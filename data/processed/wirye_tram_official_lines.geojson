@@ -1,0 +1,90 @@
+{
+  "type": "FeatureCollection",
+  "name": "Wirye_Tram_Official_Lines",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            127.1495,
+            37.4952
+          ],
+          [
+            127.1485,
+            37.4912
+          ],
+          [
+            127.1475,
+            37.4868
+          ],
+          [
+            127.1458,
+            37.4832
+          ],
+          [
+            127.1445,
+            37.4805
+          ],
+          [
+            127.1435,
+            37.4775
+          ],
+          [
+            127.1428,
+            37.4752
+          ],
+          [
+            127.1418,
+            37.4715
+          ],
+          [
+            127.1332,
+            37.471
+          ],
+          [
+            127.1265,
+            37.4702
+          ]
+        ]
+      },
+      "properties": {
+        "line_name": "위례선 트램 본선",
+        "section": "마천역 ~ 위례중앙광장 ~ 복정역",
+        "color": "#00F2FE"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            127.1418,
+            37.4715
+          ],
+          [
+            127.1395,
+            37.4675
+          ],
+          [
+            127.1375,
+            37.4628
+          ]
+        ]
+      },
+      "properties": {
+        "line_name": "위례선 트램 남위례지선",
+        "section": "위례역사공원역(분기) ~ 남위례역",
+        "color": "#38BDF8"
+      }
+    }
+  ]
+}
