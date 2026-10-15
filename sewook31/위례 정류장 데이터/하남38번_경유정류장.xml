@@ -1,0 +1,1236 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response>
+<comMsgHeader/>
+<msgHeader>
+<queryTime>2026-10-15 15:39:43.062</queryTime>
+<resultCode>0</resultCode>
+<resultMessage>정상적으로 처리되었습니다.</resultMessage>
+</msgHeader>
+<msgBody>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28154</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000094</stationId>
+<stationName>상산곡동.공영차고지</stationName>
+<x>127.2336167</x>
+<y>37.4997167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>1</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>하남</regionName>
+<stationId>277102423</stationId>
+<stationName>공영차고지입구(경유)</stationName>
+<x>127.23225</x>
+<y>37.5009167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>2</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28149</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000093</stationId>
+<stationName>산곡초등학교.검단산입구</stationName>
+<x>127.23105</x>
+<y>37.5034167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>3</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28136</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000092</stationId>
+<stationName>새능마을입구</stationName>
+<x>127.2259</x>
+<y>37.5114167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>4</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28129</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000091</stationId>
+<stationName>하산곡삼거리</stationName>
+<x>127.2237</x>
+<y>37.5153833</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>5</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28123</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000090</stationId>
+<stationName>천현동행정복지센터입구</stationName>
+<x>127.2217167</x>
+<y>37.5195667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>6</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28120</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000089</stationId>
+<stationName>복지회관.하남경찰서.등기소.마루공원</stationName>
+<x>127.22145</x>
+<y>37.52275</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>7</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28125</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000088</stationId>
+<stationName>정심사입구.삼일공사</stationName>
+<x>127.22275</x>
+<y>37.5283833</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>8</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28127</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000038</stationId>
+<stationName>신안아파트후문</stationName>
+<x>127.2234833</x>
+<y>37.5353667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>9</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28133</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000037</stationId>
+<stationName>꿈동산신안.창우마을.은행아파트</stationName>
+<x>127.2244667</x>
+<y>37.5379833</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>10</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28282</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000241</stationId>
+<stationName>하남검단산역.창우초교(중)</stationName>
+<x>127.2232333</x>
+<y>37.5398167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>11</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28295</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000262</stationId>
+<stationName>동일하이빌아파트(중)</stationName>
+<x>127.2194</x>
+<y>37.5405333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>12</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28278</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000243</stationId>
+<stationName>하남시청(중)</stationName>
+<x>127.2140833</x>
+<y>37.54025</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>13</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28279</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000244</stationId>
+<stationName>장지마을(중)</stationName>
+<x>127.2087667</x>
+<y>37.54085</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>14</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28275</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000247</stationId>
+<stationName>하남시청역.덕풍시장(중)</stationName>
+<x>127.2042333</x>
+<y>37.5430333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>15</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28285</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000253</stationId>
+<stationName>라인.한솔솔파크아파트(중)</stationName>
+<x>127.20045</x>
+<y>37.5448667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>16</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28277</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000248</stationId>
+<stationName>온천마을.테크노밸리U1.힐즈파크푸르지오(중)</stationName>
+<x>127.1954333</x>
+<y>37.54695</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>17</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28255</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000486</stationId>
+<stationName>황산사거리.미사센텀비즈(중)</stationName>
+<x>127.1841833</x>
+<y>37.5497667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>18</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>124000361</stationId>
+<stationName>상일초교(중)</stationName>
+<x>127.1712667</x>
+<y>37.5461</y>
+<adminName>서울특별시 강동구</adminName>
+<stationSeq>19</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>124000369</stationId>
+<stationName>초이동(중)</stationName>
+<x>127.1615333</x>
+<y>37.5420833</y>
+<adminName>서울특별시 강동구</adminName>
+<stationSeq>20</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>124000084</stationId>
+<stationName>일자산입구.둔촌도서관</stationName>
+<x>127.1496833</x>
+<y>37.5318833</y>
+<adminName>서울특별시 강동구</adminName>
+<stationSeq>21</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>124000445</stationId>
+<stationName>중앙보훈병원역2번출구</stationName>
+<x>127.1487333</x>
+<y>37.5296333</y>
+<adminName>서울특별시 강동구</adminName>
+<stationSeq>22</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>124000190</stationId>
+<stationName>중앙보훈병원역1번출구</stationName>
+<x>127.14775</x>
+<y>37.5272</y>
+<adminName>서울특별시 강동구</adminName>
+<stationSeq>23</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>124000444</stationId>
+<stationName>둔촌습지앞</stationName>
+<x>127.1455167</x>
+<y>37.52165</y>
+<adminName>서울특별시 강동구</adminName>
+<stationSeq>24</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28002</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000110</stationId>
+<stationName>배다리.서하남나들목</stationName>
+<x>127.14795</x>
+<y>37.5161667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>25</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28005</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000109</stationId>
+<stationName>원호주택.도로공사</stationName>
+<x>127.15495</x>
+<y>37.5146167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>26</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28577</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000344</stationId>
+<stationName>감일푸르지오마크베르.단독주택5단지.금강펜테리움</stationName>
+<x>127.1547167</x>
+<y>37.5111333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>27</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28455</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000648</stationId>
+<stationName>단독주택4단지</stationName>
+<x>127.1537833</x>
+<y>37.5095</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>28</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28012</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000218</stationId>
+<stationName>감일역사공원.제일풍경채</stationName>
+<x>127.1544833</x>
+<y>37.5077</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>29</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28269</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000331</stationId>
+<stationName>단샘초.감일파크센트레빌</stationName>
+<x>127.157</x>
+<y>37.5068</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>30</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28016</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000237</stationId>
+<stationName>힐스테이트포웰시티.한라비발디후문</stationName>
+<x>127.1602167</x>
+<y>37.5052167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>31</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28055</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000076</stationId>
+<stationName>감일중.한라비발디.더샵포웰시티</stationName>
+<x>127.1634167</x>
+<y>37.5022833</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>32</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28138</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000178</stationId>
+<stationName>감일초.센트레빌.포웰시티푸르지오라포레</stationName>
+<x>127.1630833</x>
+<y>37.4990833</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>33</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28190</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000238</stationId>
+<stationName>감일교차로</stationName>
+<x>127.1617333</x>
+<y>37.4976333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>34</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000668</stationId>
+<stationName>북위례입구</stationName>
+<x>127.1564167</x>
+<y>37.4889667</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>35</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000662</stationId>
+<stationName>위례포레샤인18단지남문</stationName>
+<x>127.1528</x>
+<y>37.4869833</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>36</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000664</stationId>
+<stationName>포레나송파</stationName>
+<x>127.14915</x>
+<y>37.4847</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>37</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28533</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000686</stationId>
+<stationName>스타필드시티.위례스타힐스.하남시위례도서관</stationName>
+<x>127.1474</x>
+<y>37.4800833</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>38</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28497</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000672</stationId>
+<stationName>위례초.위례중.효성해링턴타워</stationName>
+<x>127.1492333</x>
+<y>37.4776333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>39</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28370</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000297</stationId>
+<stationName>하남시위례동행정복지센터.위례고</stationName>
+<x>127.1521333</x>
+<y>37.4767333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>40</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28471</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000302</stationId>
+<stationName>위례롯데캐슬.그린파크푸르지오.남한산성입구</stationName>
+<x>127.1543333</x>
+<y>37.4743833</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>41</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28473</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000662</stationId>
+<stationName>위례롯데캐슬.호반써밋에비뉴</stationName>
+<x>127.1519333</x>
+<y>37.4738833</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>42</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28468</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000299</stationId>
+<stationName>플로리체위례.위례자이더시티</stationName>
+<x>127.1499833</x>
+<y>37.4739667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>43</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000630</stationId>
+<stationName>위례포레샤인.위례31단지후문</stationName>
+<x>127.1339167</x>
+<y>37.4748333</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>44</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000316</stationId>
+<stationName>복정역환승센터1번승강장</stationName>
+<x>127.1272167</x>
+<y>37.4700333</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>45</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>Y</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000631</stationId>
+<stationName>위례31단지.위례포레샤인후문</stationName>
+<x>127.13365</x>
+<y>37.4745833</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>46</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28372</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000295</stationId>
+<stationName>위례자이더시티.플로리체위례</stationName>
+<x>127.1491333</x>
+<y>37.4737667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>47</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28469</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000300</stationId>
+<stationName>위례롯데캐슬.호반써밋에비뉴</stationName>
+<x>127.1509833</x>
+<y>37.4736833</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>48</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28470</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000301</stationId>
+<stationName>위례그린파크푸르지오.롯데캐슬.남한산성입구</stationName>
+<x>127.1545167</x>
+<y>37.4751</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>49</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28371</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000298</stationId>
+<stationName>하남시위례동행정복지센터.위례고</stationName>
+<x>127.151</x>
+<y>37.4775667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>50</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28498</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000673</stationId>
+<stationName>위례초.위례중.효성해링턴타워</stationName>
+<x>127.1484667</x>
+<y>37.4780167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>51</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28532</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000685</stationId>
+<stationName>스타필드시티.위례지웰푸르지오.하남시위례도서관</stationName>
+<x>127.1478</x>
+<y>37.4800667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>52</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000665</stationId>
+<stationName>위례호반써밋</stationName>
+<x>127.1497167</x>
+<y>37.4847</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>53</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000663</stationId>
+<stationName>힐스테이트센트럴위례</stationName>
+<x>127.1534833</x>
+<y>37.4869167</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>54</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000669</stationId>
+<stationName>북위례입구</stationName>
+<x>127.1568667</x>
+<y>37.48875</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>55</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28189</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000188</stationId>
+<stationName>감일교차로</stationName>
+<x>127.1623667</x>
+<y>37.4975833</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>56</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28176</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000179</stationId>
+<stationName>감일초.센트레빌.포웰시티푸르지오라포레</stationName>
+<x>127.1633</x>
+<y>37.4989</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>57</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28057</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000067</stationId>
+<stationName>감일중.한라비발디.더샵포웰시티</stationName>
+<x>127.1636333</x>
+<y>37.50245</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>58</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28019</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000236</stationId>
+<stationName>힐스테이트포웰시티.한라비발디후문</stationName>
+<x>127.1607</x>
+<y>37.5052333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>59</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28266</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000330</stationId>
+<stationName>단샘초.감일파크센트레빌</stationName>
+<x>127.1573333</x>
+<y>37.5068667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>60</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28078</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000081</stationId>
+<stationName>감일역사공원.제일풍경채</stationName>
+<x>127.15455</x>
+<y>37.5079</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>61</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28454</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000647</stationId>
+<stationName>감일푸르지오마크베르.단독주택4.5단지</stationName>
+<x>127.1542333</x>
+<y>37.50975</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>62</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28574</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000341</stationId>
+<stationName>감일금강펜테리움센트럴파크</stationName>
+<x>127.15565</x>
+<y>37.5121333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>63</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28004</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000112</stationId>
+<stationName>원호주택.도로공사</stationName>
+<x>127.1547833</x>
+<y>37.51495</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>64</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28003</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000111</stationId>
+<stationName>배다리.서하남나들목</stationName>
+<x>127.1479833</x>
+<y>37.51665</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>65</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28440</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000633</stationId>
+<stationName>배다리</stationName>
+<x>127.14565</x>
+<y>37.5212667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>66</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>124000191</stationId>
+<stationName>중앙보훈병원역1번출구</stationName>
+<x>127.1480333</x>
+<y>37.5272167</y>
+<adminName>서울특별시 강동구</adminName>
+<stationSeq>67</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>124000446</stationId>
+<stationName>중앙보훈병원역3번출구</stationName>
+<x>127.1488167</x>
+<y>37.5290833</y>
+<adminName>서울특별시 강동구</adminName>
+<stationSeq>68</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>124000085</stationId>
+<stationName>일자산입구.둔촌도서관</stationName>
+<x>127.1498333</x>
+<y>37.5315333</y>
+<adminName>서울특별시 강동구</adminName>
+<stationSeq>69</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>124000370</stationId>
+<stationName>초이동(중)</stationName>
+<x>127.1611833</x>
+<y>37.54185</y>
+<adminName>서울특별시 강동구</adminName>
+<stationSeq>70</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>124000362</stationId>
+<stationName>상일초교(중)</stationName>
+<x>127.1707333</x>
+<y>37.5457333</y>
+<adminName>서울특별시 강동구</adminName>
+<stationSeq>71</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28272</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000251</stationId>
+<stationName>황산사거리.하남수산물시장(중)</stationName>
+<x>127.1838</x>
+<y>37.5495</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>72</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28273</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000249</stationId>
+<stationName>온천마을.테크노밸리U1.힐즈파크푸르지오(중)</stationName>
+<x>127.19475</x>
+<y>37.54685</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>73</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28284</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000252</stationId>
+<stationName>라인.한솔솔파크아파트(중)</stationName>
+<x>127.20005</x>
+<y>37.5449333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>74</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28280</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000246</stationId>
+<stationName>하남시청역.덕풍시장(중)</stationName>
+<x>127.2052333</x>
+<y>37.5424667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>75</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28274</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000245</stationId>
+<stationName>장지마을(중)</stationName>
+<x>127.2093</x>
+<y>37.54045</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>76</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28281</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000242</stationId>
+<stationName>하남시청(중)</stationName>
+<x>127.2149167</x>
+<y>37.5406333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>77</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>Y</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28296</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000263</stationId>
+<stationName>백송한신아파트(중)</stationName>
+<x>127.21815</x>
+<y>37.54065</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>78</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28132</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000132</stationId>
+<stationName>하남검단산역.부영아파트.창우초교</stationName>
+<x>127.224</x>
+<y>37.5395</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>79</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28134</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000131</stationId>
+<stationName>은행.꿈동산신안.창우마을아파트</stationName>
+<x>127.2241167</x>
+<y>37.5378667</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>80</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28131</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000130</stationId>
+<stationName>신안아파트후문</stationName>
+<x>127.2238333</x>
+<y>37.5350833</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>81</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28140</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000165</stationId>
+<stationName>검단산입구.한국애니메이션고교</stationName>
+<x>127.2260667</x>
+<y>37.5339333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>82</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28126</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000085</stationId>
+<stationName>정심사입구.삼일공사</stationName>
+<x>127.2228667</x>
+<y>37.5289</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>83</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28118</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000084</stationId>
+<stationName>복지회관.하남경찰서.등기소.마루공원</stationName>
+<x>127.2212333</x>
+<y>37.5222167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>84</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28121</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000156</stationId>
+<stationName>천현동행정복지센터입구</stationName>
+<x>127.2214833</x>
+<y>37.5195167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>85</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28130</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000155</stationId>
+<stationName>하산곡삼거리</stationName>
+<x>127.2237833</x>
+<y>37.5148333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>86</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28135</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000154</stationId>
+<stationName>새능마을입구</stationName>
+<x>127.2254167</x>
+<y>37.5119167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>87</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28150</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000153</stationId>
+<stationName>산곡초등학교.검단산입구</stationName>
+<x>127.23135</x>
+<y>37.5026333</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>88</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 28160</mobileNo>
+<regionName>하남</regionName>
+<stationId>227000062</stationId>
+<stationName>상산곡동.공영차고지</stationName>
+<x>127.2334333</x>
+<y>37.4997167</y>
+<adminName>경기도 하남시</adminName>
+<stationSeq>89</stationSeq>
+<turnSeq>45</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+</msgBody>
+</response>

@@ -1,0 +1,1245 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response>
+<comMsgHeader/>
+<msgHeader>
+<queryTime>2026-10-15 15:23:21.421</queryTime>
+<resultCode>0</resultCode>
+<resultMessage>정상적으로 처리되었습니다.</resultMessage>
+</msgHeader>
+<msgBody>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05210</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000215</stationId>
+<stationName>사송동.종점</stationName>
+<x>127.11515</x>
+<y>37.4151</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>1</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05250</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000277</stationId>
+<stationName>사송동.한국수자원공사</stationName>
+<x>127.11315</x>
+<y>37.4139167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>2</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05214</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000230</stationId>
+<stationName>사송동자동차검사소</stationName>
+<x>127.1141667</x>
+<y>37.4111833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>3</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05206</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000213</stationId>
+<stationName>판교신미주아파트</stationName>
+<x>127.1152667</x>
+<y>37.4075167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>4</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05208</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000211</stationId>
+<stationName>판교고.송현초.삼평동행정복지센터</stationName>
+<x>127.1152833</x>
+<y>37.4056167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>5</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05185</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000205</stationId>
+<stationName>판교신미주아파트.봇들3단지</stationName>
+<x>127.1154833</x>
+<y>37.4041333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>6</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 07508</mobileNo>
+<regionName>성남</regionName>
+<stationId>206000562</stationId>
+<stationName>차그룹컨소시엄</stationName>
+<x>127.11095</x>
+<y>37.40335</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>7</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 07510</mobileNo>
+<regionName>성남</regionName>
+<stationId>206000564</stationId>
+<stationName>봇들육교</stationName>
+<x>127.1076667</x>
+<y>37.4033667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>8</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 07496</mobileNo>
+<regionName>성남</regionName>
+<stationId>206000540</stationId>
+<stationName>삼평교</stationName>
+<x>127.1047833</x>
+<y>37.4041333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>9</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>성남</regionName>
+<stationId>277100059</stationId>
+<stationName>금토동삼거리(경유)</stationName>
+<x>127.0997333</x>
+<y>37.4105167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>10</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05067</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000151</stationId>
+<stationName>밸리마을</stationName>
+<x>127.0940333</x>
+<y>37.4084833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>11</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05257</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000284</stationId>
+<stationName>(임시)금토동삼거리</stationName>
+<x>127.0898167</x>
+<y>37.4078</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>12</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05341</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000158</stationId>
+<stationName>텔레칩스</stationName>
+<x>127.0873667</x>
+<y>37.40645</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>13</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05343</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000160</stationId>
+<stationName>판교이노베이션랩</stationName>
+<x>127.0858833</x>
+<y>37.4056333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>14</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05345</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000162</stationId>
+<stationName>스마트모빌리티실증허브</stationName>
+<x>127.0892833</x>
+<y>37.4055333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>15</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05331</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000340</stationId>
+<stationName>기업성장센터</stationName>
+<x>127.09505</x>
+<y>37.41125</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>16</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05334</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000343</stationId>
+<stationName>I_SQUARE.창업주택</stationName>
+<x>127.0961667</x>
+<y>37.4121833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>17</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05182</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000200</stationId>
+<stationName>국가기록원성남분원.코이카</stationName>
+<x>127.1014167</x>
+<y>37.41535</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>18</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05009</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000063</stationId>
+<stationName>시흥사거리</stationName>
+<x>127.1023167</x>
+<y>37.4211167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>19</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05015</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000036</stationId>
+<stationName>성남농협영농종합지원센터</stationName>
+<x>127.1050333</x>
+<y>37.4221333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>20</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05164</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000155</stationId>
+<stationName>시흥동행정복지센터</stationName>
+<x>127.1082667</x>
+<y>37.4222667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>21</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>성남</regionName>
+<stationId>277104439</stationId>
+<stationName>여수대로IC(경유)</stationName>
+<x>127.1150833</x>
+<y>37.4219</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>22</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 06224</mobileNo>
+<regionName>성남</regionName>
+<stationId>205000244</stationId>
+<stationName>모란차량기지앞</stationName>
+<x>127.1224833</x>
+<y>37.4215833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>23</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 06230</mobileNo>
+<regionName>성남</regionName>
+<stationId>205000249</stationId>
+<stationName>성남시청후문뒤</stationName>
+<x>127.1262333</x>
+<y>37.4213667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>24</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>성남</regionName>
+<stationId>277102644</stationId>
+<stationName>성남대로(경유)</stationName>
+<x>127.1289667</x>
+<y>37.4242667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>25</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 06153</mobileNo>
+<regionName>성남</regionName>
+<stationId>205000069</stationId>
+<stationName>모란역4번출구</stationName>
+<x>127.1295167</x>
+<y>37.43105</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>26</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05037</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000087</stationId>
+<stationName>모란고개</stationName>
+<x>127.1285333</x>
+<y>37.4370333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>27</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05033</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000019</stationId>
+<stationName>성남수정경찰서</stationName>
+<x>127.12765</x>
+<y>37.4418333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>28</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05032</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000022</stationId>
+<stationName>수진리고개.태평고개</stationName>
+<x>127.1272333</x>
+<y>37.4446667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>29</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05030</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000021</stationId>
+<stationName>가천대역.가천대학교</stationName>
+<x>127.1269333</x>
+<y>37.4489333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>30</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05031</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000020</stationId>
+<stationName>복우물.웃말입구</stationName>
+<x>127.1268167</x>
+<y>37.4533167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>31</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05205</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000227</stationId>
+<stationName>복정파출소.복정캠퍼스맛집거리</stationName>
+<x>127.1266667</x>
+<y>37.4555</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>32</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05141</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000116</stationId>
+<stationName>동서울대학교</stationName>
+<x>127.1260833</x>
+<y>37.4590333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>33</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05142</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000115</stationId>
+<stationName>복정초등학교</stationName>
+<x>127.1262167</x>
+<y>37.4617833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>34</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05027</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000114</stationId>
+<stationName>복정동행정복지센터</stationName>
+<x>127.1266167</x>
+<y>37.46625</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>35</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000329</stationId>
+<stationName>복정역2번출구</stationName>
+<x>127.1268667</x>
+<y>37.4691667</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>36</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>성남</regionName>
+<stationId>277104240</stationId>
+<stationName>복정삼거리(경유)</stationName>
+<x>127.1325</x>
+<y>37.4682</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>37</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05159</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000148</stationId>
+<stationName>복정고등학교.복정지구</stationName>
+<x>127.1360167</x>
+<y>37.4651</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>38</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>성남</regionName>
+<stationId>277100036</stationId>
+<stationName>창곡교차로(경유)</stationName>
+<x>127.14045</x>
+<y>37.4630833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>39</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05095</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000169</stationId>
+<stationName>복정고.남위례역아테라</stationName>
+<x>127.13725</x>
+<y>37.4603667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>40</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05124</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000173</stationId>
+<stationName>남위례역수자인센트럴.엘리프남위례역에듀포레</stationName>
+<x>127.1405333</x>
+<y>37.4599</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>41</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05320</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000330</stationId>
+<stationName>남위례역.창곡교차로</stationName>
+<x>127.1417667</x>
+<y>37.4641667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>42</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05060</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000097</stationId>
+<stationName>위례래미안이편한세상.힐스테이트위례</stationName>
+<x>127.1442667</x>
+<y>37.4671167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>43</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05082</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000093</stationId>
+<stationName>래미안위례.위례고운초교.위례35단지</stationName>
+<x>127.14365</x>
+<y>37.4710333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>44</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05069</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000240</stationId>
+<stationName>성남시위례동행정복지센터.위례보미리즌빌</stationName>
+<x>127.1416333</x>
+<y>37.4710833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>45</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05308</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000235</stationId>
+<stationName>위례중앙중학교</stationName>
+<x>127.1380167</x>
+<y>37.4712333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>46</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05325</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000335</stationId>
+<stationName>위례중앙초등학교.성남위례36단지</stationName>
+<x>127.1342</x>
+<y>37.47135</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>47</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000644</stationId>
+<stationName>위례31단지정문</stationName>
+<x>127.1326333</x>
+<y>37.4735333</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>48</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000631</stationId>
+<stationName>위례31단지.위례포레샤인후문</stationName>
+<x>127.13365</x>
+<y>37.4745833</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>49</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05314</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000327</stationId>
+<stationName>위례31단지</stationName>
+<x>127.1368333</x>
+<y>37.4730833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>50</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>Y</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05309</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000238</stationId>
+<stationName>위례자이정문</stationName>
+<x>127.1394833</x>
+<y>37.4709333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>51</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05176</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000236</stationId>
+<stationName>성남시위례동행정복지센터.위례아트리버푸르지오</stationName>
+<x>127.1422833</x>
+<y>37.4708167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>52</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05081</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000034</stationId>
+<stationName>래미안위례.위례고운초등학교앞</stationName>
+<x>127.1445333</x>
+<y>37.4707333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>53</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05180</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000090</stationId>
+<stationName>밀리토피아시티.위례역푸르지오</stationName>
+<x>127.14405</x>
+<y>37.46735</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>54</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>성남</regionName>
+<stationId>277100036</stationId>
+<stationName>창곡교차로(경유)</stationName>
+<x>127.14045</x>
+<y>37.4630833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>55</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05119</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000172</stationId>
+<stationName>위례해솔초등학교.위례해솔유치원</stationName>
+<x>127.1403667</x>
+<y>37.4600333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>56</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05087</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000168</stationId>
+<stationName>복정고.남위례역아테라</stationName>
+<x>127.1372667</x>
+<y>37.46055</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>57</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05163</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000068</stationId>
+<stationName>남위례역.성남여성인력개발센터</stationName>
+<x>127.13945</x>
+<y>37.46405</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>58</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05158</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000147</stationId>
+<stationName>복정고등학교.복정지구</stationName>
+<x>127.1352667</x>
+<y>37.4658667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>59</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>서울</regionName>
+<stationId>123000249</stationId>
+<stationName>장지동</stationName>
+<x>127.1263333</x>
+<y>37.46915</y>
+<adminName>서울특별시 송파구</adminName>
+<stationSeq>60</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05026</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000113</stationId>
+<stationName>복정동행정복지센터</stationName>
+<x>127.1260833</x>
+<y>37.4661</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>61</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05025</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000112</stationId>
+<stationName>동서울대학교</stationName>
+<x>127.1256</x>
+<y>37.4604333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>62</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05170</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000253</stationId>
+<stationName>복정파출소.복정캠퍼스맛집거리</stationName>
+<x>127.1258667</x>
+<y>37.4567333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>63</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05028</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000111</stationId>
+<stationName>복우물.웃말입구</stationName>
+<x>127.1262333</x>
+<y>37.4541167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>64</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05143</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000110</stationId>
+<stationName>가천대역.가천대학교</stationName>
+<x>127.1263667</x>
+<y>37.4497167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>65</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05029</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000023</stationId>
+<stationName>수진리고개.태평고개</stationName>
+<x>127.1267333</x>
+<y>37.4443333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>66</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05150</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000011</stationId>
+<stationName>성남수정경찰서앞</stationName>
+<x>127.1273</x>
+<y>37.4406667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>67</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05036</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000088</stationId>
+<stationName>모란고개</stationName>
+<x>127.1280667</x>
+<y>37.4365667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>68</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 06345</mobileNo>
+<regionName>성남</regionName>
+<stationId>205000368</stationId>
+<stationName>모란역5번출구</stationName>
+<x>127.1289667</x>
+<y>37.4309</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>69</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>성남</regionName>
+<stationId>277100060</stationId>
+<stationName>성남대로(경유)</stationName>
+<x>127.1289</x>
+<y>37.42625</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>70</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 06231</mobileNo>
+<regionName>성남</regionName>
+<stationId>205000250</stationId>
+<stationName>성남시청후문</stationName>
+<x>127.1271833</x>
+<y>37.4216833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>71</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 06223</mobileNo>
+<regionName>성남</regionName>
+<stationId>205000243</stationId>
+<stationName>모란차량기지앞</stationName>
+<x>127.1218667</x>
+<y>37.4219333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>72</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<regionName>성남</regionName>
+<stationId>277104326</stationId>
+<stationName>여수대로IC(경유)</stationName>
+<x>127.11515</x>
+<y>37.4224333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>73</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05165</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000154</stationId>
+<stationName>시흥동행정복지센터</stationName>
+<x>127.1087167</x>
+<y>37.4226</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>74</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05006</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000061</stationId>
+<stationName>시흥사거리</stationName>
+<x>127.1019167</x>
+<y>37.4207667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>75</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05181</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000199</stationId>
+<stationName>국가기록원성남분원.코이카</stationName>
+<x>127.101</x>
+<y>37.4153833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>76</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05333</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000342</stationId>
+<stationName>I_SQUARE.창업주택</stationName>
+<x>127.0960167</x>
+<y>37.4123833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>77</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05332</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000341</stationId>
+<stationName>기업성장센터</stationName>
+<x>127.0948</x>
+<y>37.4112833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>78</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05346</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000163</stationId>
+<stationName>벤처타운(남문)</stationName>
+<x>127.0887333</x>
+<y>37.4055333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>79</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05344</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000161</stationId>
+<stationName>벤처타운(서문)</stationName>
+<x>127.0860833</x>
+<y>37.4056333</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>80</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05342</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000159</stationId>
+<stationName>벤처타운(북문)</stationName>
+<x>127.0882833</x>
+<y>37.4064167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>81</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05256</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000283</stationId>
+<stationName>(임시)금토동삼거리</stationName>
+<x>127.0899833</x>
+<y>37.4076833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>82</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05066</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000150</stationId>
+<stationName>밸리마을</stationName>
+<x>127.09395</x>
+<y>37.4082833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>83</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 07511</mobileNo>
+<regionName>성남</regionName>
+<stationId>206000565</stationId>
+<stationName>유라코퍼레이션.SK케미칼</stationName>
+<x>127.1076833</x>
+<y>37.4030667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>84</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 07509</mobileNo>
+<regionName>성남</regionName>
+<stationId>206000563</stationId>
+<stationName>한국무역정보통신</stationName>
+<x>127.1109833</x>
+<y>37.4030833</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>85</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05209</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000212</stationId>
+<stationName>판교고.송현초.삼평동행정복지센터</stationName>
+<x>127.11575</x>
+<y>37.4050167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>86</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05207</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000214</stationId>
+<stationName>이지더원.삼평동행정복지센터</stationName>
+<x>127.1156167</x>
+<y>37.4069667</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>87</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05215</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000231</stationId>
+<stationName>사송동자동차검사소</stationName>
+<x>127.1144333</x>
+<y>37.4113167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>88</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+<busRouteStationList>
+<centerYn>N</centerYn>
+<districtCd>2</districtCd>
+<mobileNo> 05211</mobileNo>
+<regionName>성남</regionName>
+<stationId>204000216</stationId>
+<stationName>사송동.종점</stationName>
+<x>127.1151</x>
+<y>37.4150167</y>
+<adminName>경기도 성남시</adminName>
+<stationSeq>89</stationSeq>
+<turnSeq>50</turnSeq>
+<turnYn>N</turnYn>
+</busRouteStationList>
+</msgBody>
+</response>
