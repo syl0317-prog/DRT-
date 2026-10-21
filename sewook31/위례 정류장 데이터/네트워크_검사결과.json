@@ -1,0 +1,72 @@
+{
+  "검사시각": "2026-10-20T13:53:45.861815",
+  "Python실행파일": "C:\\Users\\wkdtp\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+  "네트워크검사": [
+    {
+      "검사": "API 서버 DNS",
+      "성공": true,
+      "결과": {
+        "응답주소": [
+          "27.101.236.63"
+        ]
+      }
+    },
+    {
+      "검사": "API 서버 TCP 443(호스트명)",
+      "성공": true,
+      "결과": "TCP 연결 성공"
+    },
+    {
+      "검사": "API 서버 TCP 443(IP 직접) 27.101.236.63",
+      "성공": true,
+      "결과": "TCP 연결 성공"
+    },
+    {
+      "검사": "API 서버 TLS 핸드셰이크",
+      "성공": true,
+      "결과": {
+        "TLS": "TLSv1.3",
+        "인증서검증": "성공"
+      }
+    },
+    {
+      "검사": "API 서버 HTTPS(프록시 미사용)",
+      "성공": true,
+      "결과": {
+        "HTTP": 400,
+        "설명": "HTTP 오류도 HTTPS 서버 응답 도달 증거"
+      }
+    },
+    {
+      "검사": "API 서버 HTTPS(현재 프록시 설정)",
+      "성공": true,
+      "결과": {
+        "HTTP": 400,
+        "설명": "HTTP 오류도 HTTPS 서버 응답 도달 증거"
+      }
+    },
+    {
+      "검사": "대조군 example.com TCP 443",
+      "성공": true,
+      "결과": "TCP 연결 성공"
+    }
+  ],
+  "프록시": {
+    "설정된종류": [],
+    "프록시주소와인증정보": "미기록"
+  },
+  "프록시환경변수설정여부": {
+    "HTTP_PROXY": false,
+    "HTTPS_PROXY": false,
+    "ALL_PROXY": false,
+    "NO_PROXY": false
+  },
+  "원본스크립트검사": {
+    "파일": "bus_api_test.py",
+    "requests설치": true,
+    "python_dotenv설치": true,
+    "상태": "실행 종료(원본은 예외를 내부 처리하므로 API 성공을 뜻하지 않음)"
+  },
+  "재수집결과폴더": "C:\\Users\\wkdtp\\OneDrive\\바탕 화면\\위례 정류장 데이터\\diagnostics_105_106_20261020_135343_283718",
+  "원본Python_CSV_Excel해시동일": true
+}
