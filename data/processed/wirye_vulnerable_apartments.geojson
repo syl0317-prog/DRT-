@@ -1,0 +1,189 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.1495,
+          37.4738
+        ]
+      },
+      "properties": {
+        "name": "위례자이더시티",
+        "sub_title": "공공분양·신혼희망타운 A2-6BL",
+        "households": "800세대",
+        "lat": 37.4738,
+        "lon": 127.1495,
+        "nearest_tram": "108 위례역사공원역",
+        "straight_dist_m": 730,
+        "walk_dist_m": 985,
+        "walk_time_min": 15,
+        "issues": "트램역 도보 10분(700m) 초과 사각지대, 창곡천 북측 도로 우회 보행 필요",
+        "circle_radius": 240
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.153,
+          37.4725
+        ]
+      },
+      "properties": {
+        "name": "위례호반써밋에비뉴",
+        "sub_title": "창곡동 중심상업 외곽 호반베르디움",
+        "households": "1,137세대",
+        "lat": 37.4725,
+        "lon": 127.153,
+        "nearest_tram": "108 위례역사공원역",
+        "straight_dist_m": 1005,
+        "walk_dist_m": 1350,
+        "walk_time_min": 20,
+        "issues": "트램역 직선 1km 초과, 도보 20분 소요 심각 취약 권역 (DRT 직결 최우선지)",
+        "circle_radius": 280
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.1535,
+          37.4705
+        ]
+      },
+      "properties": {
+        "name": "위례더힐55",
+        "sub_title": "창곡동 동측 고지대 주거단지",
+        "households": "1,380세대",
+        "lat": 37.4705,
+        "lon": 127.1535,
+        "nearest_tram": "108 위례역사공원역",
+        "straight_dist_m": 1050,
+        "walk_dist_m": 1410,
+        "walk_time_min": 21,
+        "issues": "경사 지형으로 체감 도보 25분 이상 소요, 시내버스 배차 긴 단지",
+        "circle_radius": 270
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.1546,
+          37.473
+        ]
+      },
+      "properties": {
+        "name": "위례그린파크푸르지오",
+        "sub_title": "창곡동 최동단 남한산성 인접",
+        "households": "972세대",
+        "lat": 37.473,
+        "lon": 127.1546,
+        "nearest_tram": "108 위례역사공원역",
+        "straight_dist_m": 1150,
+        "walk_dist_m": 1550,
+        "walk_time_min": 23,
+        "issues": "성남 위례 최동단 버스 종점 권역, 트램 도보 접근 불가권",
+        "circle_radius": 260
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.1513,
+          37.4699
+        ]
+      },
+      "properties": {
+        "name": "위례센트럴푸르지오",
+        "sub_title": "창곡천 남측 위례푸른초 권역",
+        "households": "687세대",
+        "lat": 37.4699,
+        "lon": 127.1513,
+        "nearest_tram": "108 위례역사공원역",
+        "straight_dist_m": 850,
+        "walk_dist_m": 1150,
+        "walk_time_min": 17,
+        "issues": "트램역 도보 17분 소요, 학생·노약자 보행 한계 초과",
+        "circle_radius": 250
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.1558,
+          37.4745
+        ]
+      },
+      "properties": {
+        "name": "힐스테이트센트럴위례",
+        "sub_title": "창곡동 북동측 경계 주거단지",
+        "households": "1,078세대",
+        "lat": 37.4745,
+        "lon": 127.1558,
+        "nearest_tram": "107 위례중앙광장역",
+        "straight_dist_m": 1160,
+        "walk_dist_m": 1520,
+        "walk_time_min": 22,
+        "issues": "트램 중앙역 도보 22분, 광역 대중교통 환승 소외 지역",
+        "circle_radius": 260
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.1515,
+          37.4738
+        ]
+      },
+      "properties": {
+        "name": "위례롯데캐슬",
+        "sub_title": "성남시 수정구 위례순환로 인접",
+        "households": "1,673세대",
+        "lat": 37.4738,
+        "lon": 127.1515,
+        "nearest_tram": "107 위례중앙광장역",
+        "straight_dist_m": 870,
+        "walk_dist_m": 1180,
+        "walk_time_min": 18,
+        "issues": "대단지 수요 대비 트램 10분 도보권 외곽 이격, DRT 수요 밀집지",
+        "circle_radius": 270
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.1446,
+          37.4608
+        ]
+      },
+      "properties": {
+        "name": "위례포레스트부영",
+        "sub_title": "창곡동 남측 헌릉로 격리 주거지",
+        "households": "566세대",
+        "lat": 37.4608,
+        "lon": 127.1446,
+        "nearest_tram": "110 남위례역",
+        "straight_dist_m": 680,
+        "walk_dist_m": 920,
+        "walk_time_min": 14,
+        "issues": "헌릉로 대로변 단절로 남위례역 실도보 14분 소요, 보행 취약",
+        "circle_radius": 220
+      }
+    }
+  ]
+}

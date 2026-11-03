@@ -2,9 +2,11 @@
 import streamlit as st
 import pandas as pd
 import folium
+from folium import plugins
 from streamlit_folium import st_folium
 from pathlib import Path
 import html
+import json
 
 # ==========================================
 # 1. 페이지 기본 설정
@@ -297,6 +299,7 @@ with st.sidebar:
         "분석 메뉴",
         [
             "종합 대시보드",
+            "🚨 트램 사각지대 분석 (취약단지)",
             "버스 노선 분석",
             "정류장 데이터"
         ]
@@ -365,6 +368,25 @@ with k4:
 
 st.write("")
 
+@st.cache_data
+def load_blindspot_gis_data():
+    proj_root = FOLDER.parent.parent
+    data_proc = proj_root / "data" / "processed"
+    files = {
+        "changgok": data_proc / "wirye_changgok_boundary.geojson",
+        "blindspot": data_proc / "wirye_tram_blindspot_700m.geojson",
+        "buffer": data_proc / "wirye_tram_buffer_700m.geojson",
+        "stations": data_proc / "wirye_tram_official_stations.geojson",
+        "lines": data_proc / "wirye_tram_official_lines.geojson",
+        "apts": data_proc / "wirye_vulnerable_apartments.geojson"
+    }
+    loaded = {}
+    for k, p in files.items():
+        if p.exists():
+            with open(p, "r", encoding="utf-8") as f:
+                loaded[k] = json.load(f)
+    return loaded
+
 # ==========================================
 # 9. 지도 생성 함수
 # ==========================================
@@ -386,12 +408,132 @@ def make_map(data, selected="전체"):
     ]
 
     m = folium.Map(
-        location=center,
+        location=[37.4715, 127.1470] if selected == "전체" else center,
         zoom_start=15 if selected == "전체" else 16,
         tiles="OpenStreetMap",
         control_scale=True
     )
 
+    gis = load_blindspot_gis_data()
+
+    # 1. 🚨 트램 도보 10분 밖 사각지대 폴리곤 (투명도 0.4 붉은색)
+    if "blindspot" in gis:
+        fg_poly = folium.FeatureGroup(
+            name="🚨 [사각지대] 트램 도보 10분 밖 영역 (투명도 0.4 붉은색 Polygon)",
+            show=True
+        )
+        folium.GeoJson(
+            gis["blindspot"],
+            style_function=lambda x: {
+                "fillColor": "#EF4444",
+                "fillOpacity": 0.4,
+                "color": "#B91C1C",
+                "weight": 2,
+                "dashArray": "4, 4"
+            },
+            tooltip="🚨 트램 도보 10분(700m) 밖 사각지대 영역"
+        ).add_to(fg_poly)
+        fg_poly.add_to(m)
+
+    # 2. 🔴 취약 아파트 서클 (투명도 0.4 붉은색 Circle)
+    if "apts" in gis:
+        fg_circ = folium.FeatureGroup(
+            name="🔴 [단지별 권역] 취약 아파트 사각지대 서클 (투명도 0.4 붉은색 Circle)",
+            show=True
+        )
+        for feat in gis["apts"]["features"]:
+            p = feat["properties"]
+            folium.Circle(
+                location=[p["lat"], p["lon"]],
+                radius=p.get("circle_radius", 250),
+                color="#DC2626",
+                weight=2,
+                fill=True,
+                fill_color="red",
+                fill_opacity=0.4,
+                tooltip=f"🔴 {p['name']} 사각지대 권역 (도보 {p['walk_time_min']}분)"
+            ).add_to(fg_circ)
+            folium.CircleMarker(
+                location=[p["lat"], p["lon"]],
+                radius=7,
+                color="#FFFFFF",
+                weight=2,
+                fill=True,
+                fill_color="#DC2626",
+                fill_opacity=0.9,
+                tooltip=f"📍 {p['name']}"
+            ).add_to(fg_circ)
+        fg_circ.add_to(m)
+
+        # 3. 🏢 취약 아파트 상세 마커
+        fg_apts = folium.FeatureGroup(
+            name="🏢 취약 아파트 마커 (위례자이더시티, 호반써밋 등)",
+            show=True
+        )
+        for feat in gis["apts"]["features"]:
+            p = feat["properties"]
+            is_hl = p["name"] in ["위례자이더시티", "위례호반써밋에비뉴"]
+            popup_h = f"""
+            <div style="font-family:sans-serif; width:260px; padding:3px;">
+                <b style="font-size:13px; color:{'#DC2626' if is_hl else '#1E293B'};">🏢 {p['name']}</b>
+                <span style="font-size:10px; color:#64748B;">({p['sub_title']})</span>
+                <hr style="margin:4px 0;">
+                <div style="font-size:11px; line-height:1.6;">
+                    • <b>세대수:</b> {p['households']}<br>
+                    • <b>최근접 트램역:</b> <span style="color:#2563EB;"><b>{p['nearest_tram']}</b></span><br>
+                    • <b>직선거리:</b> {p['straight_dist_m']} m<br>
+                    • <b>실제 보행거리:</b> 약 {p['walk_dist_m']} m<br>
+                    • <b style="color:#DC2626;">도보 소요시간: 약 {p['walk_time_min']}분 (10분 기준 초과)</b><br>
+                    • <b>취약 사유:</b> {p['issues']}
+                </div>
+            </div>
+            """
+            folium.Marker(
+                location=[p["lat"], p["lon"]],
+                popup=folium.Popup(popup_h, max_width=290),
+                tooltip=f"🏢 {p['name']} (도보 {p['walk_time_min']}분 / 사각지대)",
+                icon=folium.Icon(color="darkred" if is_hl else "red", icon="home")
+            ).add_to(fg_apts)
+        fg_apts.add_to(m)
+
+    # 4. ⏱️ 트램 700m 도보권 버퍼 (기준선)
+    if "buffer" in gis:
+        fg_tb = folium.FeatureGroup(name="⏱️ [기준선] 트램 10분 도보권 (반경 700m)", show=True)
+        folium.GeoJson(
+            gis["buffer"],
+            style_function=lambda x: {
+                "fillColor": "#0EA5E9",
+                "color": "#0284C7",
+                "weight": 1.5,
+                "dashArray": "6, 6",
+                "fillOpacity": 0.10
+            },
+            tooltip="트램 12개 역사 10분 도보권 (반경 700m)"
+        ).add_to(fg_tb)
+        fg_tb.add_to(m)
+
+    # 5. 🚇 트램 역사 및 노선망
+    if "lines" in gis and "stations" in gis:
+        fg_ts = folium.FeatureGroup(name="🚇 위례선 공식 트램 역사 및 노선망", show=True)
+        for lf in gis["lines"]["features"]:
+            coords = [[c[1], c[0]] for c in lf["geometry"]["coordinates"]]
+            folium.PolyLine(coords, color=lf["properties"].get("color", "#00F2FE"), weight=5, opacity=0.85).add_to(fg_ts)
+        for sf in gis["stations"]["features"]:
+            c = sf["geometry"]["coordinates"]
+            folium.CircleMarker(
+                location=[c[1], c[0]],
+                radius=7,
+                color="white",
+                weight=2,
+                fill=True,
+                fill_color="#0284C7",
+                fill_opacity=0.95,
+                tooltip=f"🚇 {sf['properties']['station_no']} {sf['properties']['station_name']}"
+            ).add_to(fg_ts)
+        fg_ts.add_to(m)
+
+    # 6. 🚏 시내버스 정류장 마커 레이어
+    fg_bus = folium.FeatureGroup(name="🚏 기존 시내버스 정류장 (13개소)", show=True)
     for _, row in data.iterrows():
 
         stop_no = row["정류장번호"]
@@ -423,7 +565,7 @@ def make_map(data, selected="전체"):
 
         folium.CircleMarker(
             location=[row["lat"], row["lon"]],
-            radius=13 if is_selected else 9,
+            radius=13 if is_selected else 8,
             color="#14263E" if is_selected else "white",
             weight=3 if is_selected else 2,
             fill=True,
@@ -434,7 +576,11 @@ def make_map(data, selected="전체"):
                 popup_html,
                 max_width=280
             )
-        ).add_to(m)
+        ).add_to(fg_bus)
+    fg_bus.add_to(m)
+
+    folium.LayerControl(collapsed=False).add_to(m)
+    plugins.Fullscreen(position="topright").add_to(m)
 
     return m
 
@@ -662,6 +808,239 @@ elif page == "버스 노선 분석":
         "60번은 배차간격 미확인 상태입니다. "
         "등록 배차간격과 실제 운행간격은 다를 수 있습니다."
     )
+
+# ==========================================
+# 11-2. 트램 사각지대 분석 (취약단지) 화면
+# ==========================================
+
+elif page == "🚨 트램 사각지대 분석 (취약단지)":
+
+    st.subheader("🚨 위례 창곡동 대중교통 취약지 및 트램 도보 10분 사각지대 분석")
+    st.caption("위례선 공식 12개 정거장 도보 10분(반경 700m) 기준 공간 차집합 연산 및 취약 아파트 단지 레이어")
+
+    # 핵심 지표 카드
+    b1, b2, b3, b4 = st.columns(4)
+    with b1:
+        st.metric("성남 창곡동 총 면적", "3.19 ㎢")
+    with b2:
+        st.metric("트램 도보 10분 밖 사각지대", "1.53 ㎢", "창곡동의 48.0%")
+    with b3:
+        st.metric("조사 취약 아파트 단지", "8개 단지", "총 8,266 세대")
+    with b4:
+        st.metric("최대 보행 소요시간", "23분 (1.55 km)", "위례그린파크/더힐/호반")
+
+    st.write("")
+
+    # 데이터 경로
+    proj_root = FOLDER.parent.parent
+    data_proc = proj_root / "data" / "processed"
+
+    # GeoJSON 데이터 로드
+    changgok_file = data_proc / "wirye_changgok_boundary.geojson"
+    blindspot_file = data_proc / "wirye_tram_blindspot_700m.geojson"
+    buffer_file = data_proc / "wirye_tram_buffer_700m.geojson"
+    stations_file = data_proc / "wirye_tram_official_stations.geojson"
+    lines_file = data_proc / "wirye_tram_official_lines.geojson"
+    apts_file = data_proc / "wirye_vulnerable_apartments.geojson"
+
+    has_gis_data = all(f.exists() for f in [changgok_file, blindspot_file, stations_file, lines_file, apts_file])
+
+    if not has_gis_data:
+        st.warning("GIS 공간 데이터가 일부 누락되었습니다. generate_tram_blindspot_map.py 를 실행해주세요.")
+    else:
+        with open(changgok_file, "r", encoding="utf-8") as f:
+            changgok_geo = json.load(f)
+        with open(blindspot_file, "r", encoding="utf-8") as f:
+            blindspot_geo = json.load(f)
+        with open(buffer_file, "r", encoding="utf-8") as f:
+            buffer_geo = json.load(f)
+        with open(stations_file, "r", encoding="utf-8") as f:
+            stations_geo = json.load(f)
+        with open(lines_file, "r", encoding="utf-8") as f:
+            lines_geo = json.load(f)
+        with open(apts_file, "r", encoding="utf-8") as f:
+            apts_geo = json.load(f)
+
+        # Folium 맵 생성
+        center_lat, center_lon = 37.4715, 127.1470
+        m_blind = folium.Map(
+            location=[center_lat, center_lon],
+            zoom_start=15,
+            tiles="OpenStreetMap",
+            control_scale=True
+        )
+
+        folium.TileLayer(
+            tiles="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            attr='&copy; <a href="https://carto.com/">CARTO</a>',
+            name="CartoDB 밝은 지도",
+            control=True
+        ).add_to(m_blind)
+
+        # 1. 창곡동 경계
+        fg_b = folium.FeatureGroup(name="성남 위례동(창곡동) 행정 경계", show=True)
+        folium.GeoJson(
+            changgok_geo,
+            style_function=lambda x: {
+                "fillColor": "#1E293B",
+                "color": "#3B82F6",
+                "weight": 2.5,
+                "dashArray": "5, 5",
+                "fillOpacity": 0.05
+            },
+            tooltip="성남시 수정구 창곡동 경계"
+        ).add_to(fg_b)
+        fg_b.add_to(m_blind)
+
+        # 2. 🚨 트램 도보 10분 밖 사각지대 폴리곤 (투명도 0.4 붉은색)
+        fg_poly = folium.FeatureGroup(
+            name="🚨 [공간분석] 트램 도보 10분 밖 사각지대 영역 (투명도 0.4 붉은색 Polygon)",
+            show=True
+        )
+        folium.GeoJson(
+            blindspot_geo,
+            style_function=lambda x: {
+                "fillColor": "#EF4444",
+                "fillOpacity": 0.4,
+                "color": "#B91C1C",
+                "weight": 2,
+                "dashArray": "4, 4"
+            },
+            tooltip="🚨 트램역 도보 10분(700m) 이상 이격 사각지대 영역"
+        ).add_to(fg_poly)
+        fg_poly.add_to(m_blind)
+
+        # 3. 🔴 취약 아파트 단지별 권역 서클 (Circle: 투명도 0.4 붉은색)
+        fg_circ = folium.FeatureGroup(
+            name="🔴 [단지별 권역] 취약 아파트 사각지대 권역 서클 (Circle: 투명도 0.4 붉은색)",
+            show=True
+        )
+        for feat in apts_geo["features"]:
+            props = feat["properties"]
+            folium.Circle(
+                location=[props["lat"], props["lon"]],
+                radius=props.get("circle_radius", 250),
+                color="#DC2626",
+                weight=2,
+                fill=True,
+                fill_color="red",
+                fill_opacity=0.4,
+                tooltip=f"🔴 {props['name']} 사각지대 권역 (도보 {props['walk_time_min']}분 소요)"
+            ).add_to(fg_circ)
+            folium.CircleMarker(
+                location=[props["lat"], props["lon"]],
+                radius=7,
+                color="#FFFFFF",
+                weight=2,
+                fill=True,
+                fill_color="#DC2626",
+                fill_opacity=0.9,
+                tooltip=f"📍 {props['name']}"
+            ).add_to(fg_circ)
+        fg_circ.add_to(m_blind)
+
+        # 4. 🏢 취약 아파트 상세 마커
+        fg_apts = folium.FeatureGroup(
+            name="🏢 취약 아파트 단지 상세 마커 (위례자이더시티, 호반써밋 등)",
+            show=True
+        )
+        for feat in apts_geo["features"]:
+            props = feat["properties"]
+            is_hl = props["name"] in ["위례자이더시티", "위례호반써밋에비뉴"]
+            popup_h = f"""
+            <div style="font-family:sans-serif; width:260px; padding:3px;">
+                <b style="font-size:13px; color:{'#DC2626' if is_hl else '#1E293B'};">🏢 {props['name']}</b>
+                <span style="font-size:10px; color:#64748B;">({props['sub_title']})</span>
+                <hr style="margin:4px 0;">
+                <div style="font-size:11px; line-height:1.6;">
+                    • <b>세대수:</b> {props['households']}<br>
+                    • <b>최근접 트램역:</b> <span style="color:#2563EB;"><b>{props['nearest_tram']}</b></span><br>
+                    • <b>직선거리:</b> {props['straight_dist_m']} m<br>
+                    • <b>실제 보행거리:</b> 약 {props['walk_dist_m']} m<br>
+                    • <b style="color:#DC2626;">도보 소요시간: 약 {props['walk_time_min']}분 (10분 기준 초과)</b><br>
+                    • <b>취약 사유:</b> {props['issues']}
+                </div>
+            </div>
+            """
+            folium.Marker(
+                location=[props["lat"], props["lon"]],
+                popup=folium.Popup(popup_h, max_width=290),
+                tooltip=f"🏢 {props['name']} (도보 {props['walk_time_min']}분 / 사각지대)",
+                icon=folium.Icon(color="darkred" if is_hl else "red", icon="home")
+            ).add_to(fg_apts)
+        fg_apts.add_to(m_blind)
+
+        # 5. ⏱️ 트램 700m 도보권 버퍼
+        fg_tb = folium.FeatureGroup(name="⏱️ [기준선] 트램 12개 역사 10분 도보권 (반경 700m)", show=True)
+        folium.GeoJson(
+            buffer_geo,
+            style_function=lambda x: {
+                "fillColor": "#0EA5E9",
+                "color": "#0284C7",
+                "weight": 1.5,
+                "dashArray": "6, 6",
+                "fillOpacity": 0.10
+            },
+            tooltip="트램 12개 역사 도보 10분(반경 700m) 역세권"
+        ).add_to(fg_tb)
+        fg_tb.add_to(m_blind)
+
+        # 6. 🚇 위례선 공식 트램 노선 및 역사
+        fg_ts = folium.FeatureGroup(name="🚇 위례선 공식 트램 12개 역사 및 노선망", show=True)
+        for lf in lines_geo["features"]:
+            coords = [[c[1], c[0]] for c in lf["geometry"]["coordinates"]]
+            folium.PolyLine(coords, color=lf["properties"].get("color", "#00F2FE"), weight=5, opacity=0.85).add_to(fg_ts)
+        for sf in stations_geo["features"]:
+            c = sf["geometry"]["coordinates"]
+            folium.CircleMarker(
+                location=[c[1], c[0]],
+                radius=8,
+                color="white",
+                weight=2,
+                fill=True,
+                fill_color="#0284C7",
+                fill_opacity=0.95,
+                tooltip=f"🚇 {sf['properties']['station_no']} {sf['properties']['station_name']}"
+            ).add_to(fg_ts)
+        fg_ts.add_to(m_blind)
+
+        folium.LayerControl(collapsed=False).add_to(m_blind)
+        plugins.Fullscreen(position="topright").add_to(m_blind)
+
+        # 지도 렌더링
+        st_folium(m_blind, width=None, height=600, returned_objects=[])
+
+        st.caption("💡 지도 우측 상단 레이어 컨트롤러(Layer Control)에서 각 영역 및 단지 레이어를 자유롭게 켜고 끌 수 있습니다.")
+
+        # 하단 상세 데이터 테이블
+        st.markdown("#### 📋 창곡동 대중교통 취약 아파트 단지 상세 현황")
+        apt_table_data = []
+        for feat in apts_geo["features"]:
+            p = feat["properties"]
+            apt_table_data.append({
+                "아파트 단지명": p["name"],
+                "단지 성격": p["sub_title"],
+                "세대수": p["households"],
+                "최근접 트램역": p["nearest_tram"],
+                "직선거리": f"{p['straight_dist_m']} m",
+                "실제 도보거리": f"{p['walk_dist_m']} m",
+                "도보 소요시간": f"{p['walk_time_min']} 분",
+                "취약 사유 및 DRT 필요성": p["issues"]
+            })
+        df_apt_summary = pd.DataFrame(apt_table_data)
+        st.dataframe(df_apt_summary, hide_index=True, width="stretch")
+
+        # HTML 다운로드 버튼
+        html_map_path = proj_root / "wirye_transit_blindspot_map.html"
+        if html_map_path.exists():
+            with open(html_map_path, "r", encoding="utf-8") as hf:
+                html_bytes = hf.read().encode("utf-8")
+            st.download_button(
+                "📥 인터랙티브 Folium 사각지대 지도(HTML) 다운로드",
+                data=html_bytes,
+                file_name="wirye_transit_blindspot_map.html",
+                mime="text/html"
+            )
 
 # ==========================================
 # 12. 정류장 데이터 화면
