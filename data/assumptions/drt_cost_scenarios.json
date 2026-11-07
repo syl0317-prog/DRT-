@@ -1,0 +1,79 @@
+{
+  "_meta": {
+    "updated": "2026-11-08",
+    "unit": "원, 차량 1대 기준",
+    "note": "status: sourced=출처 있음 / assumption=팀 가정(근거 보완 필요) / null=미확인. 보험료는 미반영"
+  },
+  "scenarios": {
+    "low": {
+      "status": "assumption",
+      "lease": 1000000,
+      "driver_per_person": 3800000,
+      "drivers_per_vehicle": 1.5,
+      "fuel_maintenance": 800000,
+      "platform": 500000,
+      "insurance": null,
+      "total_monthly_excl_insurance": 8000000,
+      "total_yearly_excl_insurance": 96000000
+    },
+    "base": {
+      "status": "assumption",
+      "lease": 1200000,
+      "driver_per_person": 3800000,
+      "drivers_per_vehicle": 2,
+      "fuel_maintenance": 1000000,
+      "platform": 500000,
+      "insurance": null,
+      "total_monthly_excl_insurance": 10300000,
+      "total_yearly_excl_insurance": 123600000
+    },
+    "high": {
+      "status": "sourced",
+      "annual_cost_per_vehicle_won": 182500000,
+      "basis": "용인시 처인구 이동·남사읍 똑버스 1대당 예산(15인승 6대, 2025-11 보도). 지자체 예산 기준이라 순수 원가와 다를 수 있고 산정 기간은 미확인",
+      "source": "https://www.metroseoul.co.kr/article/20251128500156"
+    }
+  },
+  "operation": {
+    "vehicle_type": {
+      "value": "11인승 소형승합차",
+      "status": "sourced",
+      "source": "https://www.dt.co.kr/article/11670342"
+    },
+    "service_hours_per_day": {
+      "value": 18,
+      "window": "06:00-24:00",
+      "last_call": "23:30",
+      "status": "sourced",
+      "source": "https://www.dt.co.kr/article/11670342",
+      "note": "경기도 똑버스 일반 운영시간. 위례는 팀 설계에 맞춰 조정 가능"
+    },
+    "fare_adult_won": {
+      "value": 1650,
+      "status": "sourced",
+      "source": "https://kyeonggi.com/article/20260622580268",
+      "note": "2026-06 광명 똑버스 보도 기준 경기도 시내버스 요금"
+    },
+    "fare_youth_won": {
+      "value": 1160,
+      "status": "sourced",
+      "source": "https://kyeonggi.com/article/20260622580268"
+    }
+  },
+  "benchmarks_ridership": {
+    "paju_unjeong_2022": {
+      "vehicles": 10,
+      "total_passengers_1yr": 262369,
+      "per_vehicle_per_day_calc": 71.9,
+      "status": "sourced",
+      "source": "https://newsseoul.co.kr/news/view/1065609013657093"
+    },
+    "yongin_idong_namsa_2025": {
+      "vehicles": 6,
+      "avg_passengers_per_day_total": 260,
+      "per_vehicle_per_day_calc": 43.3,
+      "status": "sourced",
+      "source": "https://www.metroseoul.co.kr/article/20251128500156"
+    }
+  }
+}

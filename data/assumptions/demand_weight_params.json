@@ -1,0 +1,17 @@
+{
+  "_meta": {
+    "status": "assumption",
+    "source": "출처 확인 필요 (하남 똑버스, 업체 문의 등)",
+    "updated": "2026-11-07",
+    "note": "단위는 원/월(차량 1대 기준). null은 아직 모르는 값"
+  },
+  "scenarios": {
+    "low":  {"lease": 1000000, "driver_per_person": 3800000, "fuel_maintenance": 800000,  "platform": 500000, "insurance": null, "drivers_per_vehicle": 1},
+    "base": {"lease": 1200000, "driver_per_person": 3800000, "fuel_maintenance": 1000000, "platform": 500000, "insurance": null, "drivers_per_vehicle": 1.5},
+    "high": {"lease": 1400000, "driver_per_person": 3800000, "fuel_maintenance": 1200000, "platform": 500000, "insurance": null, "drivers_per_vehicle": 2}
+  },
+  "operation": {
+    "service_hours_per_day": null,
+    "fare_per_passenger": null
+  }
+}
