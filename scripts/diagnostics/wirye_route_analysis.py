@@ -1,9 +1,11 @@
-
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-# 31번 버스 경유정류장 XML 파일
-file_path = Path(__file__).parent / "성남331번_경유정류장.xml"
+ROOT = Path(__file__).resolve().parents[2]
+data_dir = ROOT / "data/raw/위례 정류장 데이터"
+
+# 331번 버스 경유정류장 XML 파일
+file_path = data_dir / "성남331번_경유정류장.xml"
 
 # 조사 대상 정류장 11개
 target_stations = {
@@ -36,7 +38,7 @@ try:
     print("\n일치 정류장 수:", len(matches))
 
 except FileNotFoundError:
-    print("XML 파일을 찾지 못했습니다. 파일 이름을 확인해 주세요.")
+    print(f"XML 파일을 찾지 못했습니다. 경로를 확인해 주세요: {file_path}")
 
 except ET.ParseError:
     print("XML 형식 오류입니다. XML 코드가 올바르게 저장되었는지 확인해 주세요.")

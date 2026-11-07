@@ -1,9 +1,11 @@
-
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import pandas as pd
 
-folder = Path(__file__).parent
+ROOT = Path(__file__).resolve().parents[2]
+data_dir = ROOT / "data/raw/위례 정류장 데이터"
+output_dir = ROOT / "data/processed"
+output_dir.mkdir(parents=True, exist_ok=True)
 
 # 조사 대상 정류장 13개
 stations = [
@@ -28,10 +30,10 @@ routes = {
 df = pd.DataFrame("X", index=stations, columns=list(routes) + ["위례-01"])
 
 for route, filename in routes.items():
-    path = folder / filename
+    path = data_dir / filename
 
     if not path.exists():
-        print(f"파일 없음: {filename}")
+        print(f"파일 없음: {path}")
         continue
 
     root = ET.parse(path).getroot()
@@ -59,7 +61,7 @@ for number in wirye01:
 df.index.name = "정류장번호"
 df["경유노선수"] = (df == "O").sum(axis=1)
 
-output = folder / "위례동_13개정류장_버스노선_비교.xlsx"
+output = output_dir / "위례동_13개정류장_버스노선_비교.xlsx"
 df.to_excel(output)
 
 print("엑셀 파일 생성 완료!")

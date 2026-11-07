@@ -1,10 +1,14 @@
-
-import requests
-import pandas as pd
+import os
+import time
 import xml.etree.ElementTree as ET
 from getpass import getpass
 from pathlib import Path
-import time
+import pandas as pd
+import requests
+from dotenv import load_dotenv
+
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
 
 # =====================================
 # 1. TAGO API 설정
@@ -15,7 +19,9 @@ URL = (
     "BusSttnInfoInqireService/getSttnNoList"
 )
 
-API_KEY = getpass("TAGO 일반 인증키 입력: ").strip()
+API_KEY = os.getenv("PUBLIC_DATA_SERVICE_KEY") or os.getenv("DATA_GO_KR_API_KEY")
+if not API_KEY:
+    API_KEY = getpass("TAGO 일반 인증키 입력: ").strip()
 
 # =====================================
 # 2. 조사 대상 정류장
@@ -143,10 +149,9 @@ for city_code, station_no, station_name in stations:
 
 df = pd.DataFrame(results)
 
-output_file = (
-    Path(__file__).resolve().parent
-    / "위례동_버스정류장_위치정보.xlsx"
-)
+output_dir = ROOT / "data/processed"
+output_dir.mkdir(parents=True, exist_ok=True)
+output_file = output_dir / "위례동_버스정류장_위치정보.xlsx"
 
 df.to_excel(
     output_file,

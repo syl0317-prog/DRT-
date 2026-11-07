@@ -48,3 +48,4 @@ watchdog==6.0.0
 websockets==17.2
 folium
 streamlit-folium
+python-dotenv

@@ -19,8 +19,13 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
+from dotenv import load_dotenv
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR = ROOT / "data/raw/위례 정류장 데이터"
+OUT_DIR = ROOT / "data/processed"
+load_dotenv(ROOT / ".env")
+
 API = 'https://apis.data.go.kr/1613000/BusSttnInfoInqireService/getCrdntPrxmtSttnList'
 BANDS = ['300m 이내', '300m 초과~500m 이내', '500m 초과', '좌표 오류']
 ERRORS = {
@@ -46,25 +51,39 @@ def valid(a, b):
 
 
 def credential():
-    # 기존 코드가 참조하는 환경변수 이름만 추출하며 기존 코드를 실행하지 않는다.
-    tree = ast.parse((ROOT/'bus_station_collector.py').read_text(encoding='utf-8-sig'))
+    # 환경변수 우선 확인
+    for key_name in ('PUBLIC_DATA_SERVICE_KEY', 'DATA_GO_KR_API_KEY'):
+        if os.environ.get(key_name):
+            return os.environ[key_name].strip()
+
+    # 기존 코드가 참조하는 환경변수 이름 추출 (있을 경우)
+    collector_path = ROOT / 'scripts/wirye_bus_stations.py'
     names = []
-    for n in ast.walk(tree):
-        if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == 'getenv':
-            if n.args and isinstance(n.args[0], ast.Str):
-                names.append(n.args[0].s)
+    if collector_path.exists():
+        try:
+            tree = ast.parse(collector_path.read_text(encoding='utf-8-sig'))
+            for n in ast.walk(tree):
+                if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == 'getenv':
+                    if n.args and isinstance(n.args[0], ast.Constant) and isinstance(n.args[0].value, str):
+                        names.append(n.args[0].value)
+                    elif n.args and isinstance(n.args[0], ast.Str):
+                        names.append(n.args[0].s)
+        except Exception:
+            pass
+
     for name in names:
         if os.environ.get(name):
             return os.environ[name].strip()
+
     # 단일 행 KEY=value 및 따옴표 값을 처리하며 내용을 출력하지 않는다.
-    path = ROOT/'.env'
+    path = ROOT / '.env'
     if path.exists():
         for line in path.read_text(encoding='utf-8-sig').splitlines():
             line = line.strip()
             if line.startswith('export '):
                 line = line[7:].lstrip()
             name, sep, value = line.partition('=')
-            if sep and name.strip() in names:
+            if sep and (name.strip() in names or name.strip() in ('PUBLIC_DATA_SERVICE_KEY', 'DATA_GO_KR_API_KEY')):
                 value = value.strip()
                 if value[:1] in ('\"', "'"):
                     quote = value[0]
@@ -165,7 +184,9 @@ def write_csv(path, fields, rows):
 
 
 def original_hashes():
-    return {str(f): hashlib.sha256(f.read_bytes()).hexdigest() for f in ROOT.iterdir()
+    if not DATA_DIR.exists():
+        return {}
+    return {str(f): hashlib.sha256(f.read_bytes()).hexdigest() for f in DATA_DIR.iterdir()
             if f.is_file() and f.suffix.lower() in ('.csv', '.xlsx', '.xls', '.py')
             and f.name != Path(__file__).name}
 
@@ -173,9 +194,16 @@ def original_hashes():
 def main():
     before = original_hashes()
     now = datetime.now(timezone(timedelta(hours=9)))
-    out = ROOT/('diagnostics_105_106_'+now.strftime('%Y%m%d_%H%M%S_%f'))
-    out.mkdir()
-    with (ROOT/'위례_트램정거장_좌표.csv').open(encoding='utf-8-sig') as handle:
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out = OUT_DIR / ('diagnostics_105_106_'+now.strftime('%Y%m%d_%H%M%S_%f'))
+    out.mkdir(parents=True, exist_ok=True)
+
+    tram_csv = DATA_DIR / '위례_트램정거장_좌표.csv'
+    if not tram_csv.exists():
+        print(f"좌표 파일 부재: {tram_csv}")
+        return
+
+    with tram_csv.open(encoding='utf-8-sig') as handle:
         source = list(csv.DictReader(io.StringIO(''.join(line for line in handle if line.strip()))))
     key = credential()
     details, summaries, pages = [], [], []

@@ -14,9 +14,11 @@ import urllib.parse
 import urllib.request
 from datetime import datetime
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR = ROOT / "data/raw/위례 정류장 데이터"
+OUT_DIR = ROOT / "data/processed"
 HOST = 'apis.data.go.kr'
-RESULT = ROOT / ('network_diagnostics_' + datetime.now().strftime('%Y%m%d_%H%M%S_%f'))
+RESULT = OUT_DIR / ('network_diagnostics_' + datetime.now().strftime('%Y%m%d_%H%M%S_%f'))
 
 
 def error_info(exc):
@@ -57,58 +59,56 @@ def https(use_proxy):
 
 
 def hashes():
-    return {str(f): hashlib.sha256(f.read_bytes()).hexdigest() for f in ROOT.iterdir()
+    if not DATA_DIR.exists():
+        return {}
+    return {str(f): hashlib.sha256(f.read_bytes()).hexdigest() for f in DATA_DIR.iterdir()
             if f.is_file() and f.suffix in ('.csv', '.xlsx', '.xls', '.py')}
 
 
 def main():
     before = hashes()
-    RESULT.mkdir()
+    RESULT.mkdir(parents=True, exist_ok=True)
     results = []
     addresses = []
     def dns():
         addresses.extend(sorted(set(x[4][0] for x in socket.getaddrinfo(HOST,443,type=socket.SOCK_STREAM))))
-        return {'응답주소': addresses}
-    results.append(probe('API 서버 DNS', dns))
-    results.append(probe('API 서버 TCP 443(호스트명)', lambda: tcp(HOST,443)))
-    for addr in addresses:
-        results.append(probe('API 서버 TCP 443(IP 직접) '+addr, lambda: tcp(addr,443)))
-    results.append(probe('API 서버 TLS 핸드셰이크', tls))
-    results.append(probe('API 서버 HTTPS(프록시 미사용)', lambda: https(False)))
-    results.append(probe('API 서버 HTTPS(현재 프록시 설정)', lambda: https(True)))
-    results.append(probe('대조군 example.com TCP 443', lambda: tcp('example.com',443)))
-    proxies = urllib.request.getproxies()
-    proxy_summary = {'설정된종류': sorted(proxies), '프록시주소와인증정보': '미기록'}
-    for scheme in ('https', 'http'):
-        value = proxies.get(scheme)
-        if value:
-            parsed = urllib.parse.urlsplit(value if '://' in value else 'http://'+value)
-            if parsed.hostname:
-                results.append(probe('설정된 '+scheme+' 프록시 TCP', lambda: tcp(parsed.hostname, parsed.port or 80)))
-    env_summary = {name: bool(os.environ.get(name)) for name in ('HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','NO_PROXY')}
-    # 원본을 변경하지 않고 stdout/stderr를 메모리에서 폐기한다.
-    # 기본 환경의 의존성 상태도 숨김 없이 결과에 구분한다.
-    original = {'파일': 'bus_api_test.py', 'requests설치': bool(importlib.util.find_spec('requests')),
-                'python_dotenv설치': bool(importlib.util.find_spec('dotenv'))}
-    try:
-        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            runpy.run_path(str(ROOT/'bus_api_test.py'), run_name='__main__')
-        original['상태'] = '실행 종료(원본은 예외를 내부 처리하므로 API 성공을 뜻하지 않음)'
-    except BaseException as exc:
-        original['상태'] = '실행 실패'
-        original['오류유형'] = type(exc).__name__
-        if isinstance(exc, ModuleNotFoundError) and exc.name == 'dotenv':
-            original['원인'] = '현재 Python에 python-dotenv 미설치: API 호출 전 import에서 중단'
-    spec = importlib.util.spec_from_file_location('tram_diag', ROOT/'diagnose_tram_105_106.py')
+        return {'IPv4주소수': len([x for x in addresses if ':' not in x]), 'IPv6주소수': len([x for x in addresses if ':' in x])}
+    results.append(probe('DNS 이름 해석', dns))
+    for idx, ip in enumerate(addresses[:4], 1):
+        results.append(probe('TCP 연결(직접IP #{})'.format(idx), lambda target=ip: tcp(target, 443)))
+    results.append(probe('TCP 연결(도메인:443)', lambda: tcp(HOST, 443)))
+    results.append(probe('TLS 핸드셰이크', tls))
+    results.append(probe('HTTPS 직접 요청(시스템 프록시 비활성화)', lambda: https(use_proxy=False)))
+    results.append(probe('HTTPS 요청(시스템 프록시 활성화)', lambda: https(use_proxy=True)))
+    env_keys = ['HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy']
+    env_summary = {k: bool(os.environ.get(k)) for k in env_keys}
+    proxy_summary = {'urllib_getproxies': urllib.request.getproxies()}
+    original = {'실행시도': True}
+    collector_script = ROOT / 'scripts/wirye_bus_stations.py'
+    if collector_script.exists():
+        try:
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                runpy.run_path(str(collector_script))
+            original['성공'] = True
+        except Exception as exc:
+            original['성공'] = False
+            original['오류'] = error_info(exc)
+            if isinstance(exc, ModuleNotFoundError) and exc.name == 'dotenv':
+                original['원인'] = '현재 Python에 python-dotenv 미설치: API 호출 전 import에서 중단'
+    spec = importlib.util.spec_from_file_location('tram_diag', Path(__file__).resolve().parent / 'diagnose_tram_105_106.py')
     diag = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(diag)
     # 기존 진단 모듈은 dotenv 외부 패키지 없이 .env를 안전하게 읽는다.
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
         diag.main()
-    collection = sorted(ROOT.glob('diagnostics_105_106_*'))[-1]
+    diag_folders = sorted(OUT_DIR.glob('diagnostics_105_106_*'))
+    collection = diag_folders[-1] if diag_folders else DATA_DIR
     import csv
-    with (collection/'정거장별_진단요약.csv').open(encoding='utf-8-sig') as f:
-        collected = list(csv.DictReader(f))
+    summary_csv = collection / '정거장별_진단요약.csv'
+    collected = []
+    if summary_csv.exists():
+        with summary_csv.open(encoding='utf-8-sig') as f:
+            collected = list(csv.DictReader(f))
     report = {'검사시각': datetime.now().isoformat(), 'Python실행파일': __import__('sys').executable,
               '네트워크검사': results, '프록시': proxy_summary, '프록시환경변수설정여부': env_summary,
               '원본스크립트검사': original, '재수집결과폴더': str(collection),
@@ -118,7 +118,7 @@ def main():
     for r in results:
         lines.append(json.dumps(r, ensure_ascii=False))
     lines.extend(['', '프록시: '+json.dumps(proxy_summary,ensure_ascii=False),
-                  '기존 bus_api_test.py: '+json.dumps(original,ensure_ascii=False), '',
+                  '기존 collector: '+json.dumps(original,ensure_ascii=False), '',
                   '판정 방법:',
                   '- DNS 성공이면 이름 해석 실패가 이번 연결 실패의 직접 원인은 아니다.',
                   '- 프록시를 끈 IP 직접 TCP도 10013이면 프록시만의 문제로 설명되지 않는다.',
