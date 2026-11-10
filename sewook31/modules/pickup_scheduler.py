@@ -1,3 +1,4 @@
+from modules.settings import stops_path, setting
 
 import math
 from datetime import datetime, timedelta
@@ -11,9 +12,9 @@ def calculate_pickup_schedule(
     route_stop_ids,
     tram_stop_id,
     tram_departure,
-    transfer_buffer=5,
-    dwell_minutes=1,
-    traffic_factor=1.2
+    transfer_buffer=setting("transfer_buffer"),
+    dwell_minutes=setting("dwell_minutes"),
+    traffic_factor=setting("traffic_factor")
 ):
     """
     정류장별 DRT 픽업 예정시간 계산
@@ -24,7 +25,7 @@ def calculate_pickup_schedule(
     """
 
     stops = pd.read_csv(
-        "data/drt_stops.csv",
+        stops_path(),
         dtype={"stop_id": str},
         encoding="utf-8-sig"
     )

@@ -1,3 +1,5 @@
+from modules.settings import vehicle_count
+from modules.settings import stops_path, setting
 
 from pathlib import Path
 from datetime import datetime
@@ -11,8 +13,8 @@ import pandas as pd
 BASE_DIR = Path(__file__).resolve().parent.parent
 RESERVATION_FILE = BASE_DIR / "data" / "reservations.csv"
 
-VEHICLE_COUNT = 4
-VEHICLE_CAPACITY = 8
+VEHICLE_COUNT = setting("vehicle_count")
+VEHICLE_CAPACITY = setting("vehicle_capacity")
 
 COLUMNS = [
     "reservation_id",
@@ -48,7 +50,7 @@ def get_vehicle_status(tram_stop, tram_departure):
 
     vehicles = []
 
-    for i in range(1, VEHICLE_COUNT + 1):
+    for i in range(1, vehicle_count() + 1):
         vehicle_id = f"V{i:02d}"
 
         assigned = reservations[
@@ -192,62 +194,6 @@ def create_reservation(
 
     return new_reservation, message
 
-    reservations = load_reservations()
-
-    # 같은 트램 출발편에 대한 차량별 잔여 좌석 확인
-    vehicle_status = get_vehicle_status(
-        tram_stop,
-        tram_departure
-    )
-
-    available = vehicle_status[
-        vehicle_status["잔여 좌석"] >= passengers
-    ]
-
-    if available.empty:
-        return None, "예약 가능한 차량이 없습니다."
-
-    # 잔여 좌석이 많은 차량부터 배정
-    selected = available.sort_values(
-        "잔여 좌석",
-        ascending=False
-    ).iloc[0]
-
-    vehicle_id = selected["차량 ID"]
-
-    new_reservation = {
-        "reservation_id": uuid4().hex[:10].upper(),
-        "created_at": datetime.now().isoformat(
-            timespec="seconds"
-        ),
-        "vehicle_id": vehicle_id,
-        "boarding_stop": boarding_stop,
-        "tram_stop": tram_stop,
-        "tram_departure": tram_departure,
-        "passengers": passengers,
-        "status": "예약완료"
-    }
-
-    reservations = pd.concat(
-        [
-            reservations,
-            pd.DataFrame([new_reservation])
-        ],
-        ignore_index=True
-    )
-
-    RESERVATION_FILE.parent.mkdir(
-        parents=True,
-        exist_ok=True
-    )
-
-    reservations.to_csv(
-        RESERVATION_FILE,
-        index=False,
-        encoding="utf-8-sig"
-    )
-
-    return new_reservation, "예약이 완료되었습니다."
 
 
 def cancel_reservation(reservation_id):
@@ -275,88 +221,9 @@ def calculate_reservation_pickup(
     boarding_stop,
     tram_stop,
     tram_departure,
-    transfer_buffer=5,
-    traffic_factor=1.2,
-    boarding_minutes=1
-):
-    """
-    개별 승객의 예상 DRT 탑승시간 계산
-
-    현재 버전:
-    탑승 정류장 -> 트램 정거장 직행 경로 기준
-    """
-
-    stops_file = BASE_DIR / "data" / "drt_stops.csv"
-
-    stops = pd.read_csv(
-        stops_file,
-        dtype={"stop_id": str},
-        encoding="utf-8-sig"
-    )
-
-    stop_lookup = stops.set_index("stop_id")
-
-    coordinates = []
-
-    for stop_id in [boarding_stop, tram_stop]:
-
-        if stop_id not in stop_lookup.index:
-            raise ValueError(
-                f"정류장을 찾을 수 없습니다: {stop_id}"
-            )
-
-        row = stop_lookup.loc[stop_id]
-
-        if pd.isna(row["latitude"]) or pd.isna(row["longitude"]):
-            raise ValueError(
-                f"정류장 좌표가 없습니다: {stop_id}"
-            )
-
-        coordinates.append([
-            float(row["latitude"]),
-            float(row["longitude"])
-        ])
-
-    road_route = calculate_road_route(coordinates)
-
-    if road_route is None:
-        raise ValueError("도로 경로 계산에 실패했습니다.")
-
-    # 예상 주행시간에 혼잡 보정 적용
-    driving_minutes = (
-        road_route["duration_min"] * traffic_factor
-    )
-
-    # 트램 출발시간
-    tram_time = datetime.strptime(
-        tram_departure, "%H:%M"
-    )
-
-    # 트램 출발 전 DRT 도착 목표시간
-    drt_arrival = tram_time - timedelta(
-        minutes=transfer_buffer
-    )
-
-    # 탑승 예정시간 계산
-    pickup_time = drt_arrival - timedelta(
-        minutes=driving_minutes + boarding_minutes
-    )
-
-    return {
-        "pickup_time": pickup_time.strftime("%H:%M"),
-        "drt_arrival": drt_arrival.strftime("%H:%M"),
-        "tram_departure": tram_departure,
-        "distance_km": road_route["distance_km"],
-        "driving_minutes": round(driving_minutes, 1)
-    }
-
-def calculate_reservation_pickup(
-    boarding_stop,
-    tram_stop,
-    tram_departure,
-    transfer_buffer=5,
-    traffic_factor=1.2,
-    boarding_minutes=1
+    transfer_buffer=setting("transfer_buffer"),
+    traffic_factor=setting("traffic_factor"),
+    boarding_minutes=setting("dwell_minutes")
 ):
     """
     예약 승객의 예상 DRT 탑승시간 계산
@@ -365,7 +232,7 @@ def calculate_reservation_pickup(
     from datetime import datetime, timedelta
     from modules.route_engine import calculate_road_route
 
-    stops_file = BASE_DIR / "data" / "drt_stops.csv"
+    stops_file = stops_path()
 
     stops = pd.read_csv(
         stops_file,

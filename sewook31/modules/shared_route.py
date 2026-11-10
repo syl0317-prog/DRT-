@@ -1,3 +1,4 @@
+from modules.settings import stops_path, setting
 
 from pathlib import Path
 
@@ -8,16 +9,16 @@ from modules.pickup_scheduler import calculate_pickup_schedule
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-STOPS_FILE = BASE_DIR / "data" / "drt_stops.csv"
+STOPS_FILE = stops_path()
 
 
 def get_shared_route(
     vehicle_id,
     tram_stop,
     tram_departure,
-    transfer_buffer=5,
-    dwell_minutes=1,
-    traffic_factor=1.2
+    transfer_buffer=setting("transfer_buffer"),
+    dwell_minutes=setting("dwell_minutes"),
+    traffic_factor=setting("traffic_factor")
 ):
     """
     같은 차량, 트램 정거장, 출발시간의 예약을
@@ -39,7 +40,7 @@ def get_shared_route(
         raise ValueError("해당 차량의 예약 내역이 없습니다.")
 
     stops = pd.read_csv(
-        STOPS_FILE,
+        stops_path(),
         dtype={"stop_id": str},
         encoding="utf-8-sig"
     )

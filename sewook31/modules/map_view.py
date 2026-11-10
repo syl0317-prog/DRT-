@@ -1,3 +1,4 @@
+from modules.settings import stops_path, setting
 
 from pathlib import Path
 
@@ -10,7 +11,7 @@ from modules.route_engine import calculate_road_route
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-STOPS_FILE = BASE_DIR / "data" / "drt_stops.csv"
+STOPS_FILE = stops_path()
 
 
 def show_drt_map():
@@ -19,7 +20,7 @@ def show_drt_map():
 
     # 정류장 데이터 불러오기
     stops = pd.read_csv(
-        STOPS_FILE,
+        stops_path(),
         dtype={"stop_id": str},
         encoding="utf-8-sig"
     )
@@ -186,25 +187,7 @@ def show_drt_map():
         format_func=lambda x: f"{x} - {stop_names[x]}"
     )
 
-    if st.button("선택 위치 저장"):
-
-        if lat is None or lon is None:
-            st.warning("먼저 지도에서 위치를 클릭하세요.")
-
-        else:
-            mask = stops["stop_id"] == selected_id
-
-            stops.loc[mask, "latitude"] = lat
-            stops.loc[mask, "longitude"] = lon
-
-            stops.to_csv(
-                STOPS_FILE,
-                index=False,
-                encoding="utf-8-sig"
-            )
-
-            st.success("정류장 위치 저장 완료")
-            st.rerun()
+    st.info("정류장 원본은 읽기 전용입니다. 변경 위치는 별도 검증이 필요합니다.")
 
     st.divider()
 

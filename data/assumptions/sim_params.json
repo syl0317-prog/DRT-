@@ -1,0 +1,67 @@
+{
+  "stops_file": {
+    "value": "drt_stops.csv",
+    "status": "assumption",
+    "source": "기존 미검증 후보 유지"
+  },
+  "vehicle_count": {
+    "value": 4,
+    "status": "assumption",
+    "source": "기존 reservation_manager.py; 구역당 1대/2구역 계획과 다름"
+  },
+  "vehicle_capacity": {
+    "value": 8,
+    "status": "assumption",
+    "source": "기존 차량 정원"
+  },
+  "traffic_factor": {
+    "value": 1.2,
+    "status": "assumption",
+    "source": "기존 혼잡계수"
+  },
+  "transfer_buffer": {
+    "value": 5,
+    "status": "assumption",
+    "source": "기존 환승 여유 분"
+  },
+  "dwell_minutes": {
+    "value": 1,
+    "status": "assumption",
+    "source": "기존 정차 분"
+  },
+  "k_min": {
+    "value": 1.0,
+    "status": "assumption",
+    "source": "실측 입력 전 가정값; 검증된 양수 쌍 최소 3건 필요"
+  },
+  "k_mode": {
+    "value": 1.2,
+    "status": "assumption",
+    "source": "실측 입력 전 가정값; 검증된 양수 쌍 최소 3건 필요"
+  },
+  "k_max": {
+    "value": 1.5,
+    "status": "assumption",
+    "source": "실측 입력 전 가정값; 검증된 양수 쌍 최소 3건 필요"
+  },
+  "detour_per_passenger": {
+    "value": 2,
+    "status": "assumption",
+    "source": "사용자 지정 합승 추가 분"
+  },
+  "simulation_runs": {
+    "value": 10000,
+    "status": "assumption",
+    "source": "사용자 지정 조건별 반복"
+  },
+  "random_seed": {
+    "value": 20261110,
+    "status": "assumption",
+    "source": "재현 가능한 고정 시드"
+  },
+  "operating_days_per_year": {
+    "value": 365,
+    "status": "assumption",
+    "source": "연간 비용/이용객 환산 가정; 실제 운영일 확인 필요"
+  }
+}
