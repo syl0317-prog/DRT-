@@ -45,6 +45,8 @@ menu = st.sidebar.radio(
         "트램 환승 관리",
         "운영 시뮬레이션",
         "정시성 검증",
+        "도로 혼잡도 분석",
+        "운영전략 비교",
         "관리자 패널"
     ]
 )
@@ -615,6 +617,14 @@ elif menu == "운영 시뮬레이션":
 elif menu == "정시성 검증":
     from modules.analysis_views import show_punctuality
     show_punctuality()
+
+elif menu == "도로 혼잡도 분석":
+    from modules.gits_views import show_roads
+    show_roads()
+
+elif menu == "운영전략 비교":
+    from modules.gits_views import show_strategies
+    show_strategies()
 
 elif menu == "관리자 패널":
     from modules.analysis_views import show_admin
