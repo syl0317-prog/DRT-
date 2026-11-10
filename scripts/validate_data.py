@@ -1,6 +1,7 @@
 """Read-only validation. WARN denotes incomplete evidence, FAIL structural defects."""
 import sys
 import math
+import json
 from collections import Counter
 from build_stage0 import ROOT, OUT, read_csv
 
@@ -54,6 +55,32 @@ def validate():
             check(all(33 <= float(r[lat]) <= 39 and 124 <= float(r[lon]) <= 132 for r in rows), filename + ' coordinate range')
     check(False, 'Tram coordinates unverified; legal Changgok boundary is not administrative Wirye boundary', 'WARN')
     check(False, 'Walking routes, verified bus alternatives, observed travel times and boarding-site checks missing', 'WARN')
+    params_path = ROOT/'data/assumptions/sim_params.json'
+    if params_path.exists():
+        params = json.loads(params_path.read_text(encoding='utf-8'))
+        required = {'stops_file', 'vehicle_count', 'vehicle_capacity', 'traffic_factor', 'transfer_buffer', 'dwell_minutes', 'k_min', 'k_mode', 'k_max', 'simulation_runs', 'random_seed', 'detour_per_passenger'}
+        check(required <= set(params), 'simulation required settings')
+        for key, spec in params.items():
+            check({'value', 'status', 'source'} <= set(spec) and spec.get('status') in ('assumption', 'sourced') and bool(spec.get('source')), key+' annotated setting')
+        check(1 <= params['vehicle_count']['value'] <= 6 and params['vehicle_capacity']['value'] > 0, 'fleet setting range')
+        check(0 < params['k_min']['value'] <= params['k_mode']['value'] <= params['k_max']['value'], 'triangular factor order')
+        check((ROOT/'sewook31/data'/params['stops_file']['value']).is_file(), 'configured stops exist')
+        table = json.loads((ROOT/'data/assumptions/tram_timetable.json').read_text(encoding='utf-8'))
+        check(all(s['headway_minutes'] > 0 and s['status'] == 'assumption' and s['source'] for s in table.values()), 'virtual timetable annotated')
+        results_path = OUT/'punctuality_results.csv'
+        if results_path.exists():
+            simulation = read_csv(results_path)
+            stops = read_csv(ROOT/'sewook31/data'/params['stops_file']['value'])
+            expected = sum(s['stop_type'] == 'drt' for s in stops)*len(table)*3*11
+            check(len(simulation) == expected, 'configured candidate simulation combinations')
+            valid = True
+            for r in simulation:
+                if r['놓칠확률'] == 'missing':
+                    valid &= r['평균대기분'] == 'missing'
+                else:
+                    valid &= 0 <= float(r['놓칠확률']) <= 1 and math.isfinite(float(r['평균대기분'])) and float(r['평균대기분']) >= 0
+                valid &= bool(r['가정'])
+            check(valid, 'simulation ranges/missing consistency/assumptions')
     counts = Counter(level for level, _ in results)
     for level, message in results:
         if level != 'PASS':
