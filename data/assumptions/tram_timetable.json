@@ -1,0 +1,12 @@
+{
+  "출퇴근": {
+    "headway_minutes": 10,
+    "status": "assumption",
+    "source": "사용자 지정 가상 배차; 실제 시간표 아님"
+  },
+  "평시": {
+    "headway_minutes": 15,
+    "status": "assumption",
+    "source": "사용자 지정 가상 배차; 실제 시간표 아님"
+  }
+}
