@@ -18,9 +18,12 @@ def main():
     dataframes = list(run.dataframe)
     assert any("시뮬레이션 예약 기반(가상)" in x for x in captions)
     assert dataframes, "차량 표가 표시되지 않았습니다."
+    playback = next(w for w in run.radio if w.label == "표시 방식")
+    playback.set_value("지도 자동 재생").run()
+    assert not run.exception, run.exception
     print("AppTest: 앱 import 및 실시간 관제 전환 정상")
-    print(f"표: {len(dataframes)}개; 캡션 중 가상 예약 안내: "
-          f"{any('시뮬레이션 예약 기반(가상)' in x for x in captions)}")
+    assert any("지도 자동 재생용 위치" in x for x in [c.value for c in run.caption])
+    print(f"표: {len(list(run.dataframe))}개; 자동 재생 지도 렌더: 정상")
     print("UI warnings:", [x.value for x in run.warning])
 
 

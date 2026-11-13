@@ -1,7 +1,11 @@
 """Streamlit UI for simulated DRT/tram live-control positions."""
 from datetime import date, datetime, time, timedelta
+from collections import defaultdict
+from html import escape
 import json
+import math
 from pathlib import Path
+from urllib.parse import quote
 
 import folium
 import pandas as pd
@@ -48,7 +52,7 @@ def _marker_color(p):
         return "yellow", "red"
     if p.get("delay_min") and p["delay_min"] > 0:
         return "yellow", "#c99700"
-    if p.get("status") == "정차중":
+    if p.get("status") in {"정차중", "대기"}:
         return "#9ca3af", "#6b7280"
     if str(p.get("vehicle_id", "")).startswith("TR-"):
         return "#ef4444", "#991b1b"
@@ -56,7 +60,7 @@ def _marker_color(p):
 
 
 def _add_base_layers(map_obj, provider, stops):
-    # No basemap tiles are requested: geometry remains visible on a white canvas offline.
+    # CartoDB tiles are attempted online; the CSS canvas remains visible offline.
     for feature in provider.get_track_features():
         coords = feature.get("geometry", {}).get("coordinates", [])
         props = feature.get("properties", {})
@@ -75,13 +79,15 @@ def _add_base_layers(map_obj, provider, stops):
             lat, lon = float(stop["latitude"]), float(stop["longitude"])
         except (TypeError, ValueError):
             continue
-        folium.Marker([lat, lon], tooltip=f"{stop['stop_name']} ({stop['stop_id']})",
-                      icon=folium.Icon(color="blue" if stop.get("stop_type") == "drt" else "red",
-                                       icon="bus" if stop.get("stop_type") == "drt" else "train",
-                                       prefix="fa")).add_to(map_obj)
+        is_drt_stop = stop.get("stop_type") == "drt"
+        folium.CircleMarker([lat, lon], radius=5 if is_drt_stop else 4,
+                            color="#1d4ed8" if is_drt_stop else "#b91c1c",
+                            fill=True, fill_color="#3b82f6" if is_drt_stop else "#ef4444",
+                            fill_opacity=0.9,
+                            tooltip=f"{stop['stop_name']} ({stop['stop_id']})").add_to(map_obj)
 
 
-def _add_position(map_obj, p):
+def _add_position(map_obj, p, display_lat=None, display_lon=None):
     if p.get("lat") is None or p.get("lon") is None:
         return
     past = p.get("_past_coordinates", [])
@@ -95,25 +101,121 @@ def _add_position(map_obj, p):
     fill, outline = _marker_color(p)
     popup = (f"<b>{p['vehicle_id']}</b><br>상태: {p.get('status', 'missing')}<br>"
              f"다음 정류장: {p.get('next_stop', 'missing')}<br>도착 예정: {p.get('eta') or 'missing'}<br>"
-             f"연결 트램: {p.get('connected_tram_time') or 'missing'}<br>지연(분): {p.get('delay_min', 'missing')}")
-    folium.CircleMarker([p["lat"], p["lon"]], radius=8, color=outline, weight=3,
-                        fill=True, fill_color=fill, fill_opacity=0.95,
-                        tooltip=f"{p['vehicle_id']} · {p.get('status')}", popup=popup).add_to(map_obj)
+             f"연결 트램: {p.get('connected_tram_time') or 'missing'}<br>"
+             f"환승 여유: {_signed_duration(p.get('transfer_buffer_seconds'))}<br>"
+             f"지연(분): {p.get('delay_min', 'missing')}")
+    if str(p.get("vehicle_id", "")).startswith("TR-"):
+        folium.CircleMarker([p["lat"], p["lon"]], radius=6, color=outline, weight=2,
+                            fill=True, fill_color=fill, fill_opacity=0.95,
+                            tooltip=f"{p['vehicle_id']} · {p.get('status')}", popup=popup).add_to(map_obj)
+        return
+    shown_lat = p["lat"] if display_lat is None else display_lat
+    shown_lon = p["lon"] if display_lon is None else display_lon
+    vehicle_label = escape(str(p.get("vehicle_id", "DRT")))
+    marker_html = (
+        f'<div style="display:flex;flex-direction:column;align-items:center;white-space:nowrap;'
+        f'font:600 10px/1.2 sans-serif;color:#111827;text-shadow:0 1px 2px #fff">'
+        f'<span style="padding:2px 4px;background:#fff;border:1px solid #9ca3af;border-radius:3px">'
+        f'{vehicle_label}</span><span style="margin-top:2px;width:10px;height:10px;border-radius:50%;'
+        f'background:{fill};border:2px solid {outline};box-shadow:0 1px 3px #555"></span></div>'
+    )
+    folium.Marker([shown_lat, shown_lon], icon=folium.DivIcon(
+        html=marker_html, icon_size=(48, 31), icon_anchor=(24, 29)),
+        tooltip=f"{vehicle_label} · {escape(str(p.get('status', 'missing')))}",
+        popup=folium.Popup(popup, max_width=280)).add_to(map_obj)
+
+
+def _display_positions(positions):
+    """Return display-only offsets for coincident DRT markers; source coordinates stay intact."""
+    groups = defaultdict(list)
+    for index, position in enumerate(positions):
+        if (str(position.get("vehicle_id", "")).startswith("TR-")
+                or position.get("lat") is None or position.get("lon") is None):
+            continue
+        groups[(round(float(position["lat"]), 6), round(float(position["lon"]), 6))].append(index)
+    display = {}
+    for (lat, lon), indices in groups.items():
+        if len(indices) == 1:
+            point = positions[indices[0]]
+            display[indices[0]] = (point["lat"], point["lon"])
+            continue
+        center = positions[indices[0]]
+        center_lat, center_lon = float(center["lat"]), float(center["lon"])
+        # Small deterministic screen-only ring (about five metres from the real point).
+        for order, index in enumerate(indices):
+            angle = 2 * math.pi * order / len(indices)
+            north_m, east_m = 5 * math.sin(angle), 5 * math.cos(angle)
+            display[index] = (center_lat + north_m / 111_320,
+                              center_lon + east_m / (111_320 * max(math.cos(math.radians(center_lat)), 0.01)))
+    return display
+
+
+def _map_bounds(provider, stops, positions):
+    points = []
+    for feature in provider.get_track_features():
+        points.extend([[float(lat), float(lon)]
+                       for lon, lat in feature.get("geometry", {}).get("coordinates", [])])
+    for feature in provider.get_station_features():
+        props = feature.get("properties", {})
+        if props.get("lat") is not None and props.get("lon") is not None:
+            points.append([float(props["lat"]), float(props["lon"])])
+    for stop in stops:
+        try:
+            points.append([float(stop["latitude"]), float(stop["longitude"])])
+        except (KeyError, TypeError, ValueError):
+            pass
+    points.extend([[float(p["lat"]), float(p["lon"])] for p in positions
+                   if p.get("lat") is not None and p.get("lon") is not None])
+    if not points:
+        return None
+    return [[min(point[0] for point in points), min(point[1] for point in points)],
+            [max(point[0] for point in points), max(point[1] for point in points)]]
+
+
+def _add_legend(map_obj):
+    legend = """<div style="position:fixed;z-index:9999;right:12px;bottom:22px;background:#fff;
+    border:1px solid #9ca3af;border-radius:5px;padding:7px 9px;font:11px/1.55 sans-serif;
+    box-shadow:0 1px 5px #777;">
+    <div><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#ef4444;margin-right:5px"></i>트램</div>
+    <div><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#2563eb;margin-right:5px"></i>DRT 운행중</div>
+    <div><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#9ca3af;margin-right:5px"></i>DRT 정차·대기</div>
+    <div><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#facc15;margin-right:5px"></i>지연</div>
+    <div><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#facc15;border:2px solid #dc2626;margin-right:5px"></i>환승 놓침</div>
+    <div><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;margin-right:5px"></i>가상정류장</div>
+    <div><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:5px"></i>트램 정거장</div>
+    </div>"""
+    map_obj.get_root().html.add_child(folium.Element(legend))
 
 
 def _timestamped_features(snapshots):
     features = []
     for stamp, positions in snapshots:
-        for p in positions:
+        display_positions = _display_positions(positions)
+        for index, p in enumerate(positions):
             if p.get("lat") is None or p.get("lon") is None:
                 continue
             fill, outline = _marker_color(p)
-            features.append({"type": "Feature", "geometry": {"type": "Point", "coordinates": [p["lon"], p["lat"]]},
-                             "properties": {"time": stamp.isoformat(), "popup": f"{p['vehicle_id']} · {p.get('status')}",
-                                            "tooltip": p["vehicle_id"],
-                                            "icon": "circle", "iconstyle": {"fillColor": fill, "color": outline,
-                                                                                 "fillOpacity": 0.95, "stroke": True,
-                                                                                 "radius": 7}}})
+            shown_lat, shown_lon = display_positions.get(index, (p["lat"], p["lon"]))
+            details = (f"<b>{escape(str(p['vehicle_id']))}</b><br>상태: {escape(str(p.get('status', 'missing')))}"
+                       f"<br>다음 정류장: {escape(str(p.get('next_stop') or 'missing'))}"
+                       f"<br>도착 예정: {_clock_label(p.get('eta'))}"
+                       f"<br>환승 여유: {_signed_duration(p.get('transfer_buffer_seconds'))}")
+            props = {"time": stamp.isoformat(), "popup": details,
+                     "tooltip": p["vehicle_id"], "icon": "circle"}
+            if str(p.get("vehicle_id", "")).startswith("TR-"):
+                props["iconstyle"] = {"fillColor": fill, "color": outline, "fillOpacity": 0.95,
+                                       "stroke": True, "radius": 6}
+            else:
+                vehicle_label = escape(str(p.get("vehicle_id", "DRT")))
+                svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="56" height="38" viewBox="0 0 56 38">'
+                       f'<rect x="1" y="1" width="54" height="17" rx="3" fill="white" stroke="#9ca3af"/>'
+                       f'<text x="28" y="13" text-anchor="middle" font-family="sans-serif" font-size="10" '
+                       f'font-weight="bold" fill="#111827">{vehicle_label}</text>'
+                       f'<circle cx="28" cy="29" r="6" fill="{fill}" stroke="{outline}" stroke-width="3"/></svg>')
+                props["iconstyle"] = {"iconUrl": "data:image/svg+xml," + quote(svg),
+                                       "iconSize": [56, 38], "iconAnchor": [28, 36]}
+            features.append({"type": "Feature", "geometry": {"type": "Point", "coordinates": [shown_lon, shown_lat]},
+                             "properties": props})
     return {"type": "FeatureCollection", "features": features}
 
 
@@ -144,39 +246,45 @@ def show_live_control():
         st.warning("차량 수가 missing이어서 관제 위치를 계산할 수 없습니다.")
         return
 
-    preset = st.selectbox("시나리오 프리셋", list(PRESETS), key="live_preset")
     today = date.today()
     lower = datetime.combine(today, time(6, 0))
     upper = datetime.combine(today + timedelta(days=1), time(0, 0))
-    default = datetime.combine(today, PRESETS[preset])
+    initial_preset = st.session_state.get("live_preset", next(iter(PRESETS)))
+    slider_key = f"live_time_{initial_preset}"
+    if slider_key not in st.session_state:
+        st.session_state[slider_key] = datetime.combine(today, PRESETS[initial_preset])
+
+    col1, col2, col3, col4, col5 = st.columns([1.5, 4.8, 1.1, 0.8, 1.2], vertical_alignment="bottom")
+    with col1:
+        preset = st.selectbox("시나리오", list(PRESETS), key="live_preset", label_visibility="collapsed")
     slider_key = f"live_time_{preset}"
     if slider_key not in st.session_state:
-        st.session_state[slider_key] = default
-
-    col1, col2, col3 = st.columns([2, 1, 1])
-    with col1:
-        sim_time = st.slider("시뮬레이션 시각", min_value=lower, max_value=upper,
-                             step=timedelta(minutes=1),
-                             format="HH:mm", key=slider_key)
+        st.session_state[slider_key] = datetime.combine(today, PRESETS[preset])
     with col2:
-        traffic_level = st.selectbox("혼잡 수준", ["min", "mode", "max"], index=1, key="live_traffic_level")
+        sim_time = st.slider("시각", min_value=lower, max_value=upper,
+                             step=timedelta(minutes=1),
+                             format="HH:mm", key=slider_key, label_visibility="collapsed")
     with col3:
-        route_class = st.selectbox("OSRM 경로 구간 가정", ["진입간선", "단지내"], key="live_route_class")
-
-    ctrl1, ctrl2, ctrl3, ctrl4 = st.columns([1, 1, 1, 2])
-    with ctrl1:
         st.button("재생 ▶ 1분 진행", key="live_step", on_click=_step_clock,
-                  args=(slider_key, upper), help="수동 모드의 안정적인 한 단계 재생입니다.")
-    with ctrl2:
+                  args=(slider_key, upper), help="시각을 1분 이동합니다.", width="stretch")
+    with col4:
         st.button("정지 ■", key="live_stop", on_click=_stop_clock)
-    with ctrl3:
-        speed = st.selectbox("배속", [1, 10, 60], format_func=lambda x: f"{x}배", key="live_speed")
-    with ctrl4:
+    with col5:
+        traffic_level = st.selectbox("혼잡 수준", ["min", "mode", "max"], index=1, key="live_traffic_level")
+
+    with st.expander("고급 설정"):
+        adv1, adv2, adv3, adv4 = st.columns([1, 1.3, 1.7, 2])
+        with adv1:
+            speed = st.selectbox("배속", [1, 10, 60], format_func=lambda x: f"{x}배", key="live_speed")
+        with adv2:
+            route_class = st.selectbox("OSRM 구간 가정", ["진입간선", "단지내"], key="live_route_class")
+        with adv3:
+            playback_mode = st.radio("표시 방식", ["시간 슬라이더", "지도 자동 재생"], horizontal=True,
+                                     key="live_playback_mode")
+        with adv4:
+            duration_min = st.selectbox("자동 재생 범위", [15, 30, 60, 120], index=2, key="live_range")
         vehicle_count = st.slider("DRT 차량 수", 1, fleet_size, fleet_size, key="live_vehicle_count")
 
-    playback_mode = st.radio("표시 방식", ["시간 슬라이더", "지도 자동 재생"], horizontal=True,
-                             help="기본은 시각 슬라이더입니다. 자동 재생은 1분 단위 위치를 미리 계산합니다.")
-    duration_min = st.selectbox("자동 재생 범위(분)", [15, 30, 60, 120], index=2, key="live_range")
 
     provider = SimulatedProvider(scenario=preset, vehicle_count=vehicle_count,
                                  traffic_level=traffic_level, route_class=route_class, service_date=today)
@@ -186,7 +294,23 @@ def show_live_control():
         import csv
         stops = list(csv.DictReader(f))
 
-    map_obj = folium.Map(location=[37.474, 127.143], zoom_start=13, tiles=None, control_scale=True)
+    band_source = cfg.get("traffic_factor_by_band_status", {}).get(route_class, "missing")
+    map_source = f"출처: {band_source}"
+    st.caption(f"{sim_time:%H:%M:%S}  ·  {preset}  ·  혼잡 {traffic_level}  ·  {route_class} ({map_source})")
+
+    scenario_changed = st.session_state.get("live_map_scenario") != preset
+    if scenario_changed:
+        st.session_state.pop("live_map_center", None)
+        st.session_state.pop("live_map_zoom", None)
+        st.session_state["live_map_scenario"] = preset
+    saved_center = st.session_state.get("live_map_center", [37.474, 127.143])
+    if isinstance(saved_center, dict):
+        saved_center = [saved_center.get("lat", 37.474), saved_center.get("lng", 127.143)]
+    saved_zoom = st.session_state.get("live_map_zoom", 13)
+    map_obj = folium.Map(location=saved_center, zoom_start=saved_zoom,
+                         tiles="CartoDB positron", control_scale=True)
+    map_obj.get_root().header.add_child(folium.Element(
+        "<style>.leaflet-container{background:#edf0f2 !important;}</style>"))
     _add_base_layers(map_obj, provider, stops)
     if playback_mode == "지도 자동 재생":
         try:
@@ -210,11 +334,27 @@ def show_live_control():
             for p in positions:
                 _add_position(map_obj, p)
     else:
-        for p in positions:
-            _add_position(map_obj, p)
+        display_positions = _display_positions(positions)
+        for index, p in enumerate(positions):
+            shown = display_positions.get(index)
+            _add_position(map_obj, p, *(shown if shown else (None, None)))
 
-    st_folium(map_obj, width=None, height=590, returned_objects=[], key="live_control_map")
-
+    if scenario_changed:
+        bounds = _map_bounds(provider, stops, positions)
+        if bounds:
+            map_obj.fit_bounds(bounds, padding=(24, 24), max_zoom=14)
+    _add_legend(map_obj)
+    map_state = st_folium(map_obj, width=None, height=500,
+                          returned_objects=["center", "zoom"], key="live_control_map")
+    if isinstance(map_state, dict):
+        center = map_state.get("center")
+        zoom = map_state.get("zoom")
+        if isinstance(center, dict) and center.get("lat") is not None and center.get("lng") is not None:
+            st.session_state["live_map_center"] = [center["lat"], center["lng"]]
+        elif isinstance(center, (list, tuple)) and len(center) == 2:
+            st.session_state["live_map_center"] = list(center)
+        if isinstance(zoom, (int, float)):
+            st.session_state["live_map_zoom"] = zoom
     table = []
     for p in positions:
         tram_time = p.get("connected_tram_time")
@@ -232,6 +372,7 @@ def show_live_control():
         st.dataframe(pd.DataFrame(table).astype(str), hide_index=True, width="stretch")
     else:
         st.info("현재 시각에 운행 중인 열차나 경로가 준비된 DRT 차량이 없습니다.")
+    st.caption("지도 배경은 인터넷 연결 시에만 표시됩니다")
 
     missed = [p for p in positions if p.get("missed_transfer")]
     for p in missed:
