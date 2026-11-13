@@ -1,0 +1,53 @@
+{
+  "created_at_utc": "2026-11-13T05:33:20.348624+00:00",
+  "input_paths": {
+    "vworld": "data\\vworld\\wirye_road_links.geojson",
+    "gits": "data\\processed\\gits_link_summary.csv",
+    "previous_matching": "data\\processed\\vworld_gits_matching.csv"
+  },
+  "input_sha256": {
+    "vworld": "7c8b2a40a3f2a87534b205b203aa1015c4329aebc0a457dcf5cca8df9278d628",
+    "gits": "73140740b2128335c36bee90e4b31eee0950a1f996ced315401942e6be4a6d81",
+    "previous_matching": "8d7bd012c9299f7ab9b69d85e41c563b2955d8bd6d1faa392d9042b15f1057c3"
+  },
+  "vworld_feature_count": 3221,
+  "gits_summary_rows": 60,
+  "matched_candidate_rows": 16,
+  "matched_vworld_links": 16,
+  "unmatched_gits_rows": 44,
+  "roads_without_gits": 3205,
+  "candidate_counts": {
+    "candidate_low_error": 8,
+    "candidate_high_error": 8
+  },
+  "final_validation_status": "review_required",
+  "match_method": "trimmed string link_id exact equality",
+  "source_counts": {
+    "GITS workbook / original observation sheet": 42,
+    "wirye_traffic_history.csv; provider lineage unverified": 18
+  },
+  "previous_matching_consistent_rows": 16,
+  "crs_policy": "No explicit source CRS; WGS84 longitude/latitude assumed; provenance unverified",
+  "length_method": "pyproj.Geod WGS84 ellipsoid; sum of line parts in meters",
+  "error_definition": "100 * abs(geometry_length - mean_speed * mean_time / 3.6) / geometry_length",
+  "threshold_pct": 10,
+  "drt_applicable": false,
+  "map_mode": "tiles_none",
+  "map_bounds": [
+    [
+      37.44770154961598,
+      127.11674817891836
+    ],
+    [
+      37.50304551140199,
+      127.17279673647823
+    ]
+  ],
+  "external_background_tile_requests": false,
+  "limitations": [
+    "ID equality and low length error do not verify segment or direction.",
+    "History timestamps are collection times, not verified measurement times.",
+    "Product of means is a screening reference only.",
+    "No external background tiles. Leaflet JS/CSS assets still require CDN access."
+  ]
+}
