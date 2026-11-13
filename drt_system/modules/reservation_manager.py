@@ -32,7 +32,7 @@ def load_reservations():
     if not RESERVATION_FILE.exists():
         return pd.DataFrame(columns=COLUMNS)
 
-    return pd.read_csv(
+    frame = pd.read_csv(
         RESERVATION_FILE,
         dtype={
             "reservation_id": str,
@@ -43,6 +43,8 @@ def load_reservations():
         },
         encoding="utf-8-sig"
     )
+    from modules.unified_reservations import apply_csv_cancellations
+    return apply_csv_cancellations(frame, RESERVATION_FILE)
 
 
 def get_vehicle_status(tram_stop, tram_departure):

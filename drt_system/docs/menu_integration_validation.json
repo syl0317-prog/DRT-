@@ -1,0 +1,73 @@
+{
+  "menus": [
+    "통합 대시보드",
+    "예약 관리",
+    "배차·경로",
+    "정시·환승 분석",
+    "운영 시뮬레이션",
+    "관리·설정"
+  ],
+  "tests": {
+    "total_passed": 55,
+    "failed": 0,
+    "new_menu_tests_passed": 7,
+    "final_menu_tests_rerun_passed": 7,
+    "command": "python -B -m unittest discover -s drt_system/tests -p 'test_*.py' -v"
+  },
+  "verified": [
+    "All ten original features accessible in six menus",
+    "Dashboard reservation counts match stored data",
+    "Original reservation create/read/cancel on temporary CSV only",
+    "Existing scheduler and pickup algorithms with deterministic OSRM fixture",
+    "Real existing OSRM cache read; online success/failure mocked",
+    "Independent punctuality, legacy and strategy views",
+    "GITS source selector, tables, chart, quality and candidate map access",
+    "Hidden simulations not invoked",
+    "Menu/input/result/vehicle-count state retention",
+    "Read-only overview map has six markers and no tiles or routes"
+  ],
+  "server": {
+    "address": "127.0.0.1:8512",
+    "health_http_status": 200,
+    "root_http_status": 200,
+    "stopped_after_check": true
+  },
+  "browser": {
+    "verified": false,
+    "reason": "The browser access host is unavailable"
+  },
+  "unverified": [
+    "Browser pixel rendering, actual map interaction and console runtime errors",
+    "Live external OSRM server response"
+  ],
+  "protection": {
+    "baseline_files_checked": 118,
+    "unchanged": 117,
+    "intentional_ui_changes": [
+      "drt_system\\modules\\punctuality_views.py"
+    ],
+    "original_data_files_checked": 95,
+    "original_data_files_changed": [],
+    "original_algorithms_changed": [],
+    "team_source_modules_changed": [],
+    "notes": "Only the pre-existing own punctuality presentation module changed among baseline modules; app router and own tests/docs were updated. Existing sewook31 __pycache differences predated this task and were left untouched."
+  },
+  "modified_files": [
+    "drt_system/app.py",
+    "drt_system/modules/punctuality_views.py",
+    "drt_system/tests/test_punctuality_simulation.py",
+    "drt_system/docs/punctuality_simulation_usage.md",
+    "drt_system/docs/gits_vworld_map_usage.md"
+  ],
+  "added_files": [
+    "drt_system/modules/dashboard_views.py",
+    "drt_system/modules/operational_views.py",
+    "drt_system/modules/route_views.py",
+    "drt_system/modules/detail_views.py",
+    "drt_system/modules/session_ui.py",
+    "drt_system/tests/test_menu_integration.py",
+    "drt_system/docs/menu_integration_usage.md",
+    "drt_system/docs/menu_integration_validation.json"
+  ],
+  "git_commit_or_push": false
+}

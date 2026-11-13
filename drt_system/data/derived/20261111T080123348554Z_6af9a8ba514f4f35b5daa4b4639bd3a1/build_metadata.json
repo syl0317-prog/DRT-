@@ -1,0 +1,13 @@
+{
+  "run_id": "20261111T080123348554Z_6af9a8ba514f4f35b5daa4b4639bd3a1",
+  "audit_at_utc": "2026-11-11T08:01:23.352052+00:00",
+  "existing_analysis_as_of": "2026-11-10",
+  "input_sha256": {
+    "gits_link_summary.csv": "73140740b2128335c36bee90e4b31eee0950a1f996ced315401942e6be4a6d81",
+    "gits_data_quality.csv": "b01a751b9291c5c01c1ffb79a871e68a82b008b4414cfd078a82ec76f95d4b23",
+    "vworld_gits_matching.csv": "8d7bd012c9299f7ab9b69d85e41c563b2955d8bd6d1faa392d9042b15f1057c3",
+    "wirye_road_links.geojson": "7c8b2a40a3f2a87534b205b203aa1015c4329aebc0a457dcf5cca8df9278d628"
+  },
+  "implementation_sha256": "42c076c6ff341dfa457631369f4d20f32c3fb5bfebfe185f09a43ff17ff36c2a",
+  "policy": "offline summary audit; no independent evidence registry; verified blocked"
+}
