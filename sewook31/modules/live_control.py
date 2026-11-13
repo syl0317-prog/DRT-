@@ -26,7 +26,7 @@ PRESETS = {
     "평일 출근 07~09시": time(7, 0),
     "평일 퇴근 17~19시": time(17, 0),
     "평일 낮 호출형": time(12, 0),
-    "주말": time(10, 0),
+    "주말": time(12, 0),
 }
 
 
@@ -45,6 +45,19 @@ def _step_clock(key, upper):
 
 def _stop_clock():
     st.session_state["live_playing"] = False
+
+
+def _reset_preset_clock(widget_key, service_day):
+    selected = st.session_state.get(widget_key)
+    if selected in PRESETS:
+        st.session_state[f"live_time_{selected}"] = datetime.combine(service_day, PRESETS[selected])
+
+
+def _visible_text(value, fallback="정보 없음"):
+    if value is None or value == "":
+        return fallback
+    return (str(value).replace("missing", "정보 없음").replace("Missing", "정보 없음")
+            .replace("MISSING", "정보 없음"))
 
 
 def _marker_color(p):
@@ -99,15 +112,18 @@ def _add_position(map_obj, p, display_lat=None, display_lon=None):
         folium.PolyLine(future, color="#60a5fa", weight=3, opacity=0.8,
                         dash_array="8, 8", tooltip=f"{p['vehicle_id']} 앞으로 갈 길").add_to(map_obj)
     fill, outline = _marker_color(p)
-    popup = (f"<b>{p['vehicle_id']}</b><br>상태: {p.get('status', 'missing')}<br>"
-             f"다음 정류장: {p.get('next_stop', 'missing')}<br>도착 예정: {p.get('eta') or 'missing'}<br>"
-             f"연결 트램: {p.get('connected_tram_time') or 'missing'}<br>"
+    popup = (f"<b>{escape(_visible_text(p.get('vehicle_id')))}</b><br>"
+             f"상태: {escape(_visible_text(p.get('status')))}<br>"
+             f"다음 정류장: {escape(_visible_text(p.get('next_stop')))}<br>"
+             f"도착 예정: {_clock_label(p.get('eta'))}<br>"
+             f"연결 트램: {_visible_text(p.get('connected_tram_time'))}<br>"
              f"환승 여유: {_signed_duration(p.get('transfer_buffer_seconds'))}<br>"
-             f"지연(분): {p.get('delay_min', 'missing')}")
+             f"지연(분): {_visible_text(p.get('delay_min'))}")
     if str(p.get("vehicle_id", "")).startswith("TR-"):
         folium.CircleMarker([p["lat"], p["lon"]], radius=6, color=outline, weight=2,
                             fill=True, fill_color=fill, fill_opacity=0.95,
-                            tooltip=f"{p['vehicle_id']} · {p.get('status')}", popup=popup).add_to(map_obj)
+                            tooltip=f"{_visible_text(p.get('vehicle_id'))} · {_visible_text(p.get('status'))}",
+                            popup=popup).add_to(map_obj)
         return
     shown_lat = p["lat"] if display_lat is None else display_lat
     shown_lon = p["lon"] if display_lon is None else display_lon
@@ -121,7 +137,7 @@ def _add_position(map_obj, p, display_lat=None, display_lon=None):
     )
     folium.Marker([shown_lat, shown_lon], icon=folium.DivIcon(
         html=marker_html, icon_size=(48, 31), icon_anchor=(24, 29)),
-        tooltip=f"{vehicle_label} · {escape(str(p.get('status', 'missing')))}",
+        tooltip=f"{vehicle_label} · {escape(_visible_text(p.get('status')))}",
         popup=folium.Popup(popup, max_width=280)).add_to(map_obj)
 
 
@@ -152,14 +168,13 @@ def _display_positions(positions):
 
 def _map_bounds(provider, stops, positions):
     points = []
-    for feature in provider.get_track_features():
-        points.extend([[float(lat), float(lon)]
-                       for lon, lat in feature.get("geometry", {}).get("coordinates", [])])
     for feature in provider.get_station_features():
         props = feature.get("properties", {})
         if props.get("lat") is not None and props.get("lon") is not None:
             points.append([float(props["lat"]), float(props["lon"])])
     for stop in stops:
+        if stop.get("stop_type") != "drt":
+            continue
         try:
             points.append([float(stop["latitude"]), float(stop["longitude"])])
         except (KeyError, TypeError, ValueError):
@@ -196,8 +211,9 @@ def _timestamped_features(snapshots):
                 continue
             fill, outline = _marker_color(p)
             shown_lat, shown_lon = display_positions.get(index, (p["lat"], p["lon"]))
-            details = (f"<b>{escape(str(p['vehicle_id']))}</b><br>상태: {escape(str(p.get('status', 'missing')))}"
-                       f"<br>다음 정류장: {escape(str(p.get('next_stop') or 'missing'))}"
+            details = (f"<b>{escape(_visible_text(p.get('vehicle_id')))}</b>"
+                       f"<br>상태: {escape(_visible_text(p.get('status')))}"
+                       f"<br>다음 정류장: {escape(_visible_text(p.get('next_stop')))}"
                        f"<br>도착 예정: {_clock_label(p.get('eta'))}"
                        f"<br>환승 여유: {_signed_duration(p.get('transfer_buffer_seconds'))}")
             props = {"time": stamp.isoformat(), "popup": details,
@@ -221,7 +237,7 @@ def _timestamped_features(snapshots):
 
 def _signed_duration(seconds):
     if seconds is None:
-        return "missing"
+        return "정보 없음"
     seconds = int(round(seconds))
     sign = "−" if seconds < 0 else "+"
     minutes, remainder = divmod(abs(seconds), 60)
@@ -230,11 +246,11 @@ def _signed_duration(seconds):
 
 def _clock_label(value):
     if not value:
-        return "missing"
+        return "정보 없음"
     try:
         return datetime.fromisoformat(value).strftime("%H:%M:%S")
     except (TypeError, ValueError):
-        return str(value)
+        return _visible_text(value)
 
 
 def show_live_control():
@@ -243,7 +259,7 @@ def show_live_control():
     vehicle_data = cfg.get("vehicle_count", {})
     fleet_size = int(vehicle_data.get("value", 0)) if isinstance(vehicle_data, dict) else int(vehicle_data or 0)
     if fleet_size < 1:
-        st.warning("차량 수가 missing이어서 관제 위치를 계산할 수 없습니다.")
+        st.warning("차량 수 정보가 없어 관제 위치를 계산할 수 없습니다.")
         return
 
     today = date.today()
@@ -256,7 +272,9 @@ def show_live_control():
 
     col1, col2, col3, col4, col5 = st.columns([1.5, 4.8, 1.1, 0.8, 1.2], vertical_alignment="bottom")
     with col1:
-        preset = st.selectbox("시나리오", list(PRESETS), key="live_preset", label_visibility="collapsed")
+        preset = st.selectbox("시나리오", list(PRESETS), key="live_preset",
+                              on_change=_reset_preset_clock, args=("live_preset", today),
+                              label_visibility="collapsed")
     slider_key = f"live_time_{preset}"
     if slider_key not in st.session_state:
         st.session_state[slider_key] = datetime.combine(today, PRESETS[preset])
@@ -264,6 +282,9 @@ def show_live_control():
         sim_time = st.slider("시각", min_value=lower, max_value=upper,
                              step=timedelta(minutes=1),
                              format="HH:mm", key=slider_key, label_visibility="collapsed")
+        endpoint_left, endpoint_right = st.columns(2)
+        endpoint_left.caption("06:00")
+        endpoint_right.caption("24:00")
     with col3:
         st.button("재생 ▶ 1분 진행", key="live_step", on_click=_step_clock,
                   args=(slider_key, upper), help="시각을 1분 이동합니다.", width="stretch")
@@ -294,15 +315,17 @@ def show_live_control():
         import csv
         stops = list(csv.DictReader(f))
 
-    band_source = cfg.get("traffic_factor_by_band_status", {}).get(route_class, "missing")
-    map_source = f"출처: {band_source}"
+    band_source = cfg.get("traffic_factor_by_band_status", {}).get(route_class)
+    map_source = f"출처: {_visible_text(band_source)}"
     st.caption(f"{sim_time:%H:%M:%S}  ·  {preset}  ·  혼잡 {traffic_level}  ·  {route_class} ({map_source})")
 
-    scenario_changed = st.session_state.get("live_map_scenario") != preset
+    # One-time migration discards any legacy saved center, then only a preset change refits.
+    map_view_signature = ("stations-stops-vehicles-v2", preset)
+    scenario_changed = st.session_state.get("live_map_view_signature") != map_view_signature
     if scenario_changed:
         st.session_state.pop("live_map_center", None)
         st.session_state.pop("live_map_zoom", None)
-        st.session_state["live_map_scenario"] = preset
+        st.session_state["live_map_view_signature"] = map_view_signature
     saved_center = st.session_state.get("live_map_center", [37.474, 127.143])
     if isinstance(saved_center, dict):
         saved_center = [saved_center.get("lat", 37.474), saved_center.get("lng", 127.143)]
@@ -342,7 +365,7 @@ def show_live_control():
     if scenario_changed:
         bounds = _map_bounds(provider, stops, positions)
         if bounds:
-            map_obj.fit_bounds(bounds, padding=(24, 24), max_zoom=14)
+            map_obj.fit_bounds(bounds, padding=(24, 24), max_zoom=16)
     _add_legend(map_obj)
     map_state = st_folium(map_obj, width=None, height=500,
                           returned_objects=["center", "zoom"], key="live_control_map")
@@ -355,19 +378,25 @@ def show_live_control():
             st.session_state["live_map_center"] = list(center)
         if isinstance(zoom, (int, float)):
             st.session_state["live_map_zoom"] = zoom
+    st.caption("탑승 인원은 실제 예약 기록이 없어 시뮬레이션에서 집계하지 않았습니다")
     table = []
     for p in positions:
+        is_tram = str(p.get("vehicle_id", "")).startswith("TR-")
+        no_active_drt_trip = (not is_tram and
+                              (p.get("status") == "대기" or not p.get("trip_id")))
         tram_time = p.get("connected_tram_time")
         buffer_value = p.get("transfer_buffer_seconds")
-        table.append({"차량 번호": p["vehicle_id"], "상태": p.get("status", "missing"),
-                      "탑승 인원": p.get("load") if p.get("load") is not None else "missing",
-                      "다음 정류장": p.get("next_stop") or "missing",
+        dash_for_row = is_tram or no_active_drt_trip
+        table.append({"차량 번호": _visible_text(p.get("vehicle_id")),
+                      "상태": _visible_text(p.get("status")),
+                      "탑승 인원": "-" if is_tram else (p.get("load") if p.get("load") is not None else "미집계"),
+                      "다음 정류장": _visible_text(p.get("next_stop")),
                       "도착 예정 시각": _clock_label(p.get("eta")),
-                      "운행 번호": p.get("trip_id") or "missing",
-                      "연결 예정 트램 시각": tram_time or "missing",
-                      "설계 여유": _signed_duration(p.get("planned_transfer_buffer_seconds")),
-                      "혼잡 반영 후 여유": _signed_duration(buffer_value),
-                      "지연(분)": p.get("delay_min") if p.get("delay_min") is not None else "missing"})
+                      "운행 번호": "-" if dash_for_row else _visible_text(p.get("trip_id")),
+                      "연결 예정 트램 시각": "-" if dash_for_row else _visible_text(tram_time),
+                      "설계 여유": "-" if dash_for_row else _signed_duration(p.get("planned_transfer_buffer_seconds")),
+                      "혼잡 반영 후 여유": "-" if dash_for_row else _signed_duration(buffer_value),
+                      "지연(분)": "-" if dash_for_row else _visible_text(p.get("delay_min"))})
     if table:
         st.dataframe(pd.DataFrame(table).astype(str), hide_index=True, width="stretch")
     else:
@@ -377,19 +406,19 @@ def show_live_control():
     missed = [p for p in positions if p.get("missed_transfer")]
     for p in missed:
         n = p.get("next_tram_minutes")
-        st.error(f"{p['vehicle_id']} 환승 놓침(다음 트램까지 {n if n is not None else 'missing'}분)")
+        st.error(f"{_visible_text(p.get('vehicle_id'))} 환승 놓침(다음 트램까지 {_visible_text(n)}분)")
     capacity_data = cfg.get("vehicle_capacity", {})
     capacity_value = capacity_data.get("value") if isinstance(capacity_data, dict) else None
-    capacity_label = f"차량 정원 {capacity_value}명(status={capacity_data.get('status', 'missing')})" if capacity_value is not None else "차량 정원 missing"
-    st.caption(f"탑승 인원: 시뮬레이션 예약 기반(가상) — apartment_classification.csv와 거리 가중치가 없어 현재 load는 missing입니다. {capacity_label}. 실제 예약 기록과는 분리되어 있습니다.")
+    capacity_label = f"차량 정원 {capacity_value}명(status={_visible_text(capacity_data.get('status'))})" if capacity_value is not None else "차량 정원 정보 없음"
+    st.caption(f"탑승 인원: 시뮬레이션 예약 기반(가상) — apartment_classification.csv와 거리 가중치가 없어 현재 load는 미집계입니다. {capacity_label}. 실제 예약 기록과는 분리되어 있습니다.")
     warning_categories = provider.get_warning_categories()
     if warning_categories:
         for category, messages in warning_categories.items():
             with st.expander(f"{category} ({len(messages)})"):
                 for warning in messages:
-                    st.warning(warning)
+                    st.warning(_visible_text(warning))
 
     if preset == "주말":
-        st.caption("주말 혼잡 관측값은 missing이며, 현재 진입간선 값은 평일 자료를 대입한 assumption입니다.")
+        st.caption("주말 혼잡 관측값은 없으며, 현재 진입간선 값은 평일 자료를 대입한 assumption입니다.")
     st.caption("OSRM 경로의 도로 종류는 현재 링크별로 확인되지 않아, 선택한 구간 유형의 혼잡 계수를 전체 DRT 경로에 적용합니다(assumption).")
     st.info("개통 전이라 실제 GPS 데이터가 없어 시뮬레이션으로 표출합니다. 혼잡 계수는 위례 진입 간선 12개 구간 시간대별 속도 기반(평일, 시간 구간 대응은 추정)이고, 단지 내 구간은 가정값입니다. 실제 운영 시 차량 위치 데이터(API)로 교체됩니다.")
