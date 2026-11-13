@@ -1,4 +1,3 @@
-from modules.settings import stops_path, setting
 from modules.map_view import show_drt_map
 from modules.tram_scheduler import calculate_drt_schedule
 import streamlit as st
@@ -19,6 +18,7 @@ from modules.reservation_manager import (
     calculate_reservation_pickup
 )
 from modules.shared_route import get_shared_route
+from modules.live_control import show_live_control
 
 from modules.integrated_scheduler import calculate_integrated_schedule
 from modules.pickup_scheduler import calculate_pickup_schedule
@@ -33,8 +33,6 @@ st.title("🚌 위례형 DRT 통합 운영 시스템")
 st.caption("트램 환승 연계 기반 역산형 DRT 운영 시뮬레이션")
 
 st.sidebar.title("운영 메뉴")
-st.sidebar.slider("차량 수", 1, 6, int(setting("vehicle_count")), key="vehicle_count")
-st.caption("개통 일정 확인 필요 · 가상 시간표 기준 · 기존 정류장 좌표 미검증")
 
 menu = st.sidebar.radio(
     "메뉴 선택",
@@ -44,10 +42,7 @@ menu = st.sidebar.radio(
         "예약 관리",
         "트램 환승 관리",
         "운영 시뮬레이션",
-        "정시성 검증",
-        "도로 혼잡도 분석",
-        "운영전략 비교",
-        "관리자 패널"
+        "실시간 관제"
     ]
 )
 
@@ -56,7 +51,7 @@ if menu == "운영 대시보드":
 
     col1, col2, col3, col4 = st.columns(4)
 
-    col1.metric("운영 차량", f"{st.session_state.vehicle_count}대")
+    col1.metric("운영 차량", "4대")
     col2.metric("운영 권역", "2개")
     col3.metric("예약 인원", "0명")
     col4.metric("환승 성공률", "미산출")
@@ -82,7 +77,11 @@ elif menu == "예약 관리":
         "DRT 탑승을 예약할 수 있습니다."
     )
 
-    stops_file = stops_path()
+    stops_file = (
+        Path(__file__).resolve().parent
+        / "data"
+        / "drt_stops.csv"
+    )
 
     stops = pd.read_csv(
         stops_file,
@@ -136,7 +135,7 @@ elif menu == "예약 관리":
         passengers = st.number_input(
             "탑승 인원",
             min_value=1,
-            max_value=int(setting("vehicle_capacity")),
+            max_value=8,
             value=1
         )
 
@@ -165,8 +164,8 @@ elif menu == "예약 관리":
                         boarding_stop=boarding_stop,
                         tram_stop=tram_stop,
                         tram_departure=tram_departure,
-                        transfer_buffer=setting("transfer_buffer"),
-                        traffic_factor=setting("traffic_factor")
+                        transfer_buffer=5,
+                        traffic_factor=1.2
                     )
 
                 reservation, message = create_reservation(
@@ -221,6 +220,23 @@ elif menu == "예약 관리":
                 st.error(str(e))
 
 
+            reservation, message = create_reservation(
+                boarding_stop=boarding_stop,
+                tram_stop=tram_stop,
+                tram_departure=tram_departure,
+                passengers=int(passengers)
+            )
+
+            if reservation:
+                st.success(message)
+
+                st.info(
+                    f"예약번호: {reservation['reservation_id']} / "
+                    f"배정 차량: {reservation['vehicle_id']}"
+                )
+            else:
+                st.error(message)
+
         st.divider()
 
         st.subheader("전체 예약 내역")
@@ -269,7 +285,11 @@ elif menu == "트램 환승 관리":
         "정류장별 픽업시간을 산출합니다."
     )
 
-    stops_file = stops_path()
+    stops_file = (
+        Path(__file__).resolve().parent
+        / "data"
+        / "drt_stops.csv"
+    )
 
     stops = pd.read_csv(
         stops_file,
@@ -301,7 +321,7 @@ elif menu == "트램 환승 관리":
 
     else:
 
-
+        
         st.subheader("DRT 정류장 방문 순서 설정")
 
         available_ids = drt_stops["stop_id"].tolist()
@@ -351,21 +371,21 @@ elif menu == "트램 환승 관리":
             "환승 여유시간 (분)",
             min_value=1,
             max_value=30,
-            value=int(setting("transfer_buffer"))
+            value=5
         )
 
         dwell_minutes = st.number_input(
             "정류장당 정차시간 (분)",
             min_value=0,
             max_value=10,
-            value=int(setting("dwell_minutes"))
+            value=1
         )
 
         traffic_factor = st.number_input(
             "교통 혼잡 보정계수",
             min_value=1.0,
             max_value=3.0,
-            value=float(setting("traffic_factor")),
+            value=1.2,
             step=0.1
         )
 
@@ -523,7 +543,7 @@ elif menu == "운영 시뮬레이션":
             "환승 여유시간 (분)",
             min_value=1,
             max_value=30,
-            value=int(setting("transfer_buffer")),
+            value=5,
             key="shared_transfer_buffer"
         )
 
@@ -531,7 +551,7 @@ elif menu == "운영 시뮬레이션":
             "정류장당 정차시간 (분)",
             min_value=0,
             max_value=10,
-            value=int(setting("dwell_minutes")),
+            value=1,
             key="shared_dwell_minutes"
         )
 
@@ -539,7 +559,7 @@ elif menu == "운영 시뮬레이션":
             "교통 혼잡 보정계수",
             min_value=1.0,
             max_value=3.0,
-            value=float(setting("traffic_factor")),
+            value=1.2,
             step=0.1,
             key="shared_traffic_factor"
         )
@@ -614,18 +634,5 @@ elif menu == "운영 시뮬레이션":
                 st.error(str(e))
 
 
-elif menu == "정시성 검증":
-    from modules.analysis_views import show_punctuality
-    show_punctuality()
-
-elif menu == "도로 혼잡도 분석":
-    from modules.gits_views import show_roads
-    show_roads()
-
-elif menu == "운영전략 비교":
-    from modules.gits_views import show_strategies
-    show_strategies()
-
-elif menu == "관리자 패널":
-    from modules.analysis_views import show_admin
-    show_admin()
+elif menu == "실시간 관제":
+    show_live_control()

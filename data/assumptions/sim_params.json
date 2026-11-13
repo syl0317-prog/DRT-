@@ -1,67 +1,33 @@
 {
-  "stops_file": {
-    "value": "drt_stops.csv",
-    "status": "assumption",
-    "source": "기존 미검증 후보 유지"
-  },
   "vehicle_count": {
     "value": 4,
-    "status": "assumption",
-    "source": "기존 reservation_manager.py; 구역당 1대/2구역 계획과 다름"
+    "status": "sourced",
+    "source": "sewook31/modules/reservation_manager.py: VEHICLE_COUNT"
   },
   "vehicle_capacity": {
     "value": 8,
-    "status": "assumption",
-    "source": "기존 차량 정원"
+    "status": "sourced",
+    "source": "sewook31/modules/reservation_manager.py: VEHICLE_CAPACITY"
   },
-  "traffic_factor": {
+  "traffic_factor_default": {
     "value": 1.2,
-    "status": "assumption",
-    "source": "기존 혼잡계수"
+    "status": "sourced",
+    "source": "기존 앱 기본값"
   },
-  "transfer_buffer": {
-    "value": 5,
-    "status": "assumption",
-    "source": "기존 환승 여유 분"
+  "traffic_factor_by_band": {
+    "진입간선": {
+      "출근": {"min": 1.1107692308, "mode": 1.3304973460, "max": 4.4147058824},
+      "낮": {"min": 1.0948254615, "mode": 1.2303003030, "max": 1.7801272256},
+      "퇴근": {"min": 1.1709619148, "mode": 1.4151319720, "max": 1.8878787879},
+      "밤": {"min": 1.0287953642, "mode": 1.0714920472, "max": 1.1640709068}
+    },
+    "단지내": {"min": 1.0, "mode": 1.0, "max": 1.2}
   },
-  "dwell_minutes": {
-    "value": 1,
-    "status": "assumption",
-    "source": "기존 정차 분"
+  "traffic_factor_status": {
+    "진입간선": "assumption: data/assumptions/congestion_params.json의 평일 속도 기반 요약",
+    "단지내": "assumption: 현장 속도 데이터 없음"
   },
-  "k_min": {
-    "value": 1.0,
-    "status": "assumption",
-    "source": "실측 입력 전 가정값; 검증된 양수 쌍 최소 3건 필요"
-  },
-  "k_mode": {
-    "value": 1.2,
-    "status": "assumption",
-    "source": "실측 입력 전 가정값; 검증된 양수 쌍 최소 3건 필요"
-  },
-  "k_max": {
-    "value": 1.5,
-    "status": "assumption",
-    "source": "실측 입력 전 가정값; 검증된 양수 쌍 최소 3건 필요"
-  },
-  "detour_per_passenger": {
-    "value": 2,
-    "status": "assumption",
-    "source": "사용자 지정 합승 추가 분"
-  },
-  "simulation_runs": {
-    "value": 10000,
-    "status": "assumption",
-    "source": "사용자 지정 조건별 반복"
-  },
-  "random_seed": {
-    "value": 20261110,
-    "status": "assumption",
-    "source": "재현 가능한 고정 시드"
-  },
-  "operating_days_per_year": {
-    "value": 365,
-    "status": "assumption",
-    "source": "연간 비용/이용객 환산 가정; 실제 운영일 확인 필요"
-  }
+  "transfer_buffer_min": {"value": 5, "status": "assumption", "source": "기존 앱 기본 설정"},
+  "dwell_minutes": {"value": 1, "status": "assumption", "source": "기존 앱 기본 설정"},
+  "drt_dispatch_headway_min": {"value": null, "status": "missing", "source": "DRT 배차 간격 자료 없음"}
 }
