@@ -1,0 +1,161 @@
+{
+  "status": "assumption",
+  "source_note": "구간별 좌표거리 비율은 계산값이며, 전체 14분과 101→107 약 8분의 근거는 서울시 보도 2026-02",
+  "main_line": {
+    "station_order": [
+      "101",
+      "102",
+      "103",
+      "104",
+      "105",
+      "106",
+      "107",
+      "108",
+      "111",
+      "112"
+    ],
+    "total_minutes": {
+      "value": 14,
+      "status": "sourced",
+      "source": "서울시 보도 2026-02"
+    },
+    "segments": [
+      {
+        "from": "101",
+        "to": "102",
+        "distance_m": 453.4,
+        "minutes": 1.553,
+        "status": "sourced",
+        "source": "서울시 보도 2026-02"
+      },
+      {
+        "from": "102",
+        "to": "103",
+        "distance_m": 497.1,
+        "minutes": 1.703,
+        "status": "sourced",
+        "source": "서울시 보도 2026-02"
+      },
+      {
+        "from": "103",
+        "to": "104",
+        "distance_m": 427.5,
+        "minutes": 1.464,
+        "status": "sourced",
+        "source": "서울시 보도 2026-02"
+      },
+      {
+        "from": "104",
+        "to": "105",
+        "distance_m": 321.4,
+        "minutes": 1.101,
+        "status": "sourced",
+        "source": "서울시 보도 2026-02"
+      },
+      {
+        "from": "105",
+        "to": "106",
+        "distance_m": 345.1,
+        "minutes": 1.182,
+        "status": "sourced",
+        "source": "서울시 보도 2026-02"
+      },
+      {
+        "from": "106",
+        "to": "107",
+        "distance_m": 263.1,
+        "minutes": 0.901,
+        "status": "sourced",
+        "source": "서울시 보도 2026-02"
+      },
+      {
+        "from": "107",
+        "to": "108",
+        "distance_m": 420.8,
+        "minutes": 1.441,
+        "status": "sourced",
+        "source": "서울시 보도 2026-02"
+      },
+      {
+        "from": "108",
+        "to": "111",
+        "distance_m": 761.0,
+        "minutes": 2.607,
+        "status": "sourced",
+        "source": "서울시 보도 2026-02"
+      },
+      {
+        "from": "111",
+        "to": "112",
+        "distance_m": 597.9,
+        "minutes": 2.048,
+        "status": "sourced",
+        "source": "서울시 보도 2026-02"
+      }
+    ]
+  },
+  "branch_line": {
+    "station_order": [
+      "108",
+      "109",
+      "110"
+    ],
+    "segments": [
+      {
+        "from": "108",
+        "to": "109",
+        "distance_m": 488.9,
+        "minutes": null,
+        "status": "missing",
+        "source": "구간 운행시간 출처 없음"
+      },
+      {
+        "from": "109",
+        "to": "110",
+        "distance_m": 551.6,
+        "minutes": null,
+        "status": "missing",
+        "source": "구간 운행시간 출처 없음"
+      }
+    ]
+  },
+  "validation": {
+    "cumulative_101_to_107_minutes": 7.904,
+    "target_minutes": 8,
+    "status": "sourced",
+    "source": "서울시 보도 2026-02"
+  },
+  "service": {
+    "first_train": {
+      "value": "06:00",
+      "status": "assumption"
+    },
+    "last_train": {
+      "value": "23:30",
+      "status": "assumption"
+    },
+    "headway_peak": {
+      "value": 10,
+      "unit": "분",
+      "status": "assumption"
+    },
+    "headway_off_peak": {
+      "value": 15,
+      "unit": "분",
+      "status": "assumption"
+    },
+    "peak_periods": [
+      {
+        "start": "07:00",
+        "end": "09:00",
+        "status": "assumption"
+      },
+      {
+        "start": "17:00",
+        "end": "19:00",
+        "status": "assumption"
+      }
+    ]
+  },
+  "scheduler_integration": "sewook31/modules/tram_scheduler.py에는 트램 시간표 생성 로직이 없고 DRT 역산 함수만 있으므로 중복 구현하지 않음. 웹에서 사용할 때 main_line/branch_line/service를 읽도록 연결하고, 기존 calculate_drt_schedule에는 선택된 트램 도착시각만 전달할 것."
+}

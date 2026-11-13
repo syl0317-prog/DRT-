@@ -1,0 +1,33 @@
+{
+  "vehicle_count": {
+    "value": 4,
+    "status": "sourced",
+    "source": "sewook31/modules/reservation_manager.py: VEHICLE_COUNT"
+  },
+  "vehicle_capacity": {
+    "value": 8,
+    "status": "sourced",
+    "source": "sewook31/modules/reservation_manager.py: VEHICLE_CAPACITY"
+  },
+  "traffic_factor_default": {
+    "value": 1.2,
+    "status": "sourced",
+    "source": "기존 앱 기본값"
+  },
+  "traffic_factor_by_band": {
+    "진입간선": {
+      "출근": {"min": 1.1107692308, "mode": 1.3304973460, "max": 4.4147058824},
+      "낮": {"min": 1.0948254615, "mode": 1.2303003030, "max": 1.7801272256},
+      "퇴근": {"min": 1.1709619148, "mode": 1.4151319720, "max": 1.8878787879},
+      "밤": {"min": 1.0287953642, "mode": 1.0714920472, "max": 1.1640709068}
+    },
+    "단지내": {"min": 1.0, "mode": 1.0, "max": 1.2}
+  },
+  "traffic_factor_status": {
+    "진입간선": "assumption: data/assumptions/congestion_params.json의 평일 속도 기반 요약",
+    "단지내": "assumption: 현장 속도 데이터 없음"
+  },
+  "transfer_buffer_min": {"value": 5, "status": "assumption", "source": "기존 앱 기본 설정"},
+  "dwell_minutes": {"value": 1, "status": "assumption", "source": "기존 앱 기본 설정"},
+  "drt_dispatch_headway_min": {"value": null, "status": "missing", "source": "DRT 배차 간격 자료 없음"}
+}
