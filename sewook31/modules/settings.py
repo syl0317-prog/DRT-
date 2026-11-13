@@ -13,8 +13,8 @@ def setting(name):
     return load_params()[name]['value']
 
 def stops_path():
-    path = (BASE_DIR / 'data' / setting('stops_file')).resolve()
-    if path.parent != (BASE_DIR / 'data').resolve() or path.suffix != '.csv':
+    path = (PROJECT_DIR / 'sewook31' / 'data' / setting('stops_file')).resolve()
+    if path.parent != (PROJECT_DIR / 'sewook31' / 'data').resolve() or path.suffix != '.csv':
         raise ValueError('stops_file must be a CSV filename in sewook31/data')
     return path
 

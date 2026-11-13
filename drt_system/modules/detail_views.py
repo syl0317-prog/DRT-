@@ -1,3 +1,4 @@
+from modules.timetable_periods import load_periods
 # Legacy presentation screens, retained together; original modules remain untouched.
 """Analysis views keep missing routes and assumptions visible."""
 import altair as alt
@@ -81,7 +82,7 @@ def show_roads():
 def show_strategies():
     st.header('운영전략 비교')
     st.warning('A/B는 차량이 픽업 지점에서 즉시 이용 가능한 단일 운행 가정 실험입니다. 전체 차량 배차 구현은 missing이며 차량 수 효과를 검증하지 않습니다. C안은 구현 보류입니다.')
-    timetable = json.loads((PROJECT_DIR/'data/assumptions/tram_timetable.json').read_text(encoding='utf-8'))
+    timetable = load_periods()
     period = st.selectbox('시간대', list(timetable))
     strategies = st.multiselect('전략', ['A','B','C'], default=['A','B','C'])
     buffer = st.slider('환승 여유시간(분)', 0, 15, 5)

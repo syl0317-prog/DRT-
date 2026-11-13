@@ -1,3 +1,4 @@
+from modules.timetable_periods import load_periods
 """Seeded arrival/departure simulation. Minutes relative to target tram departure 0."""
 import json
 import math
@@ -61,7 +62,7 @@ def generate(k=None, allow_network=False):
     calibrated, n, status, source = calibrate()
     k = tuple(k or calibrated)
     assumption = f'{source}; k={k}; 정류장 및 트램 좌표 unverified; 출발=-(OSRM+정차+여유); 합승 추가시간은 예정출발에 미반영; 가상시간표'
-    timetable = json.loads((PROJECT_DIR / 'data/assumptions/tram_timetable.json').read_text(encoding='utf-8'))
+    timetable = load_periods()
     stops = pd.read_csv(stops_path(), encoding='utf-8-sig')
     canonical = json.loads((PROJECT_DIR / 'data/processed/wirye_tram_official_stations.geojson').read_text(encoding='utf-8'))['features']
     trams = pd.DataFrame([{'stop_name': f['properties']['station_name'], 'longitude': f['geometry']['coordinates'][0], 'latitude': f['geometry']['coordinates'][1]} for f in canonical])
