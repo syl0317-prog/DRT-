@@ -60,7 +60,7 @@ def _marker_color(p):
 
 
 def _add_base_layers(map_obj, provider, stops):
-    # CartoDB tiles are attempted online; the CSS canvas remains visible offline.
+    # OpenStreetMap tiles are attempted online; the CSS canvas remains visible offline.
     for feature in provider.get_track_features():
         coords = feature.get("geometry", {}).get("coordinates", [])
         props = feature.get("properties", {})
@@ -308,7 +308,7 @@ def show_live_control():
         saved_center = [saved_center.get("lat", 37.474), saved_center.get("lng", 127.143)]
     saved_zoom = st.session_state.get("live_map_zoom", 13)
     map_obj = folium.Map(location=saved_center, zoom_start=saved_zoom,
-                         tiles="CartoDB positron", control_scale=True)
+                         tiles="OpenStreetMap", control_scale=True)
     map_obj.get_root().header.add_child(folium.Element(
         "<style>.leaflet-container{background:#edf0f2 !important;}</style>"))
     _add_base_layers(map_obj, provider, stops)
@@ -372,7 +372,7 @@ def show_live_control():
         st.dataframe(pd.DataFrame(table).astype(str), hide_index=True, width="stretch")
     else:
         st.info("현재 시각에 운행 중인 열차나 경로가 준비된 DRT 차량이 없습니다.")
-    st.caption("지도 배경은 인터넷 연결 시에만 표시됩니다")
+    st.caption("지도 배경은 인터넷 연결 시에만 표시됩니다 · 지도 데이터 출처: © OpenStreetMap contributors")
 
     missed = [p for p in positions if p.get("missed_transfer")]
     for p in missed:
