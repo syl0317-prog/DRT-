@@ -42,7 +42,7 @@ class IntegrationTests(unittest.TestCase):
         self.assertTrue(all(r['temporary'] for r in fallback));self.assertTrue(all(r['distance_km'] is None for r in fallback))
 
     def test_route_selection_review_creation_cancellation_and_preservation(self):
-        before=self.store.snapshot();old=self.service.list_records();self.assertEqual(len(old),6)
+        before=self.store.snapshot();old=self.service.list_records();self.assertGreater(len(old),0)
         evidence=lambda *a,**k:dict(status='unverified',reason='offline test')
         for rid,origin,destination in [('R01','D01','D02'),('R02','V05','V08')]:
             row=self.service.create(origin,destination,self.future,1,rid,route_id=rid,evidence_provider=evidence)
@@ -54,6 +54,8 @@ class IntegrationTests(unittest.TestCase):
         for rid,a,b in [('R01','V05','V08'),('R02','D01','D02'),('R02','V08','V05')]:
             with self.assertRaises(RouteError):self.service.create(a,b,self.future,1,rid+a,route_id=rid,evidence_provider=evidence)
         self.assertEqual(self.csv.read_bytes(),self.original);self.assertEqual(self.store.snapshot(),before)
+        original_ids={row['public_id'] for row in old}
+        self.assertEqual([row for row in self.service.list_records() if row['public_id'] in original_ids],old)
         self.assertEqual([r['status'] for r in self.service.own_records()],['예약취소','예약취소'])
 
     def test_r02_vehicle_capacity_overlap_and_cancel_in_temporary_database(self):

@@ -21,7 +21,8 @@ with ExitStack() as stack:
     pd.DataFrame(columns=COLUMNS).to_csv(csv, index=False, encoding="utf-8-sig")
     stack.enter_context(patch("modules.reservation_manager.RESERVATION_FILE", csv))
     stack.enter_context(patch("modules.unified_reservations.DATABASE", temp / "unified.sqlite3"))
-    for module in ("reservation_manager", "integrated_scheduler", "pickup_scheduler"):
+    # Pickup calculation imports the engine inside the function as well.
+    for module in ("route_engine", "reservation_manager", "integrated_scheduler", "pickup_scheduler"):
         stack.enter_context(patch(f"modules.{module}.calculate_road_route", side_effect=fake_route))
     app = AppTest.from_file(str(ROOT / "sewook31/app.py"), default_timeout=60).run()
     assert not app.exception, app.exception
