@@ -72,17 +72,19 @@ class SimulationTests(unittest.TestCase):
         from streamlit.testing.v1 import AppTest
         at = AppTest.from_file(str(ROOT/'sewook31/app.py'), default_timeout=30).run()
         self.assertEqual(len(at.exception), 0)
-        for menu in ('예약 관리', '트램 환승 관리', '운영 시뮬레이션', '정시성 검증', '관리자 패널'):
+        for menu in ('통합 대시보드', '예약 관리', '배차·경로', '정시·환승 분석', '운영 시뮬레이션', '관리·설정'):
             at.sidebar.radio[0].set_value(menu).run()
             self.assertEqual(len(at.exception), 0, menu)
         at.sidebar.slider[0].set_value(2).run()
         self.assertEqual(at.session_state['vehicle_count'], 2)
         # Exercise plotting branch using synthetic route only inside isolated test.
         with patch('modules.punctuality_sim.calculate_road_route', return_value={'duration_min': 6}):
-            at.sidebar.radio[0].set_value('정시성 검증').run()
+            at.sidebar.radio[0].set_value('정시·환승 분석').run()
+            at.radio(key='punctuality_section').set_value('기존 정시성 검증').run()
             self.assertEqual(len(at.exception), 0)
 
 if __name__ == '__main__':
-    for path in (ROOT/'sewook31').rglob('*.py'):
-        py_compile.compile(str(path), doraise=True)
+    with tempfile.TemporaryDirectory() as directory:
+        for index, path in enumerate((ROOT/'sewook31').rglob('*.py')):
+            py_compile.compile(str(path), cfile=str(Path(directory)/f'{index}.pyc'), doraise=True)
     unittest.main()

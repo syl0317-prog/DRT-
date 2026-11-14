@@ -46,6 +46,9 @@ class IntegrationTests(unittest.TestCase):
         evidence=lambda *a,**k:dict(status='unverified',reason='offline test')
         for rid,origin,destination in [('R01','D01','D02'),('R02','V05','V08')]:
             row=self.service.create(origin,destination,self.future,1,rid,route_id=rid,evidence_provider=evidence)
+            repeated=self.service.create(origin,destination,self.future,1,rid,route_id=rid,evidence_provider=evidence)
+            self.assertEqual(row['public_id'],repeated['public_id'])
+            self.assertEqual(len(self.service.own_records()),1 if rid=='R01' else 2)
             self.assertEqual(row['route_id'],rid);self.assertEqual(row['status'],'배차 검토 필요')
             self.assertIsNone(row['vehicle_id']);self.service.cancel(row['public_id'])
         for rid,a,b in [('R01','V05','V08'),('R02','D01','D02'),('R02','V08','V05')]:

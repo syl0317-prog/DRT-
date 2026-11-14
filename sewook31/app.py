@@ -53,12 +53,16 @@ elif menu == "배차·경로":
         with scope("new_route_management"):
             show_route_management()
 elif menu == "정시·환승 분석":
-    selected = persistent_ui.radio("정시·환승 분석 방식", ["개별 운행 분석", "기존 정시성 검증"],
+    selected = persistent_ui.radio("정시·환승 분석 방식", ["개별 운행 분석", "기존 정시성 검증", "정시성 계산·검증 결과"],
                                    horizontal=True, key="punctuality_section")
     if selected == "개별 운행 분석":
         from modules.punctuality_views import show_punctuality_analysis
         with scope("punctuality"):
             show_punctuality_analysis()
+    elif selected == "정시성 계산·검증 결과":
+        from modules.punctuality_view import show_punctuality
+        with scope("main_punctuality"):
+            show_punctuality()
     else:
         from modules.detail_views import show_punctuality
         with scope("legacy_punctuality"):
