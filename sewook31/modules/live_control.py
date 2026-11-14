@@ -22,12 +22,8 @@ from modules.vehicle_positions import SimulatedProvider
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG_FILE = ROOT / "data" / "assumptions" / "sim_params.json"
-PRESETS = {
-    "평일 출근 07~09시": time(7, 0),
-    "평일 퇴근 17~19시": time(17, 0),
-    "평일 낮 호출형": time(12, 0),
-    "주말": time(12, 0),
-}
+PRESETS = {"평일 출근 07~09시": (time(7, 0), time(7, 0), time(9, 0)),
+           "평일 퇴근 17~19시": (time(17, 0), time(17, 0), time(19, 0))}
 
 
 def _config():
@@ -50,7 +46,33 @@ def _stop_clock():
 def _reset_preset_clock(widget_key, service_day):
     selected = st.session_state.get(widget_key)
     if selected in PRESETS:
-        st.session_state[f"live_time_{selected}"] = datetime.combine(service_day, PRESETS[selected])
+        start, default_time, end = PRESETS[selected]
+        st.session_state["live_window"] = (datetime.combine(service_day, start), datetime.combine(service_day, end))
+        st.session_state["live_time"] = datetime.combine(service_day, default_time)
+
+
+def _nearest_monday(value):
+    previous = value - timedelta(days=value.weekday())
+    following = previous + timedelta(days=7)
+    return previous if (value - previous) <= (following - value) else following
+
+
+@st.cache_data(show_spinner=False, ttl=300)
+def _window_summary(preset, service_day, start_text, end_text, fleet_size, route_class):
+    day = date.fromisoformat(service_day)
+    start_t, end_t = time.fromisoformat(start_text), time.fromisoformat(end_text)
+    result = []
+    for level in ("min", "mode", "max"):
+        provider = SimulatedProvider(scenario=preset, vehicle_count=fleet_size, traffic_level=level,
+                                     route_class=route_class, service_date=day,
+                                     service_window=(start_t, end_t))
+        trips = [trip for vehicle in provider.drt_trips.values() for trip in vehicle]
+        slacks = [(trip["target_tram"] - trip["arrival"]).total_seconds() / 60 for trip in trips]
+        result.append({"혼잡 수준": level + (" (최악 구간 기준)" if level == "max" and route_class == "진입간선" else ""),
+                       "DRT 운행 횟수": len(trips), "환승 성공": sum(not trip["missed"] for trip in trips),
+                       "환승 놓침": sum(bool(trip["missed"]) for trip in trips),
+                       "평균 환승 여유(분)": round(sum(slacks) / len(slacks), 2) if slacks else None})
+    return result
 
 
 def _visible_text(value, fallback="정보 없음"):
@@ -261,37 +283,49 @@ def show_live_control():
     if fleet_size < 1:
         st.warning("차량 수 정보가 없어 관제 위치를 계산할 수 없습니다.")
         return
+    day = _nearest_monday(date.today())
+    st.caption("평일 기준 · 저수요 시간대(낮·주말)는 이번 구현 범위에서 제외")
+    if "live_preset" not in st.session_state or st.session_state["live_preset"] not in PRESETS:
+        st.session_state["live_preset"] = next(iter(PRESETS))
+    preset = st.session_state["live_preset"]
+    default_start, default_time, default_end = PRESETS[preset]
+    if "live_window" not in st.session_state:
+        st.session_state["live_window"] = (datetime.combine(day, default_start), datetime.combine(day, default_end))
+    if "live_time" not in st.session_state:
+        st.session_state["live_time"] = datetime.combine(day, default_time)
 
-    today = date.today()
-    lower = datetime.combine(today, time(6, 0))
-    upper = datetime.combine(today + timedelta(days=1), time(0, 0))
-    initial_preset = st.session_state.get("live_preset", next(iter(PRESETS)))
-    slider_key = f"live_time_{initial_preset}"
-    if slider_key not in st.session_state:
-        st.session_state[slider_key] = datetime.combine(today, PRESETS[initial_preset])
-
-    col1, col2, col3, col4, col5 = st.columns([1.5, 4.8, 1.1, 0.8, 1.2], vertical_alignment="bottom")
-    with col1:
+    row1 = st.columns([1.5, 1.5, 4], vertical_alignment="bottom")
+    with row1[0]:
         preset = st.selectbox("시나리오", list(PRESETS), key="live_preset",
-                              on_change=_reset_preset_clock, args=("live_preset", today),
-                              label_visibility="collapsed")
-    slider_key = f"live_time_{preset}"
-    if slider_key not in st.session_state:
-        st.session_state[slider_key] = datetime.combine(today, PRESETS[preset])
-    with col2:
-        sim_time = st.slider("시각", min_value=lower, max_value=upper,
-                             step=timedelta(minutes=1),
-                             format="HH:mm", key=slider_key, label_visibility="collapsed")
-        endpoint_left, endpoint_right = st.columns(2)
-        endpoint_left.caption("06:00")
-        endpoint_right.caption("24:00")
-    with col3:
-        st.button("재생 ▶ 1분 진행", key="live_step", on_click=_step_clock,
-                  args=(slider_key, upper), help="시각을 1분 이동합니다.", width="stretch")
-    with col4:
-        st.button("정지 ■", key="live_stop", on_click=_stop_clock)
-    with col5:
+                              on_change=_reset_preset_clock, args=("live_preset", day))
+    window_key = "live_window"
+    with row1[1]:
         traffic_level = st.selectbox("혼잡 수준", ["min", "mode", "max"], index=1, key="live_traffic_level")
+    with row1[2]:
+        window = st.slider("운행 시간대 조절", min_value=datetime.combine(day, time(6, 0)),
+                           max_value=datetime.combine(day, time(22, 0)),
+                           value=st.session_state[window_key], step=timedelta(minutes=30),
+                           format="HH:mm", key=window_key)
+    start_dt, end_dt = window
+    if end_dt <= start_dt:
+        end_dt = min(start_dt + timedelta(minutes=30), datetime.combine(day, time(22, 0)))
+        window = (start_dt, end_dt)
+        st.session_state[window_key] = window
+    time_key = "live_time"
+    if time_key not in st.session_state or not start_dt <= st.session_state[time_key] <= end_dt:
+        st.session_state[time_key] = datetime.combine(day, default_time)
+        st.session_state[time_key] = min(max(st.session_state[time_key], start_dt), end_dt)
+
+    row2 = st.columns([6, 1.3, 1])
+    with row2[0]:
+        sim_time = st.slider("시뮬레이션 시각", min_value=start_dt, max_value=end_dt,
+                             value=st.session_state[time_key], step=timedelta(minutes=1),
+                             format="HH:mm", key=time_key)
+    with row2[1]:
+        st.button("재생 ▶ 1분 진행", key="live_step", on_click=_step_clock,
+                  args=(time_key, end_dt), help="슬라이더 시각을 1분 이동합니다.", width="stretch")
+    with row2[2]:
+        st.button("정지 ■", key="live_stop", on_click=_stop_clock)
 
     with st.expander("고급 설정"):
         adv1, adv2, adv3, adv4 = st.columns([1, 1.3, 1.7, 2])
@@ -300,127 +334,114 @@ def show_live_control():
         with adv2:
             route_class = st.selectbox("OSRM 구간 가정", ["진입간선", "단지내"], key="live_route_class")
         with adv3:
-            playback_mode = st.radio("표시 방식", ["시간 슬라이더", "지도 자동 재생"], horizontal=True,
-                                     key="live_playback_mode")
+            playback_mode = st.radio("표시 방식", ["시간 슬라이더", "지도 자동 재생"], horizontal=True, key="live_playback_mode")
         with adv4:
             duration_min = st.selectbox("자동 재생 범위", [15, 30, 60, 120], index=2, key="live_range")
         vehicle_count = st.slider("DRT 차량 수", 1, fleet_size, fleet_size, key="live_vehicle_count")
 
-
+    service_window = (start_dt.time(), end_dt.time())
     provider = SimulatedProvider(scenario=preset, vehicle_count=vehicle_count,
-                                 traffic_level=traffic_level, route_class=route_class, service_date=today)
+                                 traffic_level=traffic_level, route_class=route_class,
+                                 service_date=day, service_window=service_window)
     positions = provider.get_positions(sim_time)
-    stops = []
-    with (ROOT / "sewook31" / "data" / "drt_stops.csv").open(encoding="utf-8-sig", newline="") as f:
-        import csv
+    import csv
+    stops_path = ROOT / "sewook31" / "data" / str(cfg.get("stops_file", "drt_stops.csv"))
+    if not stops_path.exists():
+        stops_path = ROOT / "sewook31" / "data" / "drt_stops.csv"
+    with stops_path.open(encoding="utf-8-sig", newline="") as f:
         stops = list(csv.DictReader(f))
 
-    band_source = cfg.get("traffic_factor_by_band_status", {}).get(route_class)
-    map_source = f"출처: {_visible_text(band_source)}"
-    st.caption(f"{sim_time:%H:%M:%S}  ·  {preset}  ·  혼잡 {traffic_level}  ·  {route_class} ({map_source})")
+    headway = 15
+    try:
+        timetable = json.loads((ROOT / "data/assumptions/tram_timetable.json").read_text(encoding="utf-8"))["service"]
+        hhmm = sim_time.strftime("%H:%M")
+        headway = int(timetable.get("headway_off_peak", {}).get("value", 15))
+        for peak in timetable.get("peak_periods", []):
+            if peak.get("start") <= hhmm < peak.get("end"):
+                headway = int(timetable.get("headway_peak", {}).get("value", 10))
+                break
+    except (OSError, ValueError, KeyError, TypeError):
+        pass
+    source = "data/processed/congestion_by_hour.csv" if route_class == "진입간선" else "sim_params.json 단지내 가정값"
+    max_note = " · 최악 구간 기준" if traffic_level == "max" and route_class == "진입간선" else ""
+    st.caption(f"{sim_time:%H:%M:%S} · {preset} · 혼잡 {traffic_level}{max_note} · 출처: {source} · 현재 트램 배차 {headway}분")
 
-    # One-time migration discards any legacy saved center, then only a preset change refits.
-    map_view_signature = ("stations-stops-vehicles-v2", preset)
-    scenario_changed = st.session_state.get("live_map_view_signature") != map_view_signature
+    signature = ("stations-stops-vehicles-v3", preset)
+    scenario_changed = st.session_state.get("live_map_view_signature") != signature
     if scenario_changed:
         st.session_state.pop("live_map_center", None)
         st.session_state.pop("live_map_zoom", None)
-        st.session_state["live_map_view_signature"] = map_view_signature
+        st.session_state["live_map_view_signature"] = signature
     saved_center = st.session_state.get("live_map_center", [37.474, 127.143])
-    if isinstance(saved_center, dict):
-        saved_center = [saved_center.get("lat", 37.474), saved_center.get("lng", 127.143)]
     saved_zoom = st.session_state.get("live_map_zoom", 13)
-    map_obj = folium.Map(location=saved_center, zoom_start=saved_zoom,
-                         tiles="OpenStreetMap", control_scale=True)
-    map_obj.get_root().header.add_child(folium.Element(
-        "<style>.leaflet-container{background:#edf0f2 !important;}</style>"))
+    map_obj = folium.Map(location=saved_center, zoom_start=saved_zoom, tiles="OpenStreetMap", control_scale=True)
+    map_obj.get_root().header.add_child(folium.Element("<style>.leaflet-container{background:#edf0f2 !important;}</style>"))
     _add_base_layers(map_obj, provider, stops)
     if playback_mode == "지도 자동 재생":
         try:
             if TimestampedGeoJson is None:
-                raise RuntimeError("folium.plugins.TimestampedGeoJson is missing")
-            end_time = min(sim_time + timedelta(minutes=duration_min), upper)
-            snapshots = provider.get_autoplay_positions(sim_time, end_time)
-            data = _timestamped_features(snapshots)
-            if data["features"]:
-                TimestampedGeoJson(data, period="PT1M", duration="PT1M", transition_time=max(1, 200 // speed),
-                                   loop=False, auto_play=False, add_last_point=True,
-                                   max_speed=speed, loop_button=True,
-                                   date_options="YYYY-MM-DD HH:mm", time_slider_drag_update=True).add_to(map_obj)
-                st.caption(f"지도 자동 재생용 위치 {len(data['features']):,}건을 1분 간격으로 미리 계산했습니다.")
-            else:
-                st.warning("자동 재생 위치가 없어 시간 슬라이더 화면으로 표시합니다.")
-                for p in positions:
-                    _add_position(map_obj, p)
+                raise RuntimeError("folium.plugins.TimestampedGeoJson을 사용할 수 없습니다.")
+            end_time = min(sim_time + timedelta(minutes=duration_min), end_dt)
+            features = _timestamped_features(provider.get_autoplay_positions(sim_time, end_time))
+            if not features["features"]:
+                raise RuntimeError("자동 재생용 위치가 없습니다.")
+            TimestampedGeoJson(features, period="PT1M", duration="PT1M", transition_time=max(1, 200 // speed),
+                               loop=False, auto_play=False, add_last_point=True, max_speed=speed,
+                               loop_button=True, date_options="YYYY-MM-DD HH:mm", time_slider_drag_update=True).add_to(map_obj)
+            st.caption(f"지도 자동 재생 위치 {len(features['features']):,}건을 1분 간격으로 미리 계산했습니다.")
         except Exception as exc:
-            st.warning(f"자동 재생 플러그인을 사용할 수 없어 슬라이더 화면으로 전환했습니다: {type(exc).__name__}")
+            st.warning(f"자동 재생을 사용할 수 없어 시각 슬라이더로 전환했습니다: {type(exc).__name__}")
             for p in positions:
                 _add_position(map_obj, p)
     else:
-        display_positions = _display_positions(positions)
-        for index, p in enumerate(positions):
-            shown = display_positions.get(index)
-            _add_position(map_obj, p, *(shown if shown else (None, None)))
-
+        displayed = _display_positions(positions)
+        for i, p in enumerate(positions):
+            _add_position(map_obj, p, *(displayed[i] if i in displayed else (None, None)))
     if scenario_changed:
         bounds = _map_bounds(provider, stops, positions)
         if bounds:
             map_obj.fit_bounds(bounds, padding=(24, 24), max_zoom=16)
     _add_legend(map_obj)
-    map_state = st_folium(map_obj, width=None, height=500,
-                          returned_objects=["center", "zoom"], key="live_control_map")
+    map_state = st_folium(map_obj, width=None, height=520, returned_objects=["center", "zoom"], key="live_control_map")
     if isinstance(map_state, dict):
-        center = map_state.get("center")
-        zoom = map_state.get("zoom")
+        center, zoom = map_state.get("center"), map_state.get("zoom")
         if isinstance(center, dict) and center.get("lat") is not None and center.get("lng") is not None:
             st.session_state["live_map_center"] = [center["lat"], center["lng"]]
-        elif isinstance(center, (list, tuple)) and len(center) == 2:
-            st.session_state["live_map_center"] = list(center)
         if isinstance(zoom, (int, float)):
             st.session_state["live_map_zoom"] = zoom
+
     st.caption("탑승 인원은 실제 예약 기록이 없어 시뮬레이션에서 집계하지 않았습니다")
     table = []
     for p in positions:
         is_tram = str(p.get("vehicle_id", "")).startswith("TR-")
-        no_active_drt_trip = (not is_tram and
-                              (p.get("status") == "대기" or not p.get("trip_id")))
-        tram_time = p.get("connected_tram_time")
-        buffer_value = p.get("transfer_buffer_seconds")
-        dash_for_row = is_tram or no_active_drt_trip
-        table.append({"차량 번호": _visible_text(p.get("vehicle_id")),
-                      "상태": _visible_text(p.get("status")),
+        no_trip = not is_tram and (p.get("status") == "대기" or not p.get("trip_id"))
+        dash = is_tram or no_trip
+        table.append({"차량 번호": _visible_text(p.get("vehicle_id")), "상태": _visible_text(p.get("status")),
                       "탑승 인원": "-" if is_tram else (p.get("load") if p.get("load") is not None else "미집계"),
-                      "다음 정류장": _visible_text(p.get("next_stop")),
-                      "도착 예정 시각": _clock_label(p.get("eta")),
-                      "운행 번호": "-" if dash_for_row else _visible_text(p.get("trip_id")),
-                      "연결 예정 트램 시각": "-" if dash_for_row else _visible_text(tram_time),
-                      "설계 여유": "-" if dash_for_row else _signed_duration(p.get("planned_transfer_buffer_seconds")),
-                      "혼잡 반영 후 여유": "-" if dash_for_row else _signed_duration(buffer_value),
-                      "지연(분)": "-" if dash_for_row else _visible_text(p.get("delay_min"))})
+                      "다음 정류장": _visible_text(p.get("next_stop")), "도착 예정 시각": _clock_label(p.get("eta")),
+                      "운행 번호": "-" if dash else _visible_text(p.get("trip_id")),
+                      "연결 예정 트램 시각": "-" if dash else _visible_text(p.get("connected_tram_time")),
+                      "설계 여유": "-" if dash else _signed_duration(p.get("planned_transfer_buffer_seconds")),
+                      "혼잡 반영 후 여유": "-" if dash else _signed_duration(p.get("transfer_buffer_seconds")),
+                      "지연(분)": "-" if dash else _visible_text(p.get("delay_min"))})
     if table:
         st.dataframe(pd.DataFrame(table).astype(str), hide_index=True, width="stretch")
     else:
         st.info("현재 시각에 운행 중인 열차나 경로가 준비된 DRT 차량이 없습니다.")
+    try:
+        summary = _window_summary(preset, day.isoformat(), service_window[0].isoformat(), service_window[1].isoformat(),
+                                  vehicle_count, route_class)
+        st.subheader("선택 시간대 요약")
+        st.dataframe(pd.DataFrame(summary).astype(str), hide_index=True, width="stretch")
+    except Exception as exc:
+        st.warning(f"선택 시간대 요약 계산을 마치지 못했습니다: {type(exc).__name__}")
+    for p in positions:
+        if p.get("missed_transfer"):
+            st.error(f"{_visible_text(p.get('vehicle_id'))} 환승 놓침(다음 트램까지 {_visible_text(p.get('next_tram_minutes'))}분)")
+    for warning in provider.warnings:
+        st.warning(_visible_text(warning))
     st.caption("지도 배경은 인터넷 연결 시에만 표시됩니다 · 지도 데이터 출처: © OpenStreetMap contributors")
-
-    missed = [p for p in positions if p.get("missed_transfer")]
-    for p in missed:
-        n = p.get("next_tram_minutes")
-        st.error(f"{_visible_text(p.get('vehicle_id'))} 환승 놓침(다음 트램까지 {_visible_text(n)}분)")
-    capacity_data = cfg.get("vehicle_capacity", {})
-    capacity_value = capacity_data.get("value") if isinstance(capacity_data, dict) else None
-    capacity_label = f"차량 정원 {capacity_value}명(status={_visible_text(capacity_data.get('status'))})" if capacity_value is not None else "차량 정원 정보 없음"
-    st.caption(f"탑승 인원: 시뮬레이션 예약 기반(가상) — apartment_classification.csv와 거리 가중치가 없어 현재 load는 미집계입니다. {capacity_label}. 실제 예약 기록과는 분리되어 있습니다.")
-    warning_categories = provider.get_warning_categories()
-    if warning_categories:
-        for category, messages in warning_categories.items():
-            with st.expander(f"{category} ({len(messages)})"):
-                for warning in messages:
-                    st.warning(_visible_text(warning))
-
-    if preset == "주말":
-        st.caption("주말 혼잡 관측값은 없으며, 현재 진입간선 값은 평일 자료를 대입한 assumption입니다.")
-    st.caption("OSRM 경로의 도로 종류는 현재 링크별로 확인되지 않아, 선택한 구간 유형의 혼잡 계수를 전체 DRT 경로에 적용합니다(assumption).")
+    st.caption("OSRM 경로의 도로 종류는 링크별로 확인되지 않아 선택 구간 유형의 혼잡 계수를 전체 DRT 경로에 적용합니다(assumption).")
     st.info("개통 전이라 실제 GPS 데이터가 없어 시뮬레이션으로 표출합니다. 혼잡 계수는 위례 진입 간선 12개 구간 시간대별 속도 기반(평일, 시간 구간 대응은 추정)이고, 단지 내 구간은 가정값입니다. 실제 운영 시 차량 위치 데이터(API)로 교체됩니다.")
 
     st.caption("이 시스템의 트램 운행은 가상 시간표를 기준으로 설계된 시뮬레이션입니다.")

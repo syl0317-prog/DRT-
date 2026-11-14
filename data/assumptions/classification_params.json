@@ -1,0 +1,13 @@
+{
+  "tram_walk_threshold_m": 700,
+  "bus_walk_threshold_m": 500,
+  "walk_factor": 1.3,
+  "service_stop_count": 4,
+  "max_service_stops": 8,
+  "drt_transfer_tram_ids": [
+    "106",
+    "108"
+  ],
+  "status": "assumption",
+  "transfer_station_basis": "사용자 제공 답사 결과"
+}

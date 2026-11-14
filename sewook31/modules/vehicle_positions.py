@@ -15,6 +15,7 @@ from modules.route_engine import calculate_road_route
 ROOT = Path(__file__).resolve().parents[2]
 APP_DIR = Path(__file__).resolve().parents[1]
 STOPS_FILE = APP_DIR / "data" / "drt_stops.csv"
+CONGESTION_HOURLY_FILE = ROOT / "data" / "processed" / "congestion_by_hour.csv"
 CONFIG_FILE = ROOT / "data" / "assumptions" / "sim_params.json"
 TIMETABLE_FILE = ROOT / "data" / "assumptions" / "tram_timetable.json"
 STATIONS_FILE = ROOT / "data" / "processed" / "wirye_tram_official_stations.geojson"
@@ -26,8 +27,12 @@ def _json(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _read_stops():
-    with STOPS_FILE.open(encoding="utf-8-sig", newline="") as f:
+def _read_stops(config=None):
+    configured = (config or {}).get("stops_file", "drt_stops.csv")
+    selected = APP_DIR / "data" / str(configured)
+    if not selected.is_file():
+        selected = STOPS_FILE
+    with selected.open(encoding="utf-8-sig", newline="") as f:
         return list(csv.DictReader(f))
 
 
@@ -117,24 +122,30 @@ class SimulatedProvider(PositionProvider):
     TRANSFER_STATION = {"T01": "106", "T02": "108"}
 
     def __init__(self, scenario="평일 출근 07~09시", vehicle_count=None,
-                 traffic_level="mode", route_class="진입간선", service_date=None):
+                 traffic_level="mode", route_class="진입간선", service_date=None,
+                 service_window=None):
         self.scenario = scenario
         self.day = service_date or date.today()
         self.warnings = []
         if scenario == "주말":
             self.warnings.append("주말 시간표 missing; 확인된 비첨두 배차 간격을 주말에 적용한 assumption")
         self.config = self._load_config()
+        self.service_window = service_window
         self.timetable = _json(TIMETABLE_FILE)
         self.congestion = _json(CONGESTION_FILE)
         count = self.config.get("vehicle_count", {})
         self.vehicle_count = int(vehicle_count if vehicle_count is not None else count.get("value", 0))
         self.traffic_level = traffic_level if traffic_level in {"min", "mode", "max"} else "mode"
         self.route_class = route_class if route_class in {"진입간선", "단지내"} else "진입간선"
-        self.stops = {r["stop_id"]: r for r in _read_stops()}
+        selected_stops_file = APP_DIR / "data" / str(self.config.get("stops_file", "drt_stops.csv"))
+        if not selected_stops_file.is_file():
+            self.warnings.append("설정된 정류장 파일을 찾지 못해 기존 drt_stops.csv를 사용했습니다.")
+        self.stops = {r["stop_id"]: r for r in _read_stops(self.config)}
         self.tram_stop_ids = {k: v for k, v in self.stops.items() if v.get("stop_type") == "tram"}
         self.drt_stop_ids = {k: v for k, v in self.stops.items() if v.get("stop_type") == "drt"}
         self.station_data = _json(STATIONS_FILE)
         self.line_data = _json(LINES_FILE)
+        self.hourly_congestion = self._load_hourly_congestion()
         self.stations = {f["properties"]["station_no"]: {
             "name": f["properties"].get("station_name", f["properties"]["station_no"]),
             "lat": float(f["properties"]["lat"]), "lon": float(f["properties"]["lon"]),
@@ -150,11 +161,30 @@ class SimulatedProvider(PositionProvider):
         self.warnings.append("data/assumptions/sim_params.json missing; sewook31/sim_params.json fallback used")
         return _json(fallback) if fallback.exists() else {}
 
+    def _load_hourly_congestion(self):
+        try:
+            import pandas as pd
+            frame = pd.read_csv(CONGESTION_HOURLY_FILE, encoding="utf-8-sig")
+            time_col = "시간" if "시간" in frame else None
+            k_col = "k" if "k" in frame else None
+            if not time_col or not k_col:
+                return {}
+            frame[time_col] = pd.to_numeric(frame[time_col], errors="coerce")
+            frame[k_col] = pd.to_numeric(frame[k_col], errors="coerce")
+            result = {}
+            for hour, group in frame.dropna(subset=[time_col, k_col]).groupby(time_col):
+                values = group[k_col].clip(lower=1.0)
+                result[int(hour)] = {"min": float(values.min()), "mode": float(values.median()),
+                                     "max": float(values.max())}
+            return result
+        except (OSError, ValueError, ImportError):
+            return {}
+
     def _factor(self, when):
         band = ("출근" if 7 <= when.hour < 9 else "퇴근" if 17 <= when.hour < 19
                 else "낮" if 10 <= when.hour < 16 else "밤" if 20 <= when.hour < 24 else None)
         profile = self.config.get("traffic_factor_by_band", {}).get(self.route_class, {})
-        values = profile if self.route_class == "단지내" else profile.get(band)
+        values = profile if self.route_class == "단지내" else self.hourly_congestion.get(when.hour)
         if not isinstance(values, dict):
             default = self.config.get("traffic_factor_default", {}).get("value", 1.2)
             message = f"해당 시각의 시간대 혼잡계수 missing; 기존 기본값 {default} 사용 (assumption)"
@@ -318,6 +348,11 @@ class SimulatedProvider(PositionProvider):
                 self.warnings.append(f"{vid}: OSRM 경로/캐시 missing ({home_id}→{tram_id}); 해당 차량 생략")
                 continue
             events = self._station_events(tram_id)
+            if self.service_window:
+                start_t, end_t = self.service_window
+                lower = datetime.combine(self.day, start_t)
+                upper = datetime.combine(self.day, end_t)
+                events = [event for event in events if lower <= event <= upper]
             if not events:
                 self.warnings.append(f"{vid}: {tram_id}에 연결할 트램 출발시각이 missing; 차량 생략")
                 continue
@@ -327,10 +362,10 @@ class SimulatedProvider(PositionProvider):
             for target in selected:
                 plan_probe = target - timedelta(minutes=buffer + float(outward["duration_min"]))
                 plan_factor, band, _ = self._factor(plan_probe)
-                # Schedule against the central estimate; selected min/mode/max is
-                # applied to travel to expose late-transfer scenarios.
+                # Schedule against the hourly median; apply selected min/mode/max
+                # only to actual travel, preserving a reproducible comparison.
                 profile = self.config.get("traffic_factor_by_band", {}).get(self.route_class, {})
-                mode_values = profile if self.route_class == "단지내" else profile.get(band, {})
+                mode_values = profile if self.route_class == "단지내" else self.hourly_congestion.get(plan_probe.hour, {})
                 plan_factor = float(mode_values.get("mode", plan_factor)) if isinstance(mode_values, dict) else plan_factor
                 plan_start = target - timedelta(minutes=buffer + float(outward["duration_min"]) * plan_factor)
                 actual_factor, band, factor_status = self._factor(plan_start)
