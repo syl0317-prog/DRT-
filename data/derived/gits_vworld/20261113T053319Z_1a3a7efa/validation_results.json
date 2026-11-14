@@ -1,0 +1,56 @@
+{
+  "automated_tests": {
+    "passed": 6,
+    "failed": 0,
+    "command": "python -B -m unittest discover -s drt_system/tests -p test_gits_vworld_map.py -v"
+  },
+  "saved_html_js_syntax": "passed (node --check)",
+  "saved_html_geojson_layers": 17,
+  "saved_html_popup_bindings": 16,
+  "saved_html_tile_layers": 0,
+  "input_hashes_unchanged": true,
+  "map_feature_counts": {
+    "gray": 3205,
+    "blue": 8,
+    "orange": 8,
+    "total": 3221
+  },
+  "browser_test": {
+    "status": "unavailable",
+    "reason": "The browser access host is unavailable",
+    "unverified": [
+      "Actual road rendering",
+      "Zoom and pan interaction",
+      "Candidate popup clicks",
+      "Layer toggles",
+      "Browser console runtime errors",
+      "CDN asset loading"
+    ]
+  },
+  "prior_html_audit": {
+    "fixed_html": "Exists, zero L.geoJson calls and zero popups; road code absent",
+    "gits_map_rebuilt.html": "Exists, 3221 L.geoJson calls, preserved"
+  },
+  "artifacts": {
+    "gits_vworld_review_map.html": {
+      "bytes": 2339169,
+      "sha256": "1cd7aa2c5dd97ba4ffdd851bba360d52ffe80753650928996048991fe048255e"
+    },
+    "matching_candidates.csv": {
+      "bytes": 6540,
+      "sha256": "2ccb163afbe7d32d2eb9c2f7ba9404ff58f7230fe78e994ac78914da7c8015c2"
+    },
+    "matching_summary.json": {
+      "bytes": 2026,
+      "sha256": "028c0f25221debe0d94105d4241aa26468d021b02acf3c46532e559987b809de"
+    },
+    "unmatched_gits.csv": {
+      "bytes": 20886,
+      "sha256": "67fe097bce2a5c3131344322f6232728232948eafecdbed4991814cd692f47a7"
+    },
+    "vworld_with_gits.geojson": {
+      "bytes": 2113001,
+      "sha256": "f2424655add4fc935bb68e89a7eb7a8727f511c93eb4cb5a879826ea77615de8"
+    }
+  }
+}

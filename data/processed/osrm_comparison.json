@@ -1,0 +1,9 @@
+{
+  "route": "위례그린파크푸르지오 → 위례역사공원",
+  "osrm_minutes": 2.075,
+  "field_reference_minutes": 6,
+  "field_reference_status": "unverified",
+  "field_reference_source": "사용자 답사 약 6분 참고값; 날짜·경로·원시기록 missing",
+  "coordinate_status": "unverified",
+  "note": "정거장 GeoJSON 108 기준. 보정하지 않음. 혼잡계수 실측 보정에 사용하지 않음."
+}

@@ -13,3 +13,6 @@ __pycache__/
 *.pyc
 .env.*
 !.env.example
+
+# Local Streamlit startup smoke log
+data/processed/streamlit_smoke.log

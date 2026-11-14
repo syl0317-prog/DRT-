@@ -1,0 +1,61 @@
+﻿source,link_id,observation_count,valid_count,invalid_count,quality,length_consistency,max_length_time_relative_error,as_of
+GITS workbook / original observation sheet,2040031A00,1,1,0,timestamp_missing,consistent,0.01259803137824036,2026-11-10
+GITS workbook / original observation sheet,2040032A00,1,1,0,timestamp_missing,consistent,0.03634185812403632,2026-11-10
+GITS workbook / original observation sheet,2040041A00,1,1,0,timestamp_missing,consistent,0.011715606632214388,2026-11-10
+GITS workbook / original observation sheet,2040042A00,1,1,0,timestamp_missing,consistent,0.011624133916130694,2026-11-10
+GITS workbook / original observation sheet,2040331A00,1,1,0,timestamp_missing,consistent,0.00699774530076287,2026-11-10
+GITS workbook / original observation sheet,2040332A00,1,1,0,timestamp_missing,consistent,0.010088642930603861,2026-11-10
+GITS workbook / original observation sheet,2040333A00,1,1,0,timestamp_missing,consistent,0.00879405250115132,2026-11-10
+GITS workbook / original observation sheet,2040341A00,1,1,0,timestamp_missing,consistent,0.02075387345096883,2026-11-10
+GITS workbook / original observation sheet,2040342A00,2,2,0,timestamp_missing,consistent,0.010247955258138472,2026-11-10
+GITS workbook / original observation sheet,2040343A00,1,1,0,timestamp_missing,consistent,0.007601310065014342,2026-11-10
+GITS workbook / original observation sheet,2040351A00,1,1,0,timestamp_missing,consistent,0.013678470578995914,2026-11-10
+GITS workbook / original observation sheet,2040352A00,1,1,0,timestamp_missing,consistent,0.002640801619033376,2026-11-10
+GITS workbook / original observation sheet,2040353A00,1,1,0,timestamp_missing,consistent,0.007525298044301706,2026-11-10
+GITS workbook / original observation sheet,2040361A00,1,1,0,timestamp_missing,consistent,0.015285117443105909,2026-11-10
+GITS workbook / original observation sheet,2040362A00,1,1,0,timestamp_missing,consistent,0.03405763599938356,2026-11-10
+GITS workbook / original observation sheet,2040363A00,1,1,0,timestamp_missing,consistent,0.009255793128252525,2026-11-10
+GITS workbook / original observation sheet,2040371A00,1,1,0,timestamp_missing,consistent,0.03538901597402033,2026-11-10
+GITS workbook / original observation sheet,2040372A00,1,1,0,timestamp_missing,consistent,0.019321620401258798,2026-11-10
+GITS workbook / original observation sheet,2040373A00,1,1,0,timestamp_missing,consistent,0.0034382516564109983,2026-11-10
+GITS workbook / original observation sheet,2040374A00,1,1,0,timestamp_missing,consistent,0.003981704529573742,2026-11-10
+GITS workbook / original observation sheet,2040375A00,1,1,0,timestamp_missing,consistent,0.0021850920860235993,2026-11-10
+GITS workbook / original observation sheet,2040376A00,1,1,0,timestamp_missing,consistent,0.03229402463855489,2026-11-10
+GITS workbook / original observation sheet,2040381A00,1,1,0,timestamp_missing,consistent,0.014823024622942917,2026-11-10
+GITS workbook / original observation sheet,2040382A00,1,1,0,timestamp_missing,consistent,0.014625928478443854,2026-11-10
+GITS workbook / original observation sheet,2040383A00,1,1,0,timestamp_missing,consistent,0.02690196115950632,2026-11-10
+GITS workbook / original observation sheet,2040384A00,1,1,0,timestamp_missing,consistent,0.03463269686307777,2026-11-10
+GITS workbook / original observation sheet,2040385A00,1,1,0,timestamp_missing,consistent,0.048040794417605934,2026-11-10
+GITS workbook / original observation sheet,2040386A00,2,2,0,timestamp_missing,consistent,0.03343275167887506,2026-11-10
+GITS workbook / original observation sheet,2040391A00,1,1,0,timestamp_missing,consistent,0.022087713709249193,2026-11-10
+GITS workbook / original observation sheet,2040392A00,1,1,0,timestamp_missing,consistent,0.008967056116862751,2026-11-10
+GITS workbook / original observation sheet,2040401A00,1,1,0,timestamp_missing,consistent,0.000257997936016536,2026-11-10
+GITS workbook / original observation sheet,2040402A00,1,1,0,timestamp_missing,consistent,0.016027839162793066,2026-11-10
+GITS workbook / original observation sheet,2040411A00,1,1,0,timestamp_missing,consistent,0.03960443113203064,2026-11-10
+GITS workbook / original observation sheet,2040412A00,1,1,0,timestamp_missing,consistent,0.007821789305670276,2026-11-10
+GITS workbook / original observation sheet,2040413A00,1,1,0,timestamp_missing,consistent,0.020991356500264558,2026-11-10
+GITS workbook / original observation sheet,2040414A00,1,1,0,timestamp_missing,consistent,0.00806451612903229,2026-11-10
+GITS workbook / original observation sheet,2040421A00,1,1,0,timestamp_missing,consistent,0.005565245686695328,2026-11-10
+GITS workbook / original observation sheet,2040422A00,1,1,0,timestamp_missing,consistent,0.007726092710631754,2026-11-10
+GITS workbook / original observation sheet,2040423A00,1,1,0,timestamp_missing,consistent,0.012066897184390713,2026-11-10
+GITS workbook / original observation sheet,2040424A00,1,1,0,timestamp_missing,consistent,0.006190471610708671,2026-11-10
+GITS workbook / original observation sheet,9000002144,1,1,0,timestamp_missing,consistent,0.011863224005582694,2026-11-10
+GITS workbook / original observation sheet,9000002145,1,1,0,timestamp_missing,consistent,0.004176652076562708,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230221700,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230221800,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230223000,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230223100,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230223900,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230224000,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230224500,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230224600,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230229500,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230229600,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230229900,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230230000,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230232900,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230233000,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230234200,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,1230234300,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,2270208300,1,1,0,single_snapshot,missing,missing,2026-11-10
+wirye_traffic_history.csv; provider lineage unverified,2270208400,1,1,0,single_snapshot,missing,missing,2026-11-10

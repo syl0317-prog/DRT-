@@ -1,0 +1,62 @@
+{
+  "cause": "Both active maps used tiles=None; the background layer was absent.",
+  "modified_code": [
+    "drt_system/modules/dashboard_views.py",
+    "drt_system/modules/route_views.py"
+  ],
+  "added_code": [
+    "drt_system/modules/map_background.py"
+  ],
+  "unchanged_code": [
+    "drt_system/app.py",
+    "drt_system/modules/map_view.py",
+    "Reservation, dispatch, OSRM, GITS and punctuality algorithms"
+  ],
+  "providers": [
+    "OpenStreetMap standard (default)",
+    "OSM Deutschland / FOSSGIS (research/non-commercial alternative, initially inactive)"
+  ],
+  "tile_diagnostics": [
+    {
+      "url": "https://tile.openstreetmap.org/14/13978/6350.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 32831,
+      "png_signature": true
+    },
+    {
+      "url": "https://tile.openstreetmap.de/14/13978/6350.png",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 32217,
+      "png_signature": true
+    }
+  ],
+  "tests": {
+    "passed": 59,
+    "failed": 0,
+    "new_background_tests": 4,
+    "command": "python -B -m unittest discover -s drt_system/tests -p 'test_*.py' -v",
+    "checks": [
+      "Attributed explicit tile layers, alternate initially inactive",
+      "Dashboard: 4 DRT and 2 transfer markers, no OSRM",
+      "Route: markers, route line, click coordinates and center/zoom preserved",
+      "JavaScript syntax and mocked error/recovery/timeout notice",
+      "Six menus and operational regression tests"
+    ]
+  },
+  "browser": {
+    "verified": false,
+    "reason": "The browser access host is unavailable",
+    "unverified": [
+      "Actual browser road/building display",
+      "Pan/zoom, provider switching and clicks in actual browser",
+      "Browser console/runtime and client-specific tile responses"
+    ]
+  },
+  "original_data": {
+    "checked": 95,
+    "changed": []
+  },
+  "git_commit_or_push": false
+}

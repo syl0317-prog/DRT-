@@ -1,0 +1,117 @@
+{
+  "feature": "Stop-first unified reservations for eight persisted DRT stops",
+  "catalog": {
+    "boarding": [
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "V05",
+      "V06",
+      "V07",
+      "V08"
+    ],
+    "default_destinations": 8,
+    "optional_tram_destinations": [
+      "T01",
+      "T02"
+    ],
+    "invented_names_or_coordinates": false
+  },
+  "actual_state": {
+    "existing_csv_records": 6,
+    "existing_r02_bookings": 0,
+    "new_unified_requests": 0,
+    "r02_active": false,
+    "r02_vehicles": [],
+    "existing_r02_route_preserved": true
+  },
+  "storage": {
+    "new_canonical": "data/derived/unified_reservations/reservations.sqlite3",
+    "tables": [
+      "requests",
+      "csv_cancellations"
+    ],
+    "migration": false,
+    "legacy_csv_overwritten": false,
+    "legacy_csv_cancellation": "Durable source-row fingerprint overlay; applied by reservation_manager.load_reservations so old seat/simulation readers release seats",
+    "r02_cancellation": "Updates original R02 registry booking transactionally; route/stop/segment data preserved",
+    "new_cancellation": "Updates canonical unified request and its held-seat snapshot",
+    "id_namespaces": [
+      "CSV:<store>:<id>:<row fingerprint>",
+      "R02:<store>:<id>",
+      "UNI:<UUID>"
+    ]
+  },
+  "dispatch": {
+    "cross_route": "Accepted as review_required; no fabricated assignment",
+    "legacy_stop_pairs": "Accepted for review; dated stop-to-stop fleet dispatch unsupported by original legacy engine",
+    "r02": "Only active calculated ordered route with configured available vehicle and capacity; planned research run only",
+    "path_missing": "Explicitly unverified review if network/cache unavailable; NoRoute rejects",
+    "capacity": "Original R02 and new unified holds mutually checked; pending requests do not hold seats",
+    "original_csv_dates": "Not inferred; missing shown explicitly"
+  },
+  "tests": {
+    "passed": 89,
+    "new_unified_tests": 14,
+    "failed": 0,
+    "command": "python -B -m unittest discover -s drt_system/tests -p 'test_*.py' -v",
+    "checks": [
+      "Exactly eight default boarding/destination choices and optional two tram destinations",
+      "Legacy, R02, mixed and reverse request handling",
+      "Same-stop, future-date, capacity and virtual tram target checks",
+      "Single federated list, namespaced IDs and legacy missing dates",
+      "Each source cancellation, old seat release, registry and new persistence",
+      "Idempotent retry and concurrent identical submissions",
+      "Cross-store capacity and original R02 API reciprocal seat protection",
+      "UI single form, dashboard union counts, no route selector",
+      "All original six-menu, map, GITS, OSRM and punctuality regression tests"
+    ]
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8514,
+    "root_http": 200,
+    "health_http": 200,
+    "stopped": true
+  },
+  "browser": {
+    "verified": false,
+    "reason": "The browser access host is unavailable"
+  },
+  "unverified": [
+    "Actual browser rendering and real map interactions",
+    "External live OSRM availability",
+    "Actual operational dispatch feasibility, field boarding safety, real vehicle availability"
+  ],
+  "integrity": {
+    "checked": 108,
+    "changed": [
+      "drt_system\\modules\\dashboard_views.py",
+      "drt_system\\modules\\independent_routes.py",
+      "drt_system\\modules\\independent_route_views.py",
+      "drt_system\\modules\\reservation_manager.py"
+    ],
+    "original_data_changed": [],
+    "data_files_checked": 77
+  },
+  "added_files": [
+    "drt_system/modules/unified_reservations.py",
+    "drt_system/modules/unified_reservation_views.py",
+    "drt_system/tests/test_unified_reservations.py",
+    "drt_system/docs/unified_reservations_usage.md",
+    "drt_system/docs/unified_reservations_validation.json",
+    "data/derived/unified_reservations/reservations.sqlite3"
+  ],
+  "modified_files": [
+    "drt_system/app.py",
+    "drt_system/modules/dashboard_views.py",
+    "drt_system/modules/reservation_manager.py",
+    "drt_system/modules/independent_routes.py",
+    "drt_system/modules/independent_route_views.py",
+    "drt_system/tests/test_independent_routes.py",
+    "drt_system/tests/test_menu_integration.py",
+    "drt_system/docs/independent_route_usage.md"
+  ],
+  "git_commit_or_push": false
+}

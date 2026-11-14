@@ -15,7 +15,8 @@ def main():
     run = AppTest.from_file(str(app), default_timeout=30).run()
     assert not run.exception, run.exception
     menu = next(w for w in run.radio if w.label == "메뉴 선택")
-    menu.set_value("실시간 관제").run()
+    menu.set_value("관리·설정").run()
+    run.radio(key="admin_section").set_value("실시간 관제").run()
     assert not run.exception, run.exception
     captions = [x.value for x in run.caption]
     dataframes = list(run.dataframe)

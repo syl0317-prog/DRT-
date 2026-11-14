@@ -17,8 +17,8 @@ STOPS = APP / "data" / "drt_stops.csv"
 CACHE = APP / "data" / "osrm_cache.json"
 PARAMS = ROOT / "data" / "assumptions" / "sim_params.json"
 CONGESTION = ROOT / "data" / "processed" / "congestion_by_hour.csv"
-OUT_CSV = ROOT / "data" / "processed" / "punctuality_results.csv"
-OUT_PNG = ROOT / "data" / "processed" / "punctuality_chart.png"
+OUT_CSV = ROOT / "data" / "processed" / "punctuality_main_results.csv"
+OUT_PNG = ROOT / "data" / "processed" / "punctuality_main_chart.png"
 HEADERS = ["정류장", "시간대", "구간유형", "혼잡수준", "합승수", "여유분",
            "놓칠확률", "평균대기분", "기준대기분", "가정"]
 REPS = 10_000
@@ -100,7 +100,7 @@ def simulate(routes, config, congestion):
                                 if lateness > 1e-12:
                                     missed += 1
                                     remainder = lateness % HEADWAY
-                                    waits += HEADWAY - remainder if remainder > 1e-12 else HEADWAY
+                                    waits += HEADWAY - remainder if remainder > 1e-12 else 0
                                 else:
                                     waits += -lateness
                             assumptions = (f"T={duration:.3f}분 OSRM 캐시; 삼각분포 k={lo:.4f}/{mode:.4f}/{hi:.4f}; "
@@ -149,6 +149,11 @@ def draw_chart(rows):
         for key, color in colors.items():
             period, segment = key.split("-", 1)
             series = [r for r in rows if r["시간대"] == period and r["구간유형"] == segment and r["혼잡수준"] == "mode" and r["합승수"] == 0]
+            # Plot one mean per buffer rather than joining different stops end to end.
+            series = [{"여유분": b,
+                       "놓칠확률": sum(r["놓칠확률"] for r in series if r["여유분"] == b) / sum(r["여유분"] == b for r in series),
+                       "평균대기분": sum(r["평균대기분"] for r in series if r["여유분"] == b) / sum(r["여유분"] == b for r in series)}
+                      for b in sorted({r["여유분"] for r in series})]
             points = []
             for r in series:
                 x = x0 + 45 + r["여유분"] * (x1 - x0 - 65) / 10

@@ -1,3 +1,4 @@
+from modules.settings import stops_path, setting
 
 import math
 from pathlib import Path
@@ -9,20 +10,20 @@ from modules.tram_scheduler import calculate_drt_schedule
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-STOPS_FILE = BASE_DIR / "data" / "drt_stops.csv"
+STOPS_FILE = stops_path()
 
 
 def calculate_integrated_schedule(
     route_stop_ids,
     tram_stop_id,
     tram_departure,
-    transfer_buffer=5,
-    dwell_minutes=1,
-    traffic_factor=1.2
+    transfer_buffer=setting("transfer_buffer"),
+    dwell_minutes=setting("dwell_minutes"),
+    traffic_factor=setting("traffic_factor")
 ):
     # 정류장 데이터 불러오기
     stops = pd.read_csv(
-        STOPS_FILE,
+        stops_path(),
         dtype={"stop_id": str},
         encoding="utf-8-sig"
     )

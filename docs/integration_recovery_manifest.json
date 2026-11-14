@@ -1,0 +1,52 @@
+{
+  "branch": "feature/drt-simulation",
+  "head": "8b37f17ece106da6366762be77a8e70f3e863686",
+  "backup": "backups\\integration_20261114_010309",
+  "source_commit": "ee68dcc680861bc0ffb5e2254435410773f13718",
+  "source_path": "data/derived/drt_routes/routes.sqlite3",
+  "source_blob": "05d2a47f44908fdbb72623f20bcb76181f3503d3",
+  "source_sqlite_sha256": "330fad7f87356726816d932d8066415b8960919e451c93ab635fff948a5034cb",
+  "restored_stop_ids": [
+    "V05",
+    "V06",
+    "V07",
+    "V08"
+  ],
+  "restored_segments": 3,
+  "registry_revision": 2,
+  "restored_legacy_booking_ids": [
+    "DA75DCD589"
+  ],
+  "legacy_source": "drt_system/data/reservations.csv",
+  "unchanged_stop_csv": true,
+  "production_unified_counts": {
+    "requests": 0,
+    "csv_cancellations": 0
+  },
+  "production_unified_database_unchanged": false,
+  "changed_files": [
+    "sewook31/app.py",
+    "sewook31/modules/combined_routes.py",
+    "sewook31/modules/detail_views.py",
+    "sewook31/modules/gits_views.py",
+    "sewook31/modules/independent_routes.py",
+    "sewook31/modules/independent_route_views.py",
+    "sewook31/modules/punctuality_sim.py",
+    "sewook31/modules/route_views.py",
+    "sewook31/modules/settings.py",
+    "sewook31/modules/timetable_periods.py",
+    "sewook31/modules/unified_reservations.py",
+    "sewook31/modules/unified_reservation_views.py",
+    "sewook31/data/reservations.csv",
+    "drt_system/modules/detail_views.py",
+    "drt_system/modules/gits_views.py",
+    "drt_system/modules/punctuality_sim.py",
+    "drt_system/modules/timetable_periods.py",
+    "data/derived/drt_routes/routes.sqlite3",
+    "sewook31/tests/test_integrated_runtime.py",
+    "docs/integration_restore_report.md",
+    "docs/integration_recovery_manifest.json"
+  ],
+  "production_unified_logically_unchanged": true,
+  "backup_note": "SQLite backup API may change backup header counters; logical dump equality confirms preserved schema and rows."
+}
