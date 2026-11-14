@@ -1,0 +1,576 @@
+{
+  "base_main_commit": "aaef86f47d72b071faca82ffd23830d9692e832d",
+  "note": "File metadata only; no reservation contents or credentials. Presence is not a claim that every file is required for startup.",
+  "files": [
+    {
+      "path": "data/assumptions/apartment_households.csv",
+      "in_base_main": true,
+      "bytes": 3590,
+      "sha256": "0512fd38e76c26bcbf376f2031a920bcfc98c1a71ef51ebbd95481eaab384f99"
+    },
+    {
+      "path": "data/assumptions/bus_routes_real.csv",
+      "in_base_main": true,
+      "bytes": 2130,
+      "sha256": "b59b9a165100772499d73523db4dc44d0d674103e39f84212329130c5b192036"
+    },
+    {
+      "path": "data/assumptions/congestion_params.json",
+      "in_base_main": true,
+      "bytes": 5597,
+      "sha256": "ca5d1c585a8b61a347dcae16338b4ab0e574e109d8df04de1746cf6c1c0053b5"
+    },
+    {
+      "path": "data/assumptions/demand_weight_params.json",
+      "in_base_main": true,
+      "bytes": 830,
+      "sha256": "a6b55693f3e4c446364a73a494afe5d832834949fc87849976b2cd524c134589"
+    },
+    {
+      "path": "data/assumptions/drt_cost_scenarios.json",
+      "in_base_main": true,
+      "bytes": 2686,
+      "sha256": "48fec0e1dca1442cd2854be839c2ec0d35a6d9d83263f5150e79b375f7ca10a2"
+    },
+    {
+      "path": "data/assumptions/household_stats_todo.csv",
+      "in_base_main": true,
+      "bytes": 64,
+      "sha256": "5d8b730b35c47ac094995e843fa17933be5dc5b1fd0f81c6cb5cb17bed086cce"
+    },
+    {
+      "path": "data/assumptions/sim_params.json",
+      "in_base_main": true,
+      "bytes": 2603,
+      "sha256": "a35d2b09a539a82537d8b692a94b89b8134631da56af565d0840562722a3f69f"
+    },
+    {
+      "path": "data/assumptions/tram_timetable.json",
+      "in_base_main": true,
+      "bytes": 3976,
+      "sha256": "cb426f5eb8a8fdad7404c64ecb74fc5237ea83002a5db32f1109c6845c14e273"
+    },
+    {
+      "path": "data/assumptions/travel_time_observed.csv",
+      "in_base_main": true,
+      "bytes": 84,
+      "sha256": "1e98fb5a67eb45f04d012993349b8642d29e8efe0184a80f61b0f97274d28a0b"
+    },
+    {
+      "path": "data/assumptions/추가 데이터.csv",
+      "in_base_main": true,
+      "bytes": 2100,
+      "sha256": "3100c762ffd07f6d64eedec1df36a0b5aa5d1e5368465b5344b8e317b9c9aa25"
+    },
+    {
+      "path": "data/assumptions/환승 성공률.docx",
+      "in_base_main": true,
+      "bytes": 16656,
+      "sha256": "776c787afa19ccc23f1efca4e1ce081dbd681fa9d48c834ff349f8e3b4c7d105"
+    },
+    {
+      "path": "data/derived/gits_vworld/20261113T053319Z_1a3a7efa/gits_vworld_review_map.html",
+      "in_base_main": true,
+      "bytes": 2340395,
+      "sha256": "2a413a075a20ac9dd418fd730b475a08b241856fb737893b4cd6cdc779e8fd32"
+    },
+    {
+      "path": "data/derived/gits_vworld/20261113T053319Z_1a3a7efa/matching_candidates.csv",
+      "in_base_main": true,
+      "bytes": 6540,
+      "sha256": "2ccb163afbe7d32d2eb9c2f7ba9404ff58f7230fe78e994ac78914da7c8015c2"
+    },
+    {
+      "path": "data/derived/gits_vworld/20261113T053319Z_1a3a7efa/matching_summary.json",
+      "in_base_main": true,
+      "bytes": 2026,
+      "sha256": "028c0f25221debe0d94105d4241aa26468d021b02acf3c46532e559987b809de"
+    },
+    {
+      "path": "data/derived/gits_vworld/20261113T053319Z_1a3a7efa/unmatched_gits.csv",
+      "in_base_main": true,
+      "bytes": 20886,
+      "sha256": "67fe097bce2a5c3131344322f6232728232948eafecdbed4991814cd692f47a7"
+    },
+    {
+      "path": "data/derived/gits_vworld/20261113T053319Z_1a3a7efa/validation_results.json",
+      "in_base_main": true,
+      "bytes": 1754,
+      "sha256": "3c932654dd18e2a2ab2b09a5369d041648fc616d7b1c92beeff3163de54858a4"
+    },
+    {
+      "path": "data/derived/gits_vworld/20261113T053319Z_1a3a7efa/vworld_with_gits.geojson",
+      "in_base_main": true,
+      "bytes": 2113001,
+      "sha256": "f2424655add4fc935bb68e89a7eb7a8727f511c93eb4cb5a879826ea77615de8"
+    },
+    {
+      "path": "data/derived/gits_vworld/gits_map_rebuilt.html",
+      "in_base_main": true,
+      "bytes": 7202537,
+      "sha256": "a1940b69a9c8999c5ade814139dc7bda700d6bfd1d525ea7a54b9c460ff002f5"
+    },
+    {
+      "path": "data/processed/apartment_classification.csv",
+      "in_base_main": true,
+      "bytes": 9750,
+      "sha256": "ded37367f07b37c2f8b2575ec53c2bffeb70d66235abe70bf633dbaa923afb16"
+    },
+    {
+      "path": "data/processed/apartment_master.csv",
+      "in_base_main": true,
+      "bytes": 8529,
+      "sha256": "b9c1b6cd01a922373efecd280696db7254c8c2e6223bb332b41078f90d9ee84b"
+    },
+    {
+      "path": "data/processed/congestion_by_hour.csv",
+      "in_base_main": true,
+      "bytes": 60926,
+      "sha256": "c2f43ce7dc75e9701678614cbdff3a1a2e1bc6c541d2af90f58e1b36f15ce837"
+    },
+    {
+      "path": "data/processed/drt_strategy_comparison.csv",
+      "in_base_main": true,
+      "bytes": 28505,
+      "sha256": "5e6f79b27de5bacac655d2741c7c8ecc1550b3665ce8e40302f7f71f131e7597"
+    },
+    {
+      "path": "data/processed/drt_strategy_summary.csv",
+      "in_base_main": true,
+      "bytes": 14360,
+      "sha256": "cbf57d263932c5d85243c822c47f43e6afb943bad6c3302c2bea36315fb7877b"
+    },
+    {
+      "path": "data/processed/gits_data_quality.csv",
+      "in_base_main": true,
+      "bytes": 7328,
+      "sha256": "b01a751b9291c5c01c1ffb79a871e68a82b008b4414cfd078a82ec76f95d4b23"
+    },
+    {
+      "path": "data/processed/gits_link_summary.csv",
+      "in_base_main": true,
+      "bytes": 22199,
+      "sha256": "73140740b2128335c36bee90e4b31eee0950a1f996ced315401942e6be4a6d81"
+    },
+    {
+      "path": "data/processed/gits_route_matching.csv",
+      "in_base_main": true,
+      "bytes": 2763,
+      "sha256": "93f09d7b047d2035d20de44a9f9b7a06086ab28956e7926d5de5e807e9f004d4"
+    },
+    {
+      "path": "data/processed/gits_route_travel_times.csv",
+      "in_base_main": true,
+      "bytes": 2763,
+      "sha256": "93f09d7b047d2035d20de44a9f9b7a06086ab28956e7926d5de5e807e9f004d4"
+    },
+    {
+      "path": "data/processed/gits_source_hashes.json",
+      "in_base_main": true,
+      "bytes": 4832,
+      "sha256": "231455925dd641b7f1175325655df528e1a2aea7df5c8514bb716297ca3f17ff"
+    },
+    {
+      "path": "data/processed/gits_time_profiles.csv",
+      "in_base_main": true,
+      "bytes": 24186,
+      "sha256": "f787749d15a491794c28883a67c44ebbcbc056c298f06c95554556bc50aa97a7"
+    },
+    {
+      "path": "data/processed/gits_unmatched_hourly_segments.csv",
+      "in_base_main": true,
+      "bytes": 13865483,
+      "sha256": "fc839cdaefb53f93f202d9881cc64844f2c8080fae6424dadf64a38544f237d5"
+    },
+    {
+      "path": "data/processed/operating_cost_reference.csv",
+      "in_base_main": true,
+      "bytes": 1682,
+      "sha256": "da9e68a0db29e11f447527678d3dbe6bd5ff8e6e7fb327f9c13019fe35e7ceb9"
+    },
+    {
+      "path": "data/processed/osrm_comparison.json",
+      "in_base_main": true,
+      "bytes": 436,
+      "sha256": "b111716875cde6203ddd6d853332c1cb5a643b2acefa4f887c1fde255421e72a"
+    },
+    {
+      "path": "data/processed/punctuality_gits_results.csv",
+      "in_base_main": true,
+      "bytes": 3838,
+      "sha256": "c847aebc9c3a012de2ff40a75d5dbd3b67323ec8cddf08bbe5c36e8c8f651e36"
+    },
+    {
+      "path": "data/processed/punctuality_main_chart.png",
+      "in_base_main": true,
+      "bytes": 37486,
+      "sha256": "73cd113a2e0533f19e6fe3c507eadfd8e039bfa76873c403f5176d0c0d9f6969"
+    },
+    {
+      "path": "data/processed/punctuality_main_results.csv",
+      "in_base_main": true,
+      "bytes": 379326,
+      "sha256": "4e02a284838928ec6c7b16708f4d535002bf46d436fa3ccf313d9eae1479427f"
+    },
+    {
+      "path": "data/processed/punctuality_results.csv",
+      "in_base_main": true,
+      "bytes": 86818,
+      "sha256": "5d5adc92dc95947415be65d19b88672e0eaa7d4d0f0397fb0484c2915439a088"
+    },
+    {
+      "path": "data/processed/stops_with_admin.csv",
+      "in_base_main": true,
+      "bytes": 894,
+      "sha256": "d0314120141e1f94794363270f3dd0b2cb9a991e769faa0082f417c643f1c30d"
+    },
+    {
+      "path": "data/processed/vehicle_timeseries_am.csv",
+      "in_base_main": true,
+      "bytes": 8082,
+      "sha256": "72cf067aad1949649b4631fde02228a54db3f1cd23aa7905f78da41e6583a99f"
+    },
+    {
+      "path": "data/processed/virtual_stop_candidates_v2.csv",
+      "in_base_main": true,
+      "bytes": 2988,
+      "sha256": "b5c224579bb785828dc2d6d1dbcccbaef9c144166f7d6f206bc11d99d2c83768"
+    },
+    {
+      "path": "data/processed/vworld_gits_matched_map.html",
+      "in_base_main": true,
+      "bytes": 1770335,
+      "sha256": "e04590b1dbe46845a716366e6c772bfc087890b3a28beb4639ab8359e6c4eb63"
+    },
+    {
+      "path": "data/processed/vworld_gits_matching.csv",
+      "in_base_main": true,
+      "bytes": 9465,
+      "sha256": "8d7bd012c9299f7ab9b69d85e41c563b2955d8bd6d1faa392d9042b15f1057c3"
+    },
+    {
+      "path": "data/processed/wirye_changgok_boundary.geojson",
+      "in_base_main": true,
+      "bytes": 24580,
+      "sha256": "617875d1e46524af713b7ea203e1abce1aad2606d106348f156652e609c44d77"
+    },
+    {
+      "path": "data/processed/wirye_grid_population.csv",
+      "in_base_main": true,
+      "bytes": 19020,
+      "sha256": "72645d1f7b44871d10015caee8a6f6c1c14f945acf1e9494c7c53599d708635c"
+    },
+    {
+      "path": "data/processed/wirye_tram_blindspot_700m.geojson",
+      "in_base_main": true,
+      "bytes": 11340,
+      "sha256": "9abe7f2cd0f28ad4485a92db39e976802bac3697aabc18e915bf631d7ab8c8ef"
+    },
+    {
+      "path": "data/processed/wirye_tram_buffer_700m.geojson",
+      "in_base_main": true,
+      "bytes": 10140,
+      "sha256": "94d09f46049fd68e7ea384188046cd5c329e1b4e7bdc37bb08d154a28a39007c"
+    },
+    {
+      "path": "data/processed/wirye_tram_official_lines.geojson",
+      "in_base_main": true,
+      "bytes": 1772,
+      "sha256": "0f95b1b662e24f3f237010ec039fc40e6034d466936706e62cfaac82df75bcc8"
+    },
+    {
+      "path": "data/processed/wirye_tram_official_stations.geojson",
+      "in_base_main": true,
+      "bytes": 7197,
+      "sha256": "8df1fff10bf7e419c9373079f9b8e2fd075abe0fe62e528655feafbbc14698be"
+    },
+    {
+      "path": "data/processed/wirye_vulnerable_apartments.geojson",
+      "in_base_main": true,
+      "bytes": 5553,
+      "sha256": "a4c496212dcc44b8aee73cc976c3f4bd3f20dac08f57d67b20fc07c921d49be3"
+    },
+    {
+      "path": "data/processed/위례_DRT_GITS_도로교통정보_정리.xlsx",
+      "in_base_main": true,
+      "bytes": 18689,
+      "sha256": "b1ccf21ce0767499c6dffa6e3e6f62250c154be75290d0cef1450aaf1aaeb12f"
+    },
+    {
+      "path": "data/raw/drt_road_segments.csv",
+      "in_base_main": true,
+      "bytes": 609,
+      "sha256": "ff49d2c4281b7ed9210ee3ad985960c944ef75075fcaf43a8346347ffb226602"
+    },
+    {
+      "path": "data/raw/topis_all_roads.csv",
+      "in_base_main": true,
+      "bytes": 12708,
+      "sha256": "d6e1f9187bc5b47848a81fc17a85fb1872e19915d8f78a4c67e5871289969e00"
+    },
+    {
+      "path": "data/raw/topis_links_sample.csv",
+      "in_base_main": true,
+      "bytes": 163,
+      "sha256": "16d6d406858d214fd3d050697dd92eaab24442c9058f8e7c6ce223dd4008f454"
+    },
+    {
+      "path": "data/raw/topis_wirye_roads.csv",
+      "in_base_main": true,
+      "bytes": 108,
+      "sha256": "dbdc16db1b97b70283f2665549eb711609dbbcc69a1936d5ff8493f072a08900"
+    },
+    {
+      "path": "data/raw/wirye_speed_raw.csv",
+      "in_base_main": true,
+      "bytes": 696230,
+      "sha256": "bcbd863e3d325a0c669583ac8e529e2441a70eab9de099c52c9ffbc7fb9611cd"
+    },
+    {
+      "path": "data/raw/wirye_topis_links.csv",
+      "in_base_main": true,
+      "bytes": 786,
+      "sha256": "f8a1230122a2927b38f1a9342e413006abdd6f59dcebd278cf5995c5d779a05b"
+    },
+    {
+      "path": "data/raw/wirye_traffic_history.csv",
+      "in_base_main": true,
+      "bytes": 1424,
+      "sha256": "60e0e6433c91196f4a6fc8487c15f92fd57eafafecb3adaf0958baf0d5a5be2a"
+    },
+    {
+      "path": "data/raw/가상 트램 시간표.csv",
+      "in_base_main": true,
+      "bytes": 1177,
+      "sha256": "75b3fbafd0a14ab59ca99a7bc3839b029279a11abe8a87db6d0dd44fc685fcfd"
+    },
+    {
+      "path": "data/raw/위례동 버스 배차.csv",
+      "in_base_main": true,
+      "bytes": 700,
+      "sha256": "2849055337eb1fee5ac6a1683e7f2792cd3600e1452ddd81b54a71271701c806"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/31번_경유정류장.xml",
+      "in_base_main": true,
+      "bytes": 35991,
+      "sha256": "05f6c6dff022be167eb4570249e468f000b89e647051727dc4600a9b3d9171e1"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/API_페이지별_호출상태.csv",
+      "in_base_main": true,
+      "bytes": 152,
+      "sha256": "400828b2de07147d16dc3359dc720ff4a94cc336dfd01269d8f98159eb0a8df3"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/dashboard_500m_verification_20261020_140020_011428.json",
+      "in_base_main": true,
+      "bytes": 2245,
+      "sha256": "ab42b2b28afb59853c28e8c25236f69b8ad484d1468ea3eda3883132b72a5880"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/네트워크_검사결과.json",
+      "in_base_main": true,
+      "bytes": 2047,
+      "sha256": "ac5f51fa063fede9330406cd4aed0328c5295cf79a8dc3d956fec692e58b49eb"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/성남200번_경유정류장.xml",
+      "in_base_main": true,
+      "bytes": 45508,
+      "sha256": "38721be60019cff8670c3f370981c3029f949a896c6a0c2e0a4ea4a1960ed5d4"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/성남210번_경유정류장.xml",
+      "in_base_main": true,
+      "bytes": 17623,
+      "sha256": "9e4688f248ea1b6495f4ac195f10669698e0105fc2aaadf7e5ed039abc01b07a"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/성남231번_경유정류장.xml",
+      "in_base_main": true,
+      "bytes": 44209,
+      "sha256": "d76a555fd3e581920036c1881c4e74169e9f7ae932bad07f1719820cf79ca7ab"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/성남315번_경유정류장.xml",
+      "in_base_main": true,
+      "bytes": 38588,
+      "sha256": "f134d4063b81f1cb2f1ff381ec95d787e4e3805b82ceb360c58e4335bdceb84c"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/성남331번_경유정류장.xml",
+      "in_base_main": true,
+      "bytes": 27852,
+      "sha256": "1f6c9833c66922de16b91ba5dde9f43768919fbeeac2e64974497b0719ca3c0c"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/성남60번_경유정류장.xml",
+      "in_base_main": true,
+      "bytes": 49431,
+      "sha256": "0b22bbe4b49496f656f8fcf449d23754d44fef68870d84a6c436f7d8b4e2c111"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/위례동_13개정류장_버스노선_비교.xlsx",
+      "in_base_main": true,
+      "bytes": 5493,
+      "sha256": "8529d052ffec5e706d4e5311096c4483c5bcf6dbe433378aaf238a7433bd9dc3"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/위례동_13개정류장_버스노선_통합분석.xlsx",
+      "in_base_main": true,
+      "bytes": 10500,
+      "sha256": "1e78e4b3f3f0cd4feb8383e0ea3590c44641691cae4da0b58223d9e264a62889"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/위례동_버스정류장_위치정보.xlsx",
+      "in_base_main": true,
+      "bytes": 5696,
+      "sha256": "f0c7d2cef99754ae965d208b8588e48f87a76c443f4a6b292e20a8c746be894c"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/정거장별_진단요약.csv",
+      "in_base_main": true,
+      "bytes": 630,
+      "sha256": "db7ba72084bd22c9b79227415e9c88930dcfdfceb2ea5514b82035bb98b76603"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/정류장별_거리진단.csv",
+      "in_base_main": true,
+      "bytes": 1621,
+      "sha256": "a1120e0403fdc624d74a2d3095165d1f94426c854a56c4466e62b4338f71789c"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/하남31번_경유정류장.xml",
+      "in_base_main": true,
+      "bytes": 26017,
+      "sha256": "5b630093fc3f6aba5a20763f1bef5ac5af6e328a5c94c2bf191a74bbd2bdf4e8"
+    },
+    {
+      "path": "data/raw/위례 정류장 데이터/하남38번_경유정류장.xml",
+      "in_base_main": true,
+      "bytes": 36397,
+      "sha256": "0912cc150200f8a442b30610f947b2014f970ca2a586081b1aaecbbfa02034d6"
+    },
+    {
+      "path": "data/raw/위례_호반써밋_버스정류소.xlsx",
+      "in_base_main": true,
+      "bytes": 6123,
+      "sha256": "dd0586800e8a99a3b7f8bd8b8c41150dce6706a30427544f70554f16723c6069"
+    },
+    {
+      "path": "data/seeds/drt_routes.json",
+      "in_base_main": false,
+      "bytes": 7623,
+      "sha256": "79546eb738767ad1209fdb3e7aefc77395e15a19370b3cb3a14dfdec44459432"
+    },
+    {
+      "path": "data/vworld/wirye_road_links.geojson",
+      "in_base_main": true,
+      "bytes": 2843080,
+      "sha256": "7c8b2a40a3f2a87534b205b203aa1015c4329aebc0a457dcf5cca8df9278d628"
+    },
+    {
+      "path": "drt_system/data/derived/20261111T075407044884Z_b514a0039e774405ab58d64252d92ad2/build_metadata.json",
+      "in_base_main": true,
+      "bytes": 810,
+      "sha256": "c4b5afdfde40bc0918a68195a310de816c91785b20771f377697c3f62b842c3d"
+    },
+    {
+      "path": "drt_system/data/derived/20261111T075407044884Z_b514a0039e774405ab58d64252d92ad2/connectivity_report.json",
+      "in_base_main": true,
+      "bytes": 118728,
+      "sha256": "bd55df563bb90658f95934122bf05cf6d393905d4cb011d945a6ea18009e2d92"
+    },
+    {
+      "path": "drt_system/data/derived/20261111T075407044884Z_b514a0039e774405ab58d64252d92ad2/vworld_edges.geojson",
+      "in_base_main": true,
+      "bytes": 5543758,
+      "sha256": "c6c79e206073fa6ff616f852c04df7ed415a0369147189fa446b292a193933dd"
+    },
+    {
+      "path": "drt_system/data/derived/20261111T075407044884Z_b514a0039e774405ab58d64252d92ad2/vworld_graph.graphml",
+      "in_base_main": true,
+      "bytes": 3804422,
+      "sha256": "6ab9ed1f060993f2c43ab25782c0fafa2d715e54d74f5549d2b353e687174616"
+    },
+    {
+      "path": "drt_system/data/derived/20261111T075407044884Z_b514a0039e774405ab58d64252d92ad2/vworld_nodes.geojson",
+      "in_base_main": true,
+      "bytes": 924683,
+      "sha256": "8e67ec409c0f9ab662b1e0a645f8b5248298f0a50b5fad6343becce7896c5537"
+    },
+    {
+      "path": "drt_system/data/derived/20261111T080123348554Z_6af9a8ba514f4f35b5daa4b4639bd3a1/build_metadata.json",
+      "in_base_main": true,
+      "bytes": 784,
+      "sha256": "c8ad5ca566eb795ea4778be728d069a63414f87efb52d8dc4b8959d2308e4afc"
+    },
+    {
+      "path": "drt_system/data/derived/20261111T080123348554Z_6af9a8ba514f4f35b5daa4b4639bd3a1/gits_link_validation.csv",
+      "in_base_main": true,
+      "bytes": 38021,
+      "sha256": "9b51b1471a44d97cd0da3c9b13e1232bb690560503f993f35091ed10b95dfff6"
+    },
+    {
+      "path": "drt_system/data/derived/20261111T080123348554Z_6af9a8ba514f4f35b5daa4b4639bd3a1/gits_validation_report.json",
+      "in_base_main": true,
+      "bytes": 1013,
+      "sha256": "2e85d888c387587a96b3f5de38616606260f224df50ed7f9759a7e274cf2551e"
+    },
+    {
+      "path": "drt_system/data/derived/20261111T083104199001Z_e6c4daa9874c42f2b39068b1bb66c52c/vworld_routing_results.json",
+      "in_base_main": true,
+      "bytes": 2312,
+      "sha256": "19a86634f834d2a7b6e705b8ee2162c012fa971fcbd9b4ad3c90787f7456ffc8"
+    },
+    {
+      "path": "drt_system/data/derived/20261111T083117004933Z_2d6038d78c1942b39180b7d8b5751b3d/vworld_routing_results.json",
+      "in_base_main": true,
+      "bytes": 13140,
+      "sha256": "b4b72ec49c34d3f459a8ed0cf7bb2279d88185d16b258f25373ff39675ca8491"
+    },
+    {
+      "path": "drt_system/data/derived/20261111T083137823564Z_e50eccdc17dd44558627c6274f2f2885/vworld_routing_results.json",
+      "in_base_main": true,
+      "bytes": 13138,
+      "sha256": "e4d1d8562e1153b32faab5520c184e7c0a686aca363fa07a597331dc7ac75489"
+    },
+    {
+      "path": "drt_system/data/drt_stops.csv",
+      "in_base_main": true,
+      "bytes": 590,
+      "sha256": "b34d5ff5d5b7231173293c03fadbefefa8a9e11cd543b08efb8613e6481d0777"
+    },
+    {
+      "path": "drt_system/data/osrm_cache.json",
+      "in_base_main": true,
+      "bytes": 23706,
+      "sha256": "29355fe24b1085c6c87274e600658984bc99f53945cb06049d5baede21ffdfb1"
+    },
+    {
+      "path": "drt_system/data/reservations.csv",
+      "in_base_main": true,
+      "bytes": 488,
+      "sha256": "f9221f6ec6e4fe07d7638e8fa48eb68807c7321d67607d5f37340f04c974c838"
+    },
+    {
+      "path": "sewook31/data/drt_stops.csv",
+      "in_base_main": true,
+      "bytes": 590,
+      "sha256": "b34d5ff5d5b7231173293c03fadbefefa8a9e11cd543b08efb8613e6481d0777"
+    },
+    {
+      "path": "sewook31/data/osrm_cache.json",
+      "in_base_main": true,
+      "bytes": 13898,
+      "sha256": "01976365c30071b90c84d56161d4098c0a2606a6c3a11a112ff7abaf3830d9e9"
+    },
+    {
+      "path": "sewook31/data/reservations.csv",
+      "in_base_main": true,
+      "bytes": 423,
+      "sha256": "8aa5ee40efb9ef64538db160e8c732b06e679a12d5331912da39c66e6bfadffe"
+    }
+  ]
+}

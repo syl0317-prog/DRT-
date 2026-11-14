@@ -1,5 +1,2 @@
-streamlit>=1.40
-folium>=0.17
-streamlit-folium>=0.23
-pandas>=2.0
-requests>=2.31
+# Install the same tested environment as the project root.
+-r ../requirements.txt

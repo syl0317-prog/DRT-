@@ -1,3 +1,18 @@
+## 통합 웹 팀원 실행 (Python 3.12)
+
+별도 데이터 수집이나 API 키 없이 실행하려면 [팀원 실행 안내](docs/team_quickstart.md)를 따르세요. 최초 실행 전 예약 없는 R02 초기 데이터를 생성합니다. 기존 SQLite는 보존합니다.
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe scripts/init_team_runtime.py
+.\.venv\Scripts\python.exe -m streamlit run sewook31/app.py
+```
+
+[실행 환경·데이터 점검 결과](docs/team_runtime_audit.md)
+
+---
+
 
 
 # 위례신도시 대중교통 사각지대 분석 및 수요응답형 버스(DRT) 운영 최적화
@@ -63,7 +78,7 @@
 ## 개발 환경 설정
 
 ```bash
-# 1. 가상환경 생성 (Python 3.11+ 권장)
+# 1. 가상환경 생성 (Python 3.12 권장)
 python -m venv venv
 
 # 2. 가상환경 활성화 (Windows PowerShell)
