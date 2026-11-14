@@ -17,8 +17,9 @@ def show_punctuality():
     if not limits[0] <= limits[1] <= limits[2]:
         st.error('최소 ≤ 최빈 ≤ 최대를 만족해야 합니다.')
         return
-    st.caption('예정 픽업=트램 출발−(OSRM+정차+여유). 합승 우회는 추가 지연으로 비교합니다. 정시성 분석은 기준 GeoJSON 12개 중 직선 최근접역을 사용합니다. 기존 예약의 환승거점 2개와 별도입니다.')
-    frame = generate(limits, allow_network=st.checkbox('캐시 없는 경로 OSRM 조회', value=False))
+    st.caption('예정 픽업=트램 출발−(OSRM+정차+여유). 기본 분석은 8개 정류장의 고정 목적지를 사용합니다. 실제 도로 시간이 없으면 산출 불가입니다.')
+    research_nearest=st.checkbox('기존 연구 방식: 공식 12개 역 중 최근접역 비교',value=False)
+    frame = generate(limits, allow_network=st.checkbox('캐시 없는 경로 OSRM 조회', value=False),destination_mode='nearest' if research_nearest else 'fixed')
     if frame.empty:
         st.warning('정류장 missing')
         return
@@ -40,8 +41,8 @@ def show_punctuality():
         st.caption('빨강: 놓칠 확률 / 파랑: 평균 대기 / 회색 점선: 무작위 도착 H/2')
     st.dataframe(selected, hide_index=True)
     if st.button('현재 전체 조건 결과 CSV 저장'):
-        save_results(frame)
-        st.success('data/processed/punctuality_results.csv 저장')
+        path=save_results(frame)
+        st.success(f'새 분석 스냅샷 저장: {path.name}')
     st.caption(f'실측 {n}건 반영' if status == 'sourced' else '가정 기반 시뮬레이션이며 실측 입력 후 재계산됨')
 
 def show_admin():
@@ -123,12 +124,14 @@ def input_versions():
     return {str(p.relative_to(PROJECT_DIR)): hashlib.sha256(p.read_bytes()).hexdigest() for p in names if p.exists()}
 
 
-def generate(k, allow_network=False):
-    inputs = dict(k=k, allow_network=allow_network, sources=input_versions())
+def generate(k, allow_network=False, destination_mode='fixed'):
+    from modules.independent_routes import RouteStore
+    state=RouteStore().snapshot()
+    inputs = dict(k=k, allow_network=allow_network, destination_mode=destination_mode, registry_revision=state['revision'], registry_state=state, sources=input_versions())
     saved = matching_result('legacy_punctuality_execution', inputs)
     if saved:
         return saved['value'].copy()
-    value = original_generate(k, allow_network=allow_network)
+    value = original_generate(k, allow_network=allow_network, destination_mode=destination_mode)
     # Network may have added derived cache entries: identify the actual source snapshot.
     inputs['sources'] = input_versions()
     remember_result('legacy_punctuality_execution', inputs, value, 'Existing triangular-factor model; virtual timetable; not measured')

@@ -10,7 +10,7 @@ from modules.settings import BASE_DIR
 CACHE_FILE = BASE_DIR / 'data' / 'osrm_cache.json'
 LOCK = threading.Lock()
 
-def calculate_road_route(coordinates, allow_network=True):
+def calculate_road_route(coordinates, allow_network=False):
     if len(coordinates) < 2:
         return None
     try:
@@ -26,6 +26,10 @@ def calculate_road_route(coordinates, allow_network=True):
             cache = {}
         if key in cache:
             return {**cache[key], 'cache_hit': True}
+        # Archived directional cache used lat,lon at six decimals.
+        legacy_key = ';'.join(f'{float(lat):.6f},{float(lon):.6f}' for lat, lon in coordinates)
+        if legacy_key in cache:
+            return {**cache[legacy_key], 'cache_hit': True, 'source': 'OSRM archived driving model; not observed'}
     if not allow_network:
         return None
     try:
@@ -41,15 +45,8 @@ def calculate_road_route(coordinates, allow_network=True):
             'source': 'OSRM driving model; not observed', 'retrieved_at': datetime.now(timezone.utc).isoformat()}
         if not (math.isfinite(result['duration_min']) and result['duration_min'] > 0 and result['distance_km'] >= 0):
             return None
-        with LOCK:
-            try:
-                cache = json.loads(CACHE_FILE.read_text(encoding='utf-8'))
-            except (OSError, ValueError):
-                cache = {}
-            cache[key] = result
-            temp = CACHE_FILE.with_suffix('.tmp')
-            temp.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding='utf-8')
-            os.replace(temp, CACHE_FILE)
+        # Source cache is immutable. Explicit network results are returned to
+        # the caller; registry/export workflows may save a separate snapshot.
         return {**result, 'cache_hit': False}
     except (requests.RequestException, ValueError, KeyError, TypeError, OSError):
         return None

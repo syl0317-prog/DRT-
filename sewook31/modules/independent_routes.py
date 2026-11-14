@@ -130,7 +130,7 @@ class RouteStore:
     def snapshot(self):
         if not self.path.exists():
             return dict(empty_state(), revision=0)
-        with closing(sqlite3.connect(self.path, timeout=5)) as connection:
+        with closing(sqlite3.connect(self.path.resolve().as_uri()+"?mode=ro", uri=True, timeout=5)) as connection:
             if not connection.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='registry'").fetchone():
                 return dict(empty_state(), revision=0)
             row = connection.execute("SELECT revision,payload FROM registry WHERE singleton=1").fetchone()
@@ -241,6 +241,8 @@ class RouteStore:
             self.invalidate(state, route)
 
     def configure(self, route_id, stop_order, transfer_stop_id, vehicles, expected_revision):
+        if route_id == 'R02' and transfer_stop_id not in (None, 'T02'):
+            raise RouteError('R02의 고정 목적지는 T02 위례역사공원역입니다.')
         with self.edit(expected_revision) as state:
             route = self.route(state, route_id)
             self.editable(state, route_id)
@@ -316,6 +318,8 @@ class RouteStore:
     def set_active(self, route_id, active, expected_revision):
         with self.edit(expected_revision) as state:
             route = self.route(state, route_id)
+            if active and route_id == 'R02' and route.get('transfer_stop_id') != 'T02':
+                raise RouteError('R02 활성화 전 T02 연결 및 전체 구간 경로 계산이 필요합니다.')
             stops = [s for s in state["stops"] if s["route_id"] == route_id]
             if active and (len(stops)!=4 or {s["position"] for s in stops}!={1,2,3,4} or
                            route["calculation_status"]!="calculated" or not route["vehicles"]):

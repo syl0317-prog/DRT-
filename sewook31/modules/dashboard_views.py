@@ -25,26 +25,16 @@ def reservation_snapshot(reservations, configured_vehicles):
 
 def overview_map(stops, route_state=None, legacy_preview=None):
     """Station overview with web basemap; no editing or route requests."""
-    valid = stops.copy()
-    for key in ("latitude", "longitude"):
-        valid[key] = pd.to_numeric(valid[key], errors="coerce")
-    valid = valid.loc[valid.latitude.between(-90, 90) & valid.longitude.between(-180, 180)]
-    if valid.empty:
-        return None
-    result = background_map(location=[float(valid.latitude.mean()), float(valid.longitude.mean())],
-                            zoom_start=14, control_scale=True)
-    import html
-    for _, row in valid.iterrows():
-        folium.CircleMarker([row.latitude, row.longitude], radius=7,
-                            color="#e17a18" if row.stop_type == "tram" else "#2474d2",
-                            fill=True, fill_opacity=.85,
-                            tooltip=html.escape(f"{row.stop_name} ({row.stop_id})")).add_to(result)
-    bounds_points = [[valid.latitude.min(), valid.longitude.min()], [valid.latitude.max(), valid.longitude.max()]]
-    if route_state is not None:
-        from modules.independent_route_views import overlay_routes
-        overlay_routes(result, route_state, show_original=False, legacy_preview=legacy_preview)
-        bounds_points.extend([[s["latitude"],s["longitude"]] for s in route_state["stops"]])
-    result.fit_bounds(bounds_points, padding=(30, 30), max_zoom=15)
+    from modules.combined_routes import route_layers, add_layers
+    from modules.independent_routes import RouteStore
+    result = background_map([37.474, 127.143], zoom_start=14, layer_control=False)
+    store = RouteStore()
+    routes = route_layers(store.original_loader(), route_state or store.snapshot())
+    add_layers(result, routes, ["R01", "R02"])
+    points = [[float(s["latitude"]), float(s["longitude"])] for r in routes for s in r["stops"]]
+    if points:
+        result.fit_bounds(points, padding=(30, 30))
+    folium.LayerControl(collapsed=False).add_to(result)
     return result.get_root().render()
 
 
@@ -68,61 +58,11 @@ def navigate(menu):
 
 
 def show_dashboard():
-    st.header("통합 대시보드")
-    st.caption("저장된 운영 데이터와 연구용 예측을 구분해 확인합니다.")
-    reservations = load_reservations()
-    from modules.unified_reservations import UnifiedReservations
-    from modules.unified_reservation_views import records_frame
-    try:
-        all_records=UnifiedReservations().list_records()
-        unified_frame=records_frame(all_records)
-    except (OSError,ValueError,sqlite3.Error) as error:
-        st.error(f"통합 예약 집계를 읽지 못했습니다: {error}")
-        return
-    count = st.session_state.get("vehicle_count", setting("vehicle_count"))
-    snapshot = reservation_snapshot(unified_frame, count)
-    from modules.independent_routes import RouteStore, RouteError
-    try:
-        route_state = RouteStore().snapshot()
-    except (OSError, sqlite3.Error, RouteError) as error:
-        route_state = None
-        st.error(f"별도 신규 노선 등록부를 읽지 못했습니다: {error}")
-    cols = st.columns(4)
-    for col, label, value in zip(cols, ["통합 유효 접수", "통합 접수 승객", "설정 차량 수", "예약 배정 차량 수"],
-                                 [snapshot["active_count"], snapshot["passengers"] if snapshot["passengers"] is not None else "확인 필요", count, snapshot["assigned_vehicles"]]):
-        col.metric(label, value)
-    review_count=int(unified_frame.status.eq("배차 검토 필요").sum())
-    st.caption(f"기존 CSV·R02·통합 요청을 중복 없이 집계합니다. 배차 검토 필요 {review_count}건을 포함한 접수 건수이며 배차 완료 실적이 아닙니다. 날짜 미기록 예약이 있어 오늘 예약으로 해석하지 않습니다.")
-    st.divider()
-    st.subheader("운영 현황 · 저장 데이터")
-    left, right = st.columns([1.1, 1])
-    with left:
-        st.markdown("**정류장 및 환승 거점 개요**")
-        try:
-            stops = pd.read_csv(stops_path(), dtype={"stop_id": str}, encoding="utf-8-sig")
-            rendered = overview_map(stops, route_state, st.session_state.get("legacy_map_preview"))
-            if rendered:
-                st.iframe(rendered, height=350)
-            else:
-                st.info("표시 가능한 정류장 좌표가 없습니다.")
-            st.caption(f"DRT 정류장 {int(stops.stop_type.eq('drt').sum())}개 · 환승 거점 {int(stops.stop_type.eq('tram').sum())}개 · 후보 좌표, 현장 검증 필요")
-        except (OSError, ValueError, KeyError) as error:
-            st.warning(f"정류장 개요를 읽지 못했습니다: {error}")
-    with right:
-        st.markdown("**예약 현황**")
-        active = snapshot["active"]
-        if active.empty:
-            st.info("유효 예약이 없습니다.")
-        else:
-            table=active[["public_id","boarding_stop","destination_stop","requested_at","passengers","status","route_id","vehicle_id"]].fillna("미기록/미배정")
-            st.dataframe(table.rename(columns={"public_id":"예약 ID","boarding_stop":"탑승","destination_stop":"하차","requested_at":"시각(저장 시간대)","passengers":"인원","status":"상태","route_id":"내부 경로","vehicle_id":"차량"}),hide_index=True)
-        st.button("예약 관리로 이동", on_click=navigate, args=("예약 관리",))
-        st.button("배차·경로로 이동", on_click=navigate, args=("배차·경로",))
-        st.caption("배차 완료 건수·실제 운행시간은 기록이 없어 집계하지 않습니다.")
+    from modules.dashboard_ui import show_operating_dashboard
+    show_operating_dashboard(_show_research_monitoring)
 
-    if route_state is not None:
-        from modules.independent_route_views import show_route_summary
-        show_route_summary(route_state, reservations, all_records)
+
+def _show_research_monitoring(count,snapshot):
     st.divider()
     st.subheader("분석 및 모니터링")
     run = matching_run()
@@ -151,7 +91,7 @@ def show_dashboard():
                 st.json(research["metadata"])
         else:
             st.info("이번 세션에서 확인된 실행 결과가 없습니다. 정시율을 임의로 표시하지 않습니다.")
-        st.button("정시·환승 분석으로 이동", on_click=navigate, args=("정시·환승 분석",))
+        st.button("시뮬레이션 및 정시성 분석으로 이동", on_click=navigate, args=("시뮬레이션 및 정시성 분석",))
 
     st.markdown("**최근 시뮬레이션 결과 · 운영 실적과 구분**")
     for key, title in [("shared_execution", "예약 기반 합승"), ("strategy_execution", "운영전략 비교"),

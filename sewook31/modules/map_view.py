@@ -25,7 +25,7 @@ def load_vworld_roads():
     with open(VWORLD_ROADS_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
-def show_drt_map():
+def show_legacy_drt_map():
     st.subheader("위례동 DRT 정류장 및 노선 관리")
 
     st.write("현재 실행 중인 파일:", __file__)
@@ -249,3 +249,8 @@ def show_drt_map():
         stops,
         use_container_width=True
     )
+
+
+def show_drt_map():
+    from modules.route_views import show_drt_map as common_view
+    common_view()

@@ -1,0 +1,35 @@
+{
+  "base_commit": "038500d",
+  "branch": "fix/integrated-drt-operations",
+  "runtime": "Windows / Python 3.12 / Streamlit",
+  "main_suite": {
+    "command": ".\\.venv\\Scripts\\python.exe -m unittest discover -s sewook31/tests -v",
+    "tests_run": 14,
+    "failures": 0,
+    "errors": 0,
+    "elapsed_seconds": 154.360,
+    "writes": "temporary CSV copies and SQLite backup copies only"
+  },
+  "data_preservation": {
+    "sha256_compared_files": 85,
+    "changed_or_missing": []
+  },
+  "inventory_files": 97,
+  "streamlit_server": {
+    "address": "127.0.0.1:8517",
+    "startup": "passed",
+    "health": "ok",
+    "test_server_stopped": true
+  },
+  "browser_visual_verification": "not completed: computer-use could not confidently determine Windows browser URL",
+  "sibling_drt_system_full_suite": "not run; primary app suite only",
+  "git_diff_check": "passed",
+  "commit_created": false,
+  "push_performed": false,
+  "known_limits": [
+    "R02 stored transfer_stop_id remains null; V08-to-T02 road segment is unavailable",
+    "R02 inactive and unassigned requests remain under dispatch review",
+    "R01 date-based requests require operational fleet and service policy before automatic assignment",
+    "No observed running-vehicle count, wait-time or punctuality KPI is available"
+  ]
+}

@@ -18,14 +18,12 @@ def records_frame(records):
         "tram_departure","passengers","status","route_id","vehicle_id","dispatch_status","source","simulation_adapter"])
 
 
-def show_unified_reservations():
-    streamlit.header("위례 DRT 통합 예약")
-    streamlit.caption("노선과 정류장을 선택하세요. 배차 조건 미충족 시 배차 검토 필요로 접수합니다.")
+def show_booking_form():
+    streamlit.subheader("예약 접수")
+    streamlit.caption("승차 정류장 → 노선·목적지 자동 지정 · 접수와 배차 확정은 구분됩니다.")
     service=UnifiedReservations()
     try:
         catalog=service.catalog()
-        streamlit.caption(f"저장된 DRT 정류장 {len(catalog['boarding'])}개 · 트램 거점 {len(catalog['trams'])}개")
-        route_id=st.selectbox("이용 노선",["R01","R02"],key="ua_route")
         stops=catalog["boarding"]
         lookup={s["stop_id"]:s for s in stops+catalog["trams"]}
         ids=[s["stop_id"] for s in stops]
@@ -37,21 +35,34 @@ def show_unified_reservations():
         left,right=streamlit.columns(2)
         with left:
             origin=st.selectbox("탑승 정류장",ids,format_func=label,key="ua_origin")
+        from modules.fixed_routes import resolve_stop
+        route_id,destination=resolve_stop(service.routes.original_loader(),service.routes.snapshot(),origin)
         with right:
-            include_tram=st.checkbox("트램 환승 거점도 하차 목록에 표시",key="ua_include_tram")
-            destinations=ids+([s["stop_id"] for s in catalog["trams"]] if include_tram else [])
-            destination=st.selectbox("하차 정류장",destinations,index=1,format_func=label,key="ua_destination")
-        streamlit.caption("R01: D01~D04 및 트램 거점. R02: 저장된 V05~V08 방문 순서 및 연결된 거점. 다른 노선 조합은 저장 시 거절합니다.")
+            streamlit.info(f"{route_id} → {label(destination)} · 고정 목적지")
+        if route_id == "R02":
+            route=next((r for r in service.routes.snapshot()["routes"] if r["route_id"]=="R02"),None)
+            if not route or not route["active"] or not route["vehicles"] or route.get("transfer_stop_id") != destination:
+                streamlit.warning("R02 경로·운행 조건 확인 전까지 배차 대기로 접수합니다.")
         future=datetime.now(KST)+timedelta(hours=1)
         left,right=streamlit.columns(2)
         with left:
             day=st.date_input("탑승 희망 날짜",future.date(),key="ua_day")
         with right:
             clock=st.time_input("탑승 희망 시간 (한국시간)",future.time().replace(second=0,microsecond=0,tzinfo=None),key="ua_time")
-        passengers=st.number_input("탑승 인원",1,100,1,key="ua_passengers")
-        online=st.checkbox("필요할 때 OSRM 온라인 경로 확인 허용",value=False,key="ua_online")
-        streamlit.caption("경로 미확인·노선 간 이동·미지원 배차는 검토 상태입니다. 연구용 예정 운행편 배정은 실제 운행 확정이 아닙니다.")
+        passenger_col,run_col=streamlit.columns([.65,1.35])
+        with passenger_col:
+            passengers=st.number_input("탑승 인원",1,100,1,key="ua_passengers")
+        online=False
         request_time=datetime.combine(day,clock,KST)
+        from modules.fixed_dispatch import boarding_at
+        runs=[r for r in service.operations()['runs'] if r['route_id']==route_id and r['active'] and datetime.fromisoformat(r['departure'])>datetime.now(KST)]
+        run_lookup={r['run_id']:r for r in runs}
+        with run_col:
+            run_id=st.selectbox('등록 운행편',[None]+list(run_lookup),
+                format_func=lambda k:'미선택 · 검토 접수' if k is None else f"{run_lookup[k]['vehicle_id']} · {boarding_at(run_lookup[k],origin).astimezone(KST):%m/%d %H:%M} 승차"+(' · 시험' if run_lookup[k]['test_only'] else ''),key='ua_run')
+        if run_id:
+            request_time=boarding_at(run_lookup[run_id],origin).astimezone(KST)
+            streamlit.info(f'선택 운행편의 {origin} 예정 승차 시각 {request_time:%Y-%m-%d %H:%M:%S}을 적용합니다. 정류장 방문 순서는 고정됩니다.')
         tram_departure=None
         if destination in {s["stop_id"] for s in catalog["trams"]}:
             enabled=st.checkbox("가상 트램 출발 목표 시각 입력",key="ua_tram_enabled")
@@ -61,63 +72,35 @@ def show_unified_reservations():
                 target_clock=st.time_input("가상 트램 출발시간",default.time().replace(tzinfo=None),key="ua_tram_time")
                 tram_departure=datetime.combine(target_day,target_clock,KST)
                 streamlit.caption("사용자가 정한 가상 시각이며 실제 시간표가 아닙니다.")
-        inputs=[route_id,origin,destination,request_time.isoformat(),int(passengers),tram_departure.isoformat() if tram_departure else None]
+        inputs=[route_id,origin,destination,request_time.isoformat(),int(passengers),tram_departure.isoformat() if tram_departure else None,run_id]
         fingerprint=signature(inputs)
         tokens=streamlit.session_state.setdefault("ua_request_tokens",{})
-        token=tokens.setdefault(fingerprint,uuid4().hex)
+        token=tokens.setdefault(fingerprint,'ui:'+fingerprint)
         if streamlit.button("예약 신청",key="ua_submit",type="primary"):
             try:
-                record=service.create(origin,destination,request_time,int(passengers),token,allow_network=online,tram_departure=tram_departure,route_id=route_id)
+                record=service.create(origin,destination,request_time,int(passengers),token,allow_network=online,tram_departure=tram_departure,route_id=route_id,run_id=run_id)
                 streamlit.session_state["ua_last_result"]=record
-                streamlit.success(f"{record['status']} · {record['public_id']}")
+                from modules.reservation_audit import audit_records
+                audited=audit_records([record],service.routes.original_loader(),service.routes.snapshot())[0]
+                streamlit.success(f"{audited['display_stage']} · 저장 완료")
+                streamlit.info(audited['review_reason'])
             except (RouteError,OSError,sqlite3.Error,ValueError) as error:
                 streamlit.error(str(error))
         last=streamlit.session_state.get("ua_last_result")
         if last:
             with streamlit.expander("최근 접수 결과 및 배차 판정"):
                 streamlit.write({k:last.get(k) for k in ("public_id","status","route_id","vehicle_id","dispatch_status","requested_at")})
-        streamlit.caption("동일 입력을 다시 누르면 같은 요청으로 처리해 중복 저장하지 않습니다.")
-        if streamlit.button("동일 조건으로 별도 추가 요청 준비",key="ua_new_request"):
-            tokens[fingerprint]=uuid4().hex
-            streamlit.info("새 요청 키가 준비됐습니다. 예약 신청을 눌러 별도로 접수하세요.")
+        streamlit.caption("동일 조건 재신청은 중복 저장하지 않습니다.")
+        with streamlit.expander('동일 조건으로 별도 추가 신청'):
+            if streamlit.button("새 요청 준비",key="ua_new_request"):
+                tokens[fingerprint]=uuid4().hex
+                streamlit.info("새 요청이 준비됐습니다. 예약 신청을 눌러 접수하세요.")
     except (RouteError,OSError,sqlite3.Error,ValueError,KeyError) as error:
         streamlit.error(f"정류장 또는 예약 입력을 확인하세요: {error}")
 
-    streamlit.divider()
-    streamlit.subheader("통합 예약 현황")
-    try:
-        records=service.list_records()
-        names={s["stop_id"]:s["name"] for s in service.catalog()["boarding"]+service.catalog()["trams"]}
-        options=["전체","예약완료","배차 검토 필요","예약취소"]
-        selected=st.selectbox("예약 상태 필터",options,key="ua_filter")
-        selected_route=st.selectbox("예약 노선 필터",["전체","R01","R02"],key="ua_route_filter")
-        rows=[]
-        filtered_records=[]
-        for record in records:
-            if selected_route!="전체" and record["route_id"]!=selected_route:
-                continue
-            if selected!="전체" and record["status"]!=selected:
-                continue
-            filtered_records.append(record)
-            instant=datetime.fromisoformat(record["requested_at"]).astimezone(KST) if record["requested_at"] else None
-            rows.append({"예약 ID":record["public_id"],"탑승 정류장":names.get(record["boarding_stop"],record["boarding_stop"]),
-                "하차 정류장":names.get(record["destination_stop"],record["destination_stop"]),
-                "탑승 날짜":instant.date().isoformat() if instant else "미기록",
-                "탑승 시간":instant.strftime("%H:%M") if instant else "미기록",
-                "시간 의미":record["time_basis"],"탑승 인원":record["passengers"],"예약 상태":record["status"],
-                "운행 경로":record["route_id"],"차량":record.get("vehicle_id") or "미배정",
-                "배차 판정":record["dispatch_status"],"기존 가상 트램 시각":record.get("tram_departure") or "해당 없음"})
-        streamlit.dataframe(pd.DataFrame(rows),hide_index=True)
-        streamlit.caption("과거 CSV에 없는 탑승 날짜·희망 시간은 미기록으로 표시합니다. CSV 취소는 원본 보존용 취소 기록에 저장하며 기존 좌석 계산에도 반영합니다.")
-        active=[r for r in filtered_records if r["status"] in ACTIVE]
-        if active:
-            public_id=st.selectbox("취소할 예약",[r["public_id"] for r in active],key="ua_cancel_id")
-            if streamlit.button("선택 예약 취소",key="ua_cancel"):
-                service.cancel(public_id)
-                streamlit.session_state.pop("ua_last_result",None)
-                streamlit.rerun()
-    except (RouteError,OSError,sqlite3.Error,ValueError,KeyError) as error:
-        streamlit.error(f"통합 조회/취소 실패: {error}")
+def show_reservation_list():
+    from modules.reservation_list_ui import show_booking_list
+    show_booking_list(UnifiedReservations())
 
 
 def show_simulation_compatibility():
@@ -140,3 +123,8 @@ def show_simulation_compatibility():
         streamlit.caption("아래 기존 합승 계산은 호환되는 기존 CSV 예약만 사용하며 취소 기록을 반영합니다. 날짜 기반 신규 요청을 날짜 없는 기존 그룹에 섞지 않습니다.")
     except (RouteError,OSError,sqlite3.Error,ValueError) as error:
         streamlit.error(f"적용 가능 예약 확인 실패: {error}")
+
+
+def show_unified_reservations():
+    show_booking_form()
+    show_reservation_list()

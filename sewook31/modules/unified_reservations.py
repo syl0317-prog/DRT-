@@ -37,7 +37,7 @@ def csv_cancellations(database=None):
     path=Path(database or DATABASE)
     if not path.exists():
         return set()
-    with closing(sqlite3.connect(path,timeout=5)) as connection:
+    with closing(sqlite3.connect(path.resolve().as_uri()+"?mode=ro",uri=True,timeout=5)) as connection:
         if not connection.execute("SELECT name FROM sqlite_master WHERE name='csv_cancellations'").fetchone():
             return set()
         return {row[0] for row in connection.execute("SELECT public_id FROM csv_cancellations")}
@@ -60,7 +60,7 @@ def route_unified_bookings(route_id,registry_path):
     if not path.exists():
         return []
     result=[]
-    with closing(sqlite3.connect(path,timeout=5)) as connection:
+    with closing(sqlite3.connect(path.resolve().as_uri()+"?mode=ro",uri=True,timeout=5)) as connection:
         for (payload,) in connection.execute("SELECT payload FROM requests"):
             row=json.loads(payload)
             if row.get("registry_path")==str(Path(registry_path).resolve()) and row["route_id"]==route_id and row["status"]=="예약완료":
@@ -109,7 +109,7 @@ class UnifiedReservations:
         boarding,trams=[],[]
         for row in self.routes.original_loader():
             stop=dict(stop_id=row["stop_id"],name=row["stop_name"],latitude=float(row["latitude"]),
-                      longitude=float(row["longitude"]),source="legacy",route_id=None)
+                      longitude=float(row["longitude"]),source="legacy",route_id='R01' if row['stop_type']=='drt' else None)
             (trams if row["stop_type"]=="tram" else boarding).append(stop)
         for row in sorted(state["stops"],key=lambda s:s["position"]):
             boarding.append(dict(stop_id=row["stop_id"],name=row["name"],latitude=float(row["latitude"]),
@@ -120,6 +120,10 @@ class UnifiedReservations:
         for s in boarding+trams:
             if not math.isfinite(s["latitude"]) or not math.isfinite(s["longitude"]) or not -90<=s["latitude"]<=90 or not -180<=s["longitude"]<=180:
                 raise RouteError("저장된 정류장 좌표가 유효하지 않습니다.")
+        from modules.fixed_routes import resolve_stop
+        originals=self.routes.original_loader()
+        for stop in boarding:
+            stop['route_id'],stop['destination_stop_id']=resolve_stop(originals,state,stop['stop_id'])
         return dict(boarding=boarding,trams=trams)
 
     def _csv_rows(self):
@@ -131,8 +135,15 @@ class UnifiedReservations:
     def own_records(self):
         if not self.path.exists():
             return []
-        with closing(sqlite3.connect(self.path,timeout=5)) as connection:
+        with closing(sqlite3.connect(self.path.resolve().as_uri()+"?mode=ro",uri=True,timeout=5)) as connection:
             return [json.loads(row[0]) for row in connection.execute("SELECT payload FROM requests ORDER BY rowid")]
+
+    def operations(self):
+        from modules.fixed_dispatch import read_rows
+        if not self.path.exists():
+            return dict(vehicles=[],runs=[])
+        with closing(sqlite3.connect(self.path.resolve().as_uri()+'?mode=ro',uri=True)) as connection:
+            return dict(vehicles=read_rows(connection,'fixed_vehicles'),runs=read_rows(connection,'fixed_runs'))
 
     def list_records(self):
         state=self.routes.snapshot(); cancelled=csv_cancellations(self.path); result=[]
@@ -189,7 +200,7 @@ class UnifiedReservations:
         return None,None
 
     def create(self,origin,destination,requested_at,passengers,request_key,allow_network=False,
-               evidence_provider=None,reference_now=None,tram_departure=None,route_id=None):
+               evidence_provider=None,reference_now=None,tram_departure=None,route_id=None,run_id=None):
         if origin==destination:
             raise RouteError("탑승 정류장과 하차 정류장은 서로 달라야 합니다.")
         if not isinstance(requested_at,datetime) or requested_at.tzinfo is None:
@@ -206,33 +217,23 @@ class UnifiedReservations:
         stops={s["stop_id"]:s for s in catalog["boarding"]+catalog["trams"]}
         if origin not in {s["stop_id"] for s in catalog["boarding"]} or destination not in stops:
             raise RouteError("현재 저장된 정류장을 선택하세요.")
-        initial_route,order=self._ordered_route(initial,origin,destination)
-        if route_id is not None:
-            if route_id not in ("R01", "R02"):
-                raise RouteError("R01 또는 R02 노선을 선택하세요.")
-            if route_id == "R01":
-                if any(stops[k]["source"] != "legacy" for k in (origin, destination)):
-                    raise RouteError("R01에서는 기존 CSV 정류장만 이용할 수 있습니다.")
-                initial_route, order = None, None
-            else:
-                if initial_route is None or initial_route["route_id"] != route_id:
-                    raise RouteError("R02 방문 순서의 정류장을 선택하세요. 트램 거점은 R02에 연결된 경우만 이용할 수 있습니다.")
-        route_ids={stops[k]["route_id"] for k in (origin,destination)}
-        cap=max((v["capacity"] for v in initial_route["vehicles"]),default=int(setting("vehicle_capacity"))) if initial_route else int(setting("vehicle_capacity"))
-        if passengers>cap:
-            raise RouteError("탑승 인원이 해당 차량 정원을 초과합니다.")
-        segments=[s for s in initial["segments"] if initial_route and s["route_id"]==initial_route["route_id"]]
-        if initial_route and initial_route["calculation_status"]=="calculated" and len(segments)==len(order)-1:
-            evidence=dict(status="verified_model",source="저장된 R02 OSRM 구간 · 실측 아님")
-        else:
-            evidence=(evidence_provider or path_evidence)([[stops[k]["latitude"],stops[k]["longitude"]] for k in (origin,destination)],allow_network=allow_network)
-        if evidence["status"]=="no_route":
-            raise RouteError(evidence.get("reason","이동 가능한 경로가 없습니다."))
+        from modules.fixed_routes import resolve_stop
+        fixed_route, fixed_destination = resolve_stop(self.routes.original_loader(), initial, origin)
+        if destination != fixed_destination or route_id not in (None, fixed_route):
+            raise RouteError(f"{origin}은 {fixed_route} 소속이며 목적지는 {fixed_destination}로 고정됩니다.")
+        route_id = fixed_route
+        from modules.sequential_routes import route_plans
+        plan=next(p for p in route_plans(self.routes.original_loader(),initial) if p['route_id']==route_id)
+        if passengers>100:
+            raise RouteError('한 요청의 지원 인원은 최대 100명입니다. 실제 배정은 등록 차량 정원 내에서만 가능합니다.')
+        evidence=dict(status='verified_model' if plan['road_complete'] else 'unverified',
+            source='fixed sequential route; archived road model; stop access requires operator evidence',
+            route_order=plan['order'],route_signature=plan['signature'])
         if self.routes.snapshot()["revision"]!=initial["revision"]:
             raise RouteError("경로 확인 중 등록부가 변경됐습니다. 다시 신청하세요.")
         request_time=requested_at.astimezone(timezone.utc).isoformat()
         tram_time=tram_departure.astimezone(timezone.utc).isoformat() if tram_departure else None
-        fingerprint=digest([origin,destination,request_time,passengers,tram_time] + ([route_id] if route_id is not None else []))
+        fingerprint=digest([origin,destination,request_time,passengers,tram_time,route_id,run_id])
         with self.transaction() as (connection,state,attached):
             previous=connection.execute("SELECT signature,payload FROM requests WHERE request_key=?",(str(request_key),)).fetchone()
             if previous:
@@ -246,28 +247,53 @@ class UnifiedReservations:
             record=dict(public_id="UNI:"+uuid4().hex.upper(),raw_id=None,source="unified_sqlite",
                 boarding_stop=origin,destination_stop=destination,requested_at=request_time,time_basis="사용자 입력 희망 탑승시각",
                 tram_departure=tram_time,passengers=passengers,status="배차 검토 필요",vehicle_id=None,
-                route_id=route["route_id"] if route else ("R01" if stops[origin]["source"]==stops[destination]["source"]=="legacy" else "노선 간 이동 / 개별 검토"),
+                route_id=route_id,
                 dispatch_status="현재 배차 엔진이 이 조합·날짜 기반 운행을 자동 배차하지 않음",
                 simulation_adapter="excluded",research_only=True,path_evidence=evidence,created_at=now(),registry_path=str(self.routes.path.resolve()),
                 stop_snapshot={k:copy.deepcopy(stops[k]) for k in (origin,destination)},registry_revision=initial["revision"])
-            if evidence["status"]!="verified_model":
-                record["dispatch_status"]="이동 경로 미확인; 온라인/현장 및 배차 검토 필요"
-            elif route and route["active"] and route["calculation_status"]=="calculated" and route["vehicles"]:
-                cancelled={row[0] for row in connection.execute("SELECT public_id FROM csv_cancellations")}
-                uncertain_vehicles={row["vehicle_id"] for row in self._csv_rows() if row["status"]=="예약완료" and csv_public_id(row,self.legacy_path) not in cancelled}
-                self._assign_r02(connection,state,record,route,order,requested_at,reference_now or datetime.now(timezone.utc),uncertain_vehicles)
-                if record["status"]=="예약완료" and tram_departure:
-                    booking=record["booking_snapshot"]
-                    plan=booking_schedule(booking,booking["dwell_assumption_min"],float(setting("transfer_buffer")))
-                    if datetime.fromisoformat(plan["ready_at"])>tram_departure:
-                        record.update(status="배차 검토 필요",vehicle_id=None,simulation_adapter="excluded",
-                            dispatch_status="입력 가상 트램 출발 전 환승 준비가 어려워 배차 검토 필요")
-                        record.pop("booking_snapshot",None)
-            elif route:
-                record["dispatch_status"]="R02 비활성 또는 별도 차량 미지정; 배차 검토 필요"
-            if record["route_id"] == "R01":
-                record["dispatch_status"] = "R01 날짜 기반 배차 검토 필요; 날짜 없는 기존 배정과 자동 병합하지 않음"
+            from modules.fixed_dispatch import assign
+            record['requested_run_id']=run_id
+            if run_id:
+                record['time_basis']='선택한 고정 운행편의 정류장별 예정 승차시각'
+            assign(self,connection,state,record,run_id,reference_now)
             connection.execute("INSERT INTO requests VALUES(?,?,?,?)",(record["public_id"],str(request_key),fingerprint,json.dumps(record,ensure_ascii=False,allow_nan=False)))
+            return record
+
+    @staticmethod
+    def complete_segments(segments, order):
+        ordered = sorted(segments, key=lambda s:s['position'])
+        return len(ordered) == len(order)-1 and all(
+            s['origin'] == a and s['destination'] == b and len(s.get('coordinates', [])) >= 2
+            and math.isfinite(float(s['duration_min'])) and float(s['duration_min']) > 0
+            for s,a,b in zip(ordered, order, order[1:]))
+
+    def retry_dispatch(self, public_id, run_id=None, accept_run_time=False):
+        """Re-evaluate an existing dated request atomically; never duplicate it."""
+        with self.transaction() as (connection, state, attached):
+            row = connection.execute('SELECT payload FROM requests WHERE public_id=?', (public_id,)).fetchone()
+            if row is None:
+                raise RouteError('날짜 기반 SQLite 접수만 재배차할 수 있습니다.')
+            record = json.loads(row[0])
+            if record['status'] != '배차 검토 필요':
+                raise RouteError('배차 검토 필요 상태의 접수만 재검토할 수 있습니다.')
+            from modules.fixed_routes import resolve_stop
+            rid, target = resolve_stop(self.routes.original_loader(), state, record['boarding_stop'])
+            if rid != record['route_id'] or target != record['destination_stop']:
+                raise RouteError('현재 노선 및 고정 목적지와 맞지 않는 과거 요청입니다.')
+            if run_id is not None:
+                from modules.fixed_dispatch import read_rows,boarding_at
+                selected=next((r for r in read_rows(connection,'fixed_runs') if r['run_id']==run_id and r['route_id']==rid),None)
+                if not selected:
+                    raise RouteError('선택한 운행편이 없거나 예약 노선과 다릅니다.')
+                record['requested_run_id']=run_id
+                if accept_run_time:
+                    record.setdefault('original_requested_at',record['requested_at'])
+                    record['requested_at']=boarding_at(selected,record['boarding_stop']).isoformat()
+                    record['time_basis']='운영자가 선택한 운행편 시각으로 변경; 원래 희망시각 별도 보존'
+            from modules.fixed_dispatch import assign
+            assign(self,connection,state,record,record.get('requested_run_id'))
+            record['updated_at'] = now()
+            connection.execute('UPDATE requests SET payload=? WHERE public_id=?',(json.dumps(record,ensure_ascii=False,allow_nan=False),public_id))
             return record
 
     @staticmethod

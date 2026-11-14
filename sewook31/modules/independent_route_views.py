@@ -25,22 +25,8 @@ def display_table(rows, drop=()):
 
 
 def overlay_routes(map_object, state, show_original=True, legacy_preview=None):
-    if show_original:
-        for stop in read_original_stops():
-            folium.CircleMarker([float(stop["latitude"]), float(stop["longitude"])], radius=6,
-                color="#e17a18" if stop["stop_type"]=="tram" else "#2474d2", fill=True,
-                tooltip=html.escape(f"{stop['stop_name']} ({stop['stop_id']})")).add_to(map_object)
-    for stop in state["stops"]:
-        popup = "<br>".join(html.escape(str(v)) for v in [stop["name"], stop["stop_id"],
-                    "노선: "+stop["route_id"], "방문 순서: "+str(stop["position"]), "연구용 가상정류장"])
-        folium.CircleMarker([stop["latitude"], stop["longitude"]], radius=9, color="#15803d",
-                            fill=True, fill_opacity=.8, popup=popup, tooltip=html.escape(stop["name"])).add_to(map_object)
-    for segment in state["segments"]:
-        folium.PolyLine(segment["coordinates"], color="#15803d", weight=5,
-                        tooltip=html.escape(f"{segment['route_id']} · OSRM 모형 · 사용자 지정 방문 순서")).add_to(map_object)
-    if legacy_preview:
-        folium.PolyLine(legacy_preview["route"]["coordinates"], color="#2474d2", weight=4,
-                        tooltip="기존 화면의 현재 세션 임시 경로 · 저장 노선 아님").add_to(map_object)
+    from modules.combined_routes import route_layers, add_layers
+    add_layers(map_object, route_layers(read_original_stops(), state), ["R01", "R02"])
 
 
 def _change(operation):
@@ -75,7 +61,7 @@ def _revision_gate(state):
 
 def show_route_management():
     streamlit.header("신규 독립 노선 관리")
-    streamlit.caption("R01은 기존 CSV 경유지 기능의 화면 식별자이며, R02는 SQLite에 저장하는 독립 노선입니다.")
+    streamlit.caption("R01은 D01→D02→D03→D04→T01, R02는 저장된 가상정류장 순서→T02인 고정 경유 노선입니다. 실제 차량·날짜별 운행편은 별도 등록합니다.")
     store = RouteStore()
     try:
         state = store.snapshot()
@@ -112,7 +98,7 @@ def show_route_management():
     if clicked and clicked.get("last_clicked"):
         point = clicked["last_clicked"]
         streamlit.session_state["new_route_clicked"] = dict(latitude=point["lat"], longitude=point["lng"])
-    streamlit.caption("초록: 신규 후보·저장 OSRM 경로 / 파랑: 기존 정류장·현재 세션 임시 경로 / 주황: 기존 트램 거점. 지도 선택은 저장이 아닙니다.")
+    streamlit.caption("파랑: R01 / 주황: R02 / 열차 아이콘: 트램. 점선은 미확인 추정 연결선입니다. 지도 선택은 저장이 아닙니다.")
     streamlit.info("분석 범위는 V-World 도로망의 외접 범위입니다. 행정경계가 아니며 도로와 가깝더라도 승하차 안전성·통행 가능·정차 허용을 의미하지 않습니다.")
 
     streamlit.subheader("가상정류장 등록·수정 (정확히 4개)")
@@ -161,7 +147,7 @@ def show_route_management():
             key = st.selectbox(f"신규 노선 {i+1}번째 정류장", remaining, key=f"nr_order_{i}")
             order.append(key); remaining = [r for r in remaining if r!=key]
         trams = [s for s in read_original_stops() if s["stop_type"]=="tram"]
-        tram_options = ["연결 안 함"]+[s["stop_id"] for s in trams]
+        tram_options = ["연결 안 함", "T02"] if rid == 'R02' else ["연결 안 함"]+[s["stop_id"] for s in trams]
         transfer = st.selectbox("신규 노선 종점 트램 거점", tram_options,
                                 index=tram_options.index(route["transfer_stop_id"]) if route["transfer_stop_id"] else 0,key="nr_tram")
         vehicles = st.text_input("신규 전용 연구용 차량 ID (쉼표 구분)",
@@ -237,13 +223,13 @@ def show_new_route_reservations():
 
 
 def show_route_summary(state, legacy_reservations=None, unified_records=None):
-    streamlit.subheader("노선 현황 · 별도 연구용 등록부")
-    streamlit.caption("기존 경유지 계산은 저장 노선 수에 포함하지 않습니다. 기존 예약은 신규 노선에 자동 배정하지 않습니다.")
+    streamlit.subheader("원본 R02 연구용 등록부 상태")
+    streamlit.caption("아래 수치는 원본 등록부의 저장 구간입니다. 고정 노선 전체 경로와 날짜별 차량 배정은 예약 및 배차 관리에서 확인하세요.")
     streamlit.write(f"등록된 신규 노선 수: {len(state['routes'])}")
     original=read_original_stops()
     if legacy_reservations is not None:
         count=int(legacy_reservations.status.eq("예약완료").sum())
-        streamlit.caption(f"기존 방식 (노선 미지정): DRT 정류장 {sum(s['stop_type']=='drt' for s in original)}개 · 환승 거점 {sum(s['stop_type']=='tram' for s in original)}개 · 유효 예약 {count}건. 저장 노선 수에는 포함하지 않습니다.")
+        streamlit.caption(f"보관 CSV: DRT 정류장 {sum(s['stop_type']=='drt' for s in original)}개 · 환승 거점 {sum(s['stop_type']=='tram' for s in original)}개 · 유효 예약 {count}건. 운행 날짜가 없어 새 운행편에 자동 병합하지 않습니다.")
     rows=[]
     for route in state["routes"]:
         own=[s for s in state["stops"] if s["route_id"]==route["route_id"]]
@@ -251,6 +237,6 @@ def show_route_summary(state, legacy_reservations=None, unified_records=None):
                   if unified_records is not None else [b for b in state["bookings"] if b["route_id"]==route["route_id"] and b["status"]=="reserved"])
         rows.append({"노선":route["route_id"],"상태":"연구용 활성" if route["active"] else "등록/계산 대기",
             "신규 정류장":len(own),"신규 유효 예약":len(bookings),"신규 승객":sum(b["passengers"] for b in bookings),
-            "예상 거리(km)":route["distance_km"] if route["distance_km"] is not None else "미계산",
-            "예상 이동시간(분)":route["duration_min"] if route["duration_min"] is not None else "미계산"})
+            "원본 저장 구간 거리(km)":route["distance_km"] if route["distance_km"] is not None else "미계산",
+            "원본 저장 구간 모형시간(분)":route["duration_min"] if route["duration_min"] is not None else "미계산"})
     display_table(rows)

@@ -74,30 +74,24 @@ def _marker_color(p):
 
 def _add_base_layers(map_obj, provider, stops):
     # OpenStreetMap tiles are attempted online; the CSS canvas remains visible offline.
+    research_layer=folium.FeatureGroup(name='연구용 트램 선로·정거장',show=False).add_to(map_obj)
     for feature in provider.get_track_features():
         coords = feature.get("geometry", {}).get("coordinates", [])
         props = feature.get("properties", {})
         if coords:
             folium.PolyLine([[lat, lon] for lon, lat in coords], color=props.get("color", "#0ea5e9"),
-                            weight=4, opacity=0.75, tooltip=props.get("line_name", "트램 선로")).add_to(map_obj)
+                            weight=4, opacity=0.75, tooltip=props.get("line_name", "트램 선로")).add_to(research_layer)
     for feature in provider.get_station_features():
         props = feature.get("properties", {})
         lat, lon = props.get("lat"), props.get("lon")
         if lat is not None and lon is not None:
             folium.CircleMarker([float(lat), float(lon)], radius=4, color="#b91c1c", fill=True,
                                 fill_color="#ef4444", fill_opacity=0.85,
-                                tooltip=f"트램 {props.get('station_no', '')} {props.get('station_name', '')}").add_to(map_obj)
-    for stop in stops:
-        try:
-            lat, lon = float(stop["latitude"]), float(stop["longitude"])
-        except (TypeError, ValueError):
-            continue
-        is_drt_stop = stop.get("stop_type") == "drt"
-        folium.CircleMarker([lat, lon], radius=5 if is_drt_stop else 4,
-                            color="#1d4ed8" if is_drt_stop else "#b91c1c",
-                            fill=True, fill_color="#3b82f6" if is_drt_stop else "#ef4444",
-                            fill_opacity=0.9,
-                            tooltip=f"{stop['stop_name']} ({stop['stop_id']})").add_to(map_obj)
+                                tooltip=f"트램 {props.get('station_no', '')} {props.get('station_name', '')}").add_to(research_layer)
+    from modules.combined_routes import route_layers,add_layers
+    from modules.independent_routes import RouteStore
+    store=RouteStore()
+    add_layers(map_obj,route_layers(store.original_loader(),store.snapshot()),['R01','R02'])
 
 
 def _add_position(map_obj, p, display_lat=None, display_lon=None):
@@ -320,7 +314,8 @@ def show_live_control():
     st.caption(f"{sim_time:%H:%M:%S}  ·  {preset}  ·  혼잡 {traffic_level}  ·  {route_class} ({map_source})")
 
     # One-time migration discards any legacy saved center, then only a preset change refits.
-    map_view_signature = ("stations-stops-vehicles-v2", preset)
+    show_simulated=st.checkbox('시뮬레이션 차량·이동 경로 표시 (실제 위치 아님)',value=False,key='live_show_simulated')
+    map_view_signature = ("fixed-routes-and-optional-simulation", preset,show_simulated)
     scenario_changed = st.session_state.get("live_map_view_signature") != map_view_signature
     if scenario_changed:
         st.session_state.pop("live_map_center", None)
@@ -335,7 +330,9 @@ def show_live_control():
     map_obj.get_root().header.add_child(folium.Element(
         "<style>.leaflet-container{background:#edf0f2 !important;}</style>"))
     _add_base_layers(map_obj, provider, stops)
-    if playback_mode == "지도 자동 재생":
+    if not show_simulated:
+        st.caption('고정 운영 노선만 표시 중 · 시뮬레이션 차량은 위 옵션으로 표시합니다.')
+    elif playback_mode == "지도 자동 재생":
         try:
             if TimestampedGeoJson is None:
                 raise RuntimeError("folium.plugins.TimestampedGeoJson is missing")
@@ -367,6 +364,7 @@ def show_live_control():
         if bounds:
             map_obj.fit_bounds(bounds, padding=(24, 24), max_zoom=16)
     _add_legend(map_obj)
+    folium.LayerControl(collapsed=True).add_to(map_obj)
     map_state = st_folium(map_obj, width=None, height=500,
                           returned_objects=["center", "zoom"], key="live_control_map")
     if isinstance(map_state, dict):
@@ -378,7 +376,7 @@ def show_live_control():
             st.session_state["live_map_center"] = list(center)
         if isinstance(zoom, (int, float)):
             st.session_state["live_map_zoom"] = zoom
-    st.caption("탑승 인원은 실제 예약 기록이 없어 시뮬레이션에서 집계하지 않았습니다")
+    st.caption("아래는 시뮬레이션 차량 목록입니다. 실제 차량 위치·탑승 인원과 별개입니다.")
     table = []
     for p in positions:
         is_tram = str(p.get("vehicle_id", "")).startswith("TR-")

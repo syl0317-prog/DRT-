@@ -1,0 +1,15 @@
+{
+  "branch": "fix/integrated-drt-operations",
+  "scope": "fixed sequential routes, booking, shared-run dispatch, operating maps; punctuality excluded",
+  "tests": {"run": 22, "failures": 0, "errors": 0, "seconds": 55.614, "command": ".\\.venv\\Scripts\\python.exe -B scripts/verify_sequential_routes.py"},
+  "R01": {"order": ["D01", "D02", "D03", "D04", "T01"], "solid_polylines": 1, "model_distance_km": 1.76, "source": "drt_system/data/osrm_cache.json; archived OSRM model, not observed; access separately unverified"},
+  "R02": {"order": ["V05", "V06", "V07", "V08", "T02"], "solid_polylines": 1, "unverified_tail": "V08 to T02 remains dashed; operational assignment blocked"},
+  "fleet": "No real vehicles or timetables inferred; explicit vehicle/run registration required",
+  "booking_test_writes": "Temporary CSV and SQLite copies only; R02 completed tail is synthetic TEST ONLY data in temporary DB",
+  "preservation": {"original_data_files_checked": 98, "original_data_changed": [], "protected_files_checked": 27, "protected_files_changed": [], "preexisting_pyc_changed": []},
+  "server": {"address": "127.0.0.1:8521", "health": "ok", "test_server_stopped": true},
+  "browser_visual_verification": "not performed; AppTest and generated HTML verified",
+  "git_diff_check": "passed",
+  "automatic_commit": false,
+  "push": false
+}
