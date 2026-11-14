@@ -220,25 +220,6 @@ elif menu == "예약 관리":
 
             except ValueError as e:
                 st.error(str(e))
-
-
-            reservation, message = create_reservation(
-                boarding_stop=boarding_stop,
-                tram_stop=tram_stop,
-                tram_departure=tram_departure,
-                passengers=int(passengers)
-            )
-
-            if reservation:
-                st.success(message)
-
-                st.info(
-                    f"예약번호: {reservation['reservation_id']} / "
-                    f"배정 차량: {reservation['vehicle_id']}"
-                )
-            else:
-                st.error(message)
-
         st.divider()
 
         st.subheader("전체 예약 내역")

@@ -493,7 +493,7 @@ def generate_folium_map(output_html="wirye_transit_blindspot_map.html"):
         </div>
         <div style="display:flex; align-items:center; margin-bottom:5px;">
             <span style="display:inline-block; width:18px; height:4px; background:#00F2FE; margin-right:8px;"></span>
-            <span>위례선 공식 트램 노선 (2026 개통)</span>
+            <span>위례선 트램은 개통이 지연되어 일정이 미정이며(서울시는 안전진단 후 내년 상반기 중 확정 예정), 이 시스템은 가상 시간표를 기준으로 설계되었다</span>
         </div>
         <div style="display:flex; align-items:center;">
             <span style="display:inline-block; width:18px; height:4px; border-top:2px dashed #3B82F6; margin-right:8px;"></span>

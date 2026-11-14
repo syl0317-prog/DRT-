@@ -39,7 +39,7 @@ def show_punctuality():
                                 key="punct_buffer")
     row = subset[subset["여유분"] == selected_buffer].iloc[0]
     delta = float(row["기준대기분"]) - float(row["평균대기분"])
-    delta_text = f"+{delta:.2f}" if delta < 0 else f"-{delta:.2f}"
+    delta_text = f"-{delta:.2f}" if delta >= 0 else f"+{abs(delta):.2f}"
     st.info(f"여유 {selected_buffer}분일 때 놓칠 확률 {row['놓칠확률']:.1%}, "
             f"평균 대기 {row['평균대기분']:.2f}분(기준 {row['기준대기분']:.2f}분 대비 {delta_text}분)")
 
