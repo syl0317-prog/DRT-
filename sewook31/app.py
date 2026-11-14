@@ -19,6 +19,7 @@ from modules.reservation_manager import (
 )
 from modules.shared_route import get_shared_route
 from modules.live_control import show_live_control
+from modules.punctuality_view import show_punctuality
 
 from modules.integrated_scheduler import calculate_integrated_schedule
 from modules.pickup_scheduler import calculate_pickup_schedule
@@ -41,6 +42,7 @@ menu = st.sidebar.radio(
         "DRT 운행 지도",
         "예약 관리",
         "트램 환승 관리",
+        "정시성 검증",
         "운영 시뮬레이션",
         "실시간 관제"
     ]
@@ -632,6 +634,9 @@ elif menu == "운영 시뮬레이션":
 
             except ValueError as e:
                 st.error(str(e))
+
+elif menu == "정시성 검증":
+    show_punctuality()
 
 
 elif menu == "실시간 관제":
