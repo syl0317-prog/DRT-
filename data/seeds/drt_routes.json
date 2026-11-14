@@ -1,0 +1,323 @@
+{
+  "routes": [
+    {
+      "route_id": "R02",
+      "name": "위례 DRT 신규 노선",
+      "mode": "independent",
+      "route_type": "research_virtual_drt",
+      "research_only": true,
+      "active": false,
+      "stop_order": [
+        "V05",
+        "V06",
+        "V07",
+        "V08"
+      ],
+      "transfer_stop_id": null,
+      "vehicles": [],
+      "start_stop": "V05",
+      "end_stop": "V08",
+      "calculation_status": "calculated",
+      "distance_km": 1.3336000000000001,
+      "duration_min": 2.0,
+      "created_at": "2026-11-13T15:52:45.488883+00:00",
+      "updated_at": "2026-11-13T15:52:45.488883+00:00",
+      "error": null,
+      "calculated_at": "2026-11-13T07:07:51.878574+00:00",
+      "recovery_source": "git ee68dcc:data/derived/drt_routes/routes.sqlite3"
+    }
+  ],
+  "stops": [
+    {
+      "stop_id": "V05",
+      "name": "V05",
+      "route_id": "R02",
+      "position": 1,
+      "stop_type": "virtual",
+      "registration_status": "research_candidate",
+      "latitude": 37.47327006828548,
+      "longitude": 127.15424363783058,
+      "nearest_road_m": 2.293566385776687,
+      "area_check": "V-World data envelope; not administrative boundary",
+      "roads_sha256": "7c8b2a40a3f2a87534b205b203aa1015c4329aebc0a457dcf5cca8df9278d628",
+      "coordinate_assumption": "source coordinates treated as WGS84; distance EPSG:32652",
+      "checked_at": "2026-11-13T06:59:34.477250+00:00"
+    },
+    {
+      "stop_id": "V06",
+      "name": "V06",
+      "route_id": "R02",
+      "position": 2,
+      "stop_type": "virtual",
+      "registration_status": "research_candidate",
+      "latitude": 37.46998746740596,
+      "longitude": 127.15186721982725,
+      "nearest_road_m": 15.415978926604872,
+      "area_check": "V-World data envelope; not administrative boundary",
+      "roads_sha256": "7c8b2a40a3f2a87534b205b203aa1015c4329aebc0a457dcf5cca8df9278d628",
+      "coordinate_assumption": "source coordinates treated as WGS84; distance EPSG:32652",
+      "checked_at": "2026-11-13T07:00:25.880765+00:00"
+    },
+    {
+      "stop_id": "V07",
+      "name": "V07",
+      "route_id": "R02",
+      "position": 3,
+      "stop_type": "virtual",
+      "registration_status": "research_candidate",
+      "latitude": 37.47005560133381,
+      "longitude": 127.14862708064307,
+      "nearest_road_m": 11.655773385200987,
+      "area_check": "V-World data envelope; not administrative boundary",
+      "roads_sha256": "7c8b2a40a3f2a87534b205b203aa1015c4329aebc0a457dcf5cca8df9278d628",
+      "coordinate_assumption": "source coordinates treated as WGS84; distance EPSG:32652",
+      "checked_at": "2026-11-13T07:01:03.026344+00:00"
+    },
+    {
+      "stop_id": "V08",
+      "name": "V08",
+      "route_id": "R02",
+      "position": 4,
+      "stop_type": "virtual",
+      "registration_status": "research_candidate",
+      "latitude": 37.47104337872609,
+      "longitude": 127.14269398900343,
+      "nearest_road_m": 11.168496943979807,
+      "area_check": "V-World data envelope; not administrative boundary",
+      "roads_sha256": "7c8b2a40a3f2a87534b205b203aa1015c4329aebc0a457dcf5cca8df9278d628",
+      "coordinate_assumption": "source coordinates treated as WGS84; distance EPSG:32652",
+      "checked_at": "2026-11-13T07:01:25.066533+00:00"
+    }
+  ],
+  "segments": [
+    {
+      "route_id": "R02",
+      "position": 1,
+      "origin": "V05",
+      "destination": "V06",
+      "distance_km": 0.5019,
+      "duration_min": 0.7533333333333334,
+      "coordinates": [
+        [
+          37.473262,
+          127.154444
+        ],
+        [
+          37.473081,
+          127.154432
+        ],
+        [
+          37.472649,
+          127.154401
+        ],
+        [
+          37.472636,
+          127.1544
+        ],
+        [
+          37.472194,
+          127.154374
+        ],
+        [
+          37.471791,
+          127.154359
+        ],
+        [
+          37.471735,
+          127.154348
+        ],
+        [
+          37.471615,
+          127.154324
+        ],
+        [
+          37.471468,
+          127.154284
+        ],
+        [
+          37.471319,
+          127.154223
+        ],
+        [
+          37.471112,
+          127.154138
+        ],
+        [
+          37.470952,
+          127.154046
+        ],
+        [
+          37.470831,
+          127.153972
+        ],
+        [
+          37.470676,
+          127.153844
+        ],
+        [
+          37.470499,
+          127.153673
+        ],
+        [
+          37.470349,
+          127.153477
+        ],
+        [
+          37.47026,
+          127.153353
+        ],
+        [
+          37.47018,
+          127.15321
+        ],
+        [
+          37.470094,
+          127.153038
+        ],
+        [
+          37.470012,
+          127.152852
+        ],
+        [
+          37.46994,
+          127.152641
+        ],
+        [
+          37.469856,
+          127.152375
+        ],
+        [
+          37.469811,
+          127.152093
+        ],
+        [
+          37.469799,
+          127.151885
+        ]
+      ],
+      "source": "OSRM online driving model; not observed",
+      "retrieved_at": "2026-11-13T07:07:44.533471+00:00"
+    },
+    {
+      "route_id": "R02",
+      "position": 2,
+      "origin": "V06",
+      "destination": "V07",
+      "distance_km": 0.2893,
+      "duration_min": 0.43166666666666664,
+      "coordinates": [
+        [
+          37.469799,
+          127.151885
+        ],
+        [
+          37.469794,
+          127.151804
+        ],
+        [
+          37.469801,
+          127.151604
+        ],
+        [
+          37.469834,
+          127.15094
+        ],
+        [
+          37.46985,
+          127.150513
+        ],
+        [
+          37.469858,
+          127.150276
+        ],
+        [
+          37.469909,
+          127.148956
+        ],
+        [
+          37.469922,
+          127.148619
+        ]
+      ],
+      "source": "OSRM online driving model; not observed",
+      "retrieved_at": "2026-11-13T07:07:48.211788+00:00"
+    },
+    {
+      "route_id": "R02",
+      "position": 3,
+      "origin": "V07",
+      "destination": "V08",
+      "distance_km": 0.5424,
+      "duration_min": 0.815,
+      "coordinates": [
+        [
+          37.469922,
+          127.148619
+        ],
+        [
+          37.469933,
+          127.148348
+        ],
+        [
+          37.469944,
+          127.14808
+        ],
+        [
+          37.469996,
+          127.147731
+        ],
+        [
+          37.470095,
+          127.147317
+        ],
+        [
+          37.470277,
+          127.14669
+        ],
+        [
+          37.470336,
+          127.14652
+        ],
+        [
+          37.470463,
+          127.146142
+        ],
+        [
+          37.470689,
+          127.145469
+        ],
+        [
+          37.470784,
+          127.145112
+        ],
+        [
+          37.470834,
+          127.144797
+        ],
+        [
+          37.470877,
+          127.144191
+        ],
+        [
+          37.47089,
+          127.143826
+        ],
+        [
+          37.470921,
+          127.143205
+        ],
+        [
+          37.470927,
+          127.143082
+        ],
+        [
+          37.470941,
+          127.142688
+        ]
+      ],
+      "source": "OSRM online driving model; not observed",
+      "retrieved_at": "2026-11-13T07:07:51.869859+00:00"
+    }
+  ],
+  "bookings": []
+}

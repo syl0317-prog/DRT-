@@ -1,0 +1,103 @@
+{
+  "feature": "Independent research DRT route and four user-positioned virtual stops",
+  "existing_structure": {
+    "fixed_saved_business_routes_found": false,
+    "legacy_path": "User-selected temporary waypoint route; no R01 assigned",
+    "original_stops": [
+      "T01",
+      "T02",
+      "D01",
+      "D02",
+      "D03",
+      "D04"
+    ],
+    "legacy_reservations_have_route_id": false
+  },
+  "actual_state": {
+    "route_id": "R02",
+    "name": "위례 DRT 신규 노선",
+    "registered_virtual_stops": 0,
+    "required_virtual_stops": 4,
+    "active": false,
+    "calculation_status": "not_calculated",
+    "actual_distance_km": null,
+    "actual_duration_min": null,
+    "new_bookings": 0,
+    "note": "Coordinates not supplied; no invented stop coordinates stored in actual registry"
+  },
+  "storage": {
+    "canonical": "data/derived/drt_routes/routes.sqlite3",
+    "initial_export": "data/derived/drt_routes/exports/20261113T064646_d2adafc8",
+    "concurrency": "SQLite BEGIN IMMEDIATE + global expected revision + sticky UI form revision; local shared file only",
+    "original_files_overwritten": false
+  },
+  "integration": {
+    "menus_unchanged": 6,
+    "route_screen": "배차·경로 → 신규 독립 노선",
+    "booking_screen": "예약 관리 → 신규 독립 노선 예약",
+    "legacy_algorithms_changed": false,
+    "existing_dispatch_engine_merge": false,
+    "new_schedule": "Separate chronological plan using saved OSRM segments, explicit departure date/time, dwell, transfer buffer",
+    "vehicle_ids": "Route-prefixed independent IDs; no legacy vehicle automatic reuse",
+    "gits_applied": false
+  },
+  "tests": {
+    "total_passed": 75,
+    "new_independent_route_tests_passed": 16,
+    "failed": 0,
+    "command": "python -B -m unittest discover -s drt_system/tests -p 'test_*.py' -v",
+    "checks": [
+      "Four-stop add/update, required count and coordinate confirmation",
+      "Duplicate IDs/coordinates/order and available ID suggestions",
+      "Area envelope and metric nearest road distance",
+      "Persistent route configuration and restart restore",
+      "Per-segment totals, cache reuse and mocked read-only live geometry",
+      "Failed segment clears entire route without straight-line fallback",
+      "Route map markers/green lines and separate click state",
+      "New reservation creation/read/cancel and legacy isolation",
+      "Conservative seat capacity and vehicle trip overlap",
+      "Date rollover and independent planned schedule",
+      "Concurrent stale revision rejected, stale UI form requires reload",
+      "Dashboard legacy/new counts separated and original six menus"
+    ]
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8513,
+    "health_status": 200,
+    "root_status": 200,
+    "stopped_after_check": true
+  },
+  "unverified": [
+    "Browser rendering, actual background/provider selection, popups and map click events",
+    "Actual R02 OSRM live route: no real stop locations supplied",
+    "Real vehicle availability, legal/safe boarding, actual tram timetable, operating feasibility"
+  ],
+  "browser_reason": "The browser access host is unavailable",
+  "integrity": {
+    "checked": 101,
+    "changed": [
+      "drt_system\\modules\\dashboard_views.py",
+      "drt_system\\modules\\route_views.py"
+    ],
+    "original_data_changed": []
+  },
+  "added_files": [
+    "drt_system/modules/independent_routes.py",
+    "drt_system/modules/independent_route_views.py",
+    "drt_system/tests/test_independent_routes.py",
+    "drt_system/docs/independent_route_usage.md",
+    "drt_system/docs/independent_route_validation.json",
+    "data/derived/drt_routes/routes.sqlite3",
+    "data/derived/drt_routes/exports/20261113T064646_d2adafc8/routes.json",
+    "data/derived/drt_routes/exports/20261113T064646_d2adafc8/virtual_stops.csv",
+    "data/derived/drt_routes/exports/20261113T064646_d2adafc8/route_segments.csv",
+    "data/derived/drt_routes/exports/20261113T064646_d2adafc8/reservations.csv"
+  ],
+  "modified_files": [
+    "drt_system/app.py",
+    "drt_system/modules/dashboard_views.py",
+    "drt_system/modules/route_views.py"
+  ],
+  "git_commit_or_push": false
+}

@@ -1,36 +1,38 @@
-"""Reproduce one reservation click against a disposable app copy."""
-from __future__ import annotations
-
-import csv
-import shutil
+"""Assert one legacy click creates one row; all writes stay in temporary files."""
+from contextlib import ExitStack
+from pathlib import Path
 import sys
 import tempfile
-from pathlib import Path
-
+from unittest.mock import patch
+import pandas as pd
 from streamlit.testing.v1 import AppTest
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "sewook31"))
 
+def fake_route(coordinates, **kwargs):
+    return dict(duration_min=5, distance_km=1, coordinates=coordinates,
+                source="TEST FIXTURE", retrieved_at="test", cache_hit=True)
 
-def row_count(path: Path) -> int:
-    if not path.exists():
-        return 0
-    with path.open(encoding="utf-8-sig", newline="") as f:
-        return max(0, sum(1 for _ in csv.reader(f)) - 1)
-
-
-with tempfile.TemporaryDirectory(prefix="drt_reservation_repro_", dir=ROOT) as temp:
-    copy_root = Path(temp) / "sewook31"
-    shutil.copytree(ROOT / "sewook31", copy_root, ignore=shutil.ignore_patterns("__pycache__"))
-    sys.path.insert(0, str(copy_root))
-    reservation_file = copy_root / "data" / "reservations.csv"
-    before = row_count(reservation_file)
-    app = AppTest.from_file(str(copy_root / "app.py"), default_timeout=30).run()
-    assert not app.exception, [e.message for e in app.exception]
-    app.radio[0].set_value("예약 관리").run()
-    assert not app.exception, [e.message for e in app.exception]
-    button = next(b for b in app.button if "예약하기" in b.label)
-    button.click().run()
-    assert not app.exception, [e.message for e in app.exception]
-    after = row_count(reservation_file)
-    print(f"임시 앱 복사본 예약 행: {before} -> {after} (증가 {after - before}건)")
+with ExitStack() as stack:
+    temp = Path(stack.enter_context(tempfile.TemporaryDirectory()))
+    csv = temp / "reservations.csv"
+    from modules.reservation_manager import COLUMNS
+    pd.DataFrame(columns=COLUMNS).to_csv(csv, index=False, encoding="utf-8-sig")
+    stack.enter_context(patch("modules.reservation_manager.RESERVATION_FILE", csv))
+    stack.enter_context(patch("modules.unified_reservations.DATABASE", temp / "unified.sqlite3"))
+    # Pickup calculation imports the engine inside the function as well.
+    for module in ("route_engine", "reservation_manager", "integrated_scheduler", "pickup_scheduler"):
+        stack.enter_context(patch(f"modules.{module}.calculate_road_route", side_effect=fake_route))
+    app = AppTest.from_file(str(ROOT / "sewook31/app.py"), default_timeout=60).run()
+    assert not app.exception, app.exception
+    app.sidebar.radio(key="main_menu").set_value("예약 관리").run()
+    app.radio(key="booking_section").set_value("기존 트램 연계 예약").run()
+    assert not app.exception, app.exception
+    next(b for b in app.button if b.label == "예약하기").click().run()
+    assert not app.exception, app.exception
+    assert len(pd.read_csv(csv)) == 1, "One click must create exactly one reservation"
+    app.run()
+    assert not app.exception, app.exception
+    assert len(pd.read_csv(csv)) == 1, "A rerun must not create another reservation"
+    print("PASS: one legacy click = one row; rerun = zero additional rows")

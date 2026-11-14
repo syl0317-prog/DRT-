@@ -2,21 +2,26 @@
 from pathlib import Path
 
 import pandas as pd
-import streamlit as st
+from modules.session_ui import persistent_ui as st
+import streamlit as streamlit
 
+<<<<<<< HEAD
 RESULTS = Path(__file__).resolve().parents[2] / "data" / "processed" / "punctuality_results.csv"
 CHART = Path(__file__).resolve().parents[2] / "data" / "processed" / "punctuality_chart.png"
+=======
+RESULTS = Path(__file__).resolve().parents[2] / "data" / "processed" / "punctuality_main_results.csv"
+>>>>>>> 038500dfc6e855e711352be5957a5e7a905b15a6
 
 
-@st.cache_data(show_spinner=False)
-def _load_results():
+@streamlit.cache_data(show_spinner=False)
+def _load_results(modified_ns):
     return pd.read_csv(RESULTS, encoding="utf-8-sig")
 
 
 def show_punctuality():
     st.header("정시성 검증")
     try:
-        data = _load_results()
+        data = _load_results(RESULTS.stat().st_mtime_ns)
     except (OSError, pd.errors.ParserError) as exc:
         st.error(f"정시성 결과 CSV를 읽지 못했습니다: {type(exc).__name__}")
         return
@@ -24,6 +29,7 @@ def show_punctuality():
         st.warning("계산 결과가 없습니다. scripts/punctuality_calc.py를 실행해 주세요.")
         return
 
+<<<<<<< HEAD
     col1, col2 = st.columns(2)
     with col1:
         period = st.selectbox("시간대", sorted(data["시간대"].unique()), key="punct_period")
@@ -41,11 +47,24 @@ def show_punctuality():
         & (data["합승수"] == passengers)
         & (data["혼잡수준"] == level)
     ]
+=======
+    st.download_button("전체 분석 결과 CSV 다운로드", data.to_csv(index=False).encode("utf-8-sig"),
+                       file_name="punctuality_results.csv", mime="text/csv", key="punct_csv")
+    segment = st.selectbox("구간 유형", sorted(data["구간유형"].unique()), key="punct_segment")
+    period = st.selectbox("시간대", sorted(data["시간대"].unique()), key="punct_period")
+    stop = st.selectbox("정류장", sorted(data["정류장"].unique()), key="punct_stop")
+    passengers = st.selectbox("합승 인원", sorted(data["합승수"].unique()), key="punct_passengers")
+    level = st.selectbox("혼잡 수준", ["min", "mode", "max"], index=1, key="punct_level")
+    subset = data[(data["시간대"] == period) & (data["정류장"] == stop)
+                  & (data["구간유형"] == segment)
+                  & (data["합승수"] == passengers) & (data["혼잡수준"] == level)]
+>>>>>>> 038500dfc6e855e711352be5957a5e7a905b15a6
     if subset.empty:
         st.info("선택한 조건의 결과가 없습니다.")
         return
 
     buffers = sorted(subset["여유분"].unique())
+<<<<<<< HEAD
     selected_buffer = st.slider(
         "환승 여유시간 b (분)",
         min_value=int(min(buffers)),
@@ -53,6 +72,9 @@ def show_punctuality():
         value=3,
         key="punct_buffer"
     )
+=======
+    selected_buffer = st.selectbox("환승 여유시간 b (분)", buffers, key="punct_buffer")
+>>>>>>> 038500dfc6e855e711352be5957a5e7a905b15a6
     row = subset[subset["여유분"] == selected_buffer].iloc[0]
     delta = float(row["기준대기분"]) - float(row["평균대기분"])
     delta_text = f"-{delta:.2f}" if delta >= 0 else f"+{abs(delta):.2f}"

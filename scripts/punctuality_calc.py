@@ -18,12 +18,19 @@ STOPS = APP / "data" / "drt_stops.csv"
 CACHE = APP / "data" / "osrm_cache.json"
 PARAMS = ROOT / "data" / "assumptions" / "sim_params.json"
 CONGESTION = ROOT / "data" / "processed" / "congestion_by_hour.csv"
+<<<<<<< HEAD
 OUT_CSV = ROOT / "data" / "processed" / "punctuality_results.csv"
 OUT_PNG = ROOT / "data" / "processed" / "punctuality_chart.png"
 HEADERS = [
     "정류장", "시간대", "구간유형", "혼잡수준", "합승수", "여유분",
     "놓칠확률", "평균대기분", "기준대기분", "가정"
 ]
+=======
+OUT_CSV = ROOT / "data" / "processed" / "punctuality_main_results.csv"
+OUT_PNG = ROOT / "data" / "processed" / "punctuality_main_chart.png"
+HEADERS = ["정류장", "시간대", "구간유형", "혼잡수준", "합승수", "여유분",
+           "놓칠확률", "평균대기분", "기준대기분", "가정"]
+>>>>>>> 038500dfc6e855e711352be5957a5e7a905b15a6
 REPS = 10_000
 HEADWAY = 10.0
 
@@ -192,7 +199,11 @@ def simulate(routes, congestion, dwell, trip_noise_min):
                                 if lateness > 1e-12:
                                     missed += 1
                                     remainder = lateness % HEADWAY
+<<<<<<< HEAD
                                     waits += (HEADWAY - remainder) if remainder > 1e-12 else HEADWAY
+=======
+                                    waits += HEADWAY - remainder if remainder > 1e-12 else 0
+>>>>>>> 038500dfc6e855e711352be5957a5e7a905b15a6
                                 else:
                                     waits += -lateness
 
@@ -236,6 +247,7 @@ def setup_matplotlib_font():
 
 
 def draw_chart(rows):
+<<<<<<< HEAD
     has_korean = setup_matplotlib_font()
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6.5), dpi=150)
 
@@ -309,6 +321,62 @@ def draw_chart(rows):
     OUT_PNG.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(OUT_PNG, dpi=200)
     plt.close()
+=======
+    """Small Pillow chart; uses Korean font when available, English otherwise."""
+    w, h = 1400, 850
+    im = Image.new("RGB", (w, h), "white")
+    d = ImageDraw.Draw(im)
+    title_font, label_font = _font(27), _font(17)
+    korean = "C:\\Windows\\Fonts\\malgun.ttf"
+    has_korean = Path(korean).exists()
+    title = "Punctuality simulation (no cached routes)" if not rows else ("정시성 시뮬레이션" if has_korean else "Punctuality simulation")
+    d.text((65, 24), title, fill="#182230", font=title_font)
+    colors = {"출근-단지내": "#147d64", "출근-간선연계": "#2266b3", "퇴근-단지내": "#a34d9b", "퇴근-간선연계": "#d27b00"}
+    panels = [(65, 95, 675, 370, "놓칠 확률" if has_korean else "Miss probability", "probability"),
+              (735, 95, 1345, 370, "평균 환승 대기시간" if has_korean else "Mean transfer wait", "wait")]
+    for x0, y0, x1, y1, label, metric in panels:
+        d.rectangle((x0, y0, x1, y1), outline="#536273", width=2)
+        d.text((x0 + 8, y0 + 5), label, fill="#182230", font=label_font)
+        for i in range(1, 5):
+            y = y0 + 35 + (y1 - y0 - 60) * i / 5
+            d.line((x0 + 42, y, x1 - 10, y), fill="#e2e8f0", width=1)
+        if not rows:
+            d.text((x0 + 90, y0 + 170), "No data: OSRM cache required", fill="#9b1c1c", font=label_font)
+            continue
+        for key, color in colors.items():
+            period, segment = key.split("-", 1)
+            series = [r for r in rows if r["시간대"] == period and r["구간유형"] == segment and r["혼잡수준"] == "mode" and r["합승수"] == 0]
+            # Plot one mean per buffer rather than joining different stops end to end.
+            series = [{"여유분": b,
+                       "놓칠확률": sum(r["놓칠확률"] for r in series if r["여유분"] == b) / sum(r["여유분"] == b for r in series),
+                       "평균대기분": sum(r["평균대기분"] for r in series if r["여유분"] == b) / sum(r["여유분"] == b for r in series)}
+                      for b in sorted({r["여유분"] for r in series})]
+            points = []
+            for r in series:
+                x = x0 + 45 + r["여유분"] * (x1 - x0 - 65) / 10
+                val = r["놓칠확률"] if metric == "probability" else r["평균대기분"]
+                vmax = 1 if metric == "probability" else max(HEADWAY, max((z["평균대기분"] for z in rows), default=10))
+                y = y1 - 25 - val * (y1 - y0 - 60) / vmax
+                points.append((x, y))
+            if len(points) > 1:
+                d.line(points, fill=color, width=3)
+        if metric == "wait":
+            y = y1 - 25 - 5 * (y1 - y0 - 60) / max(HEADWAY, max((r["평균대기분"] for r in rows), default=10))
+            for dx in range(x0 + 42, x1 - 10, 12):
+                d.line((dx, y, min(dx + 6, x1 - 10), y), fill="#c62828", width=2)
+    legend_y = 415
+    for i, (key, color) in enumerate(colors.items()):
+        x = 100 + (i % 2) * 330
+        y = legend_y + (i // 2) * 32
+        d.line((x, y + 9, x + 32, y + 9), fill=color, width=4)
+        d.text((x + 40, y), key, fill="#182230", font=label_font)
+    d.line((800, legend_y + 9, 832, legend_y + 9), fill="#c62828", width=2)
+    d.text((840, legend_y), "Baseline wait 5 min (dashed-style reference)", fill="#182230", font=label_font)
+    d.text((65, 535), "X: slack b (minutes), 0 to 10", fill="#344054", font=label_font)
+    d.text((65, 575), "Traffic levels min/mode/max and shared passenger counts 0/1/2 are in the CSV.", fill="#344054", font=label_font)
+    d.text((65, 615), "Assumptions only; simulated results are not field validation.", fill="#344054", font=label_font)
+    im.save(OUT_PNG, format="PNG")
+>>>>>>> 038500dfc6e855e711352be5957a5e7a905b15a6
 
 
 def main():

@@ -1,0 +1,27 @@
+{
+  "total_summary_rows": 60,
+  "total_unique_gits_links": 60,
+  "matched_unique_links": 16,
+  "all_status_counts": {
+    "verified": 0,
+    "review_required": 60,
+    "unusable": 0
+  },
+  "matched_status_counts": {
+    "verified": 0,
+    "review_required": 16,
+    "unusable": 0
+  },
+  "applicable_rows": 0,
+  "length_error_definition": "100*abs(vworld_length-implied_length)/vworld_length; implied is reference only",
+  "threshold_pct": 10,
+  "threshold_semantics": "screening only, never verification or proof of mismatch",
+  "prior_matching_row_count": 16,
+  "prior_matching_keys_without_summary": [],
+  "limitations": [
+    "No independent segment/direction/provider/time evidence in inputs; no automatic verified classification.",
+    "Summary counts cannot distinguish repeats from exact duplicate observations.",
+    "Product of mean speed and mean time need not equal mean implied length.",
+    "No traffic speed applied; no external APIs; no route or scheduling changes."
+  ]
+}

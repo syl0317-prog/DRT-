@@ -1,3 +1,4 @@
+from modules.settings import stops_path, setting
 
 from pathlib import Path
 
@@ -10,16 +11,35 @@ from modules.route_engine import calculate_road_route
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-STOPS_FILE = BASE_DIR / "data" / "drt_stops.csv"
+PROJECT_DIR = BASE_DIR.parent
 
+VWORLD_ROADS_FILE = (
+    PROJECT_DIR / "data" / "vworld" / "wirye_road_links.geojson"
+)
+STOPS_FILE = stops_path()
+
+import json
+
+@st.cache_data
+def load_vworld_roads():
+    with open(VWORLD_ROADS_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 def show_drt_map():
-
     st.subheader("위례동 DRT 정류장 및 노선 관리")
+
+    st.write("현재 실행 중인 파일:", __file__)
+
+    show_vworld = st.checkbox(
+        "V-World 도로망 표시",
+        value=False
+    )
+    st.write("V-World 도로망 파일:", str(VWORLD_ROADS_FILE))
+    st.write("파일 존재 여부:", VWORLD_ROADS_FILE.is_file())
 
     # 정류장 데이터 불러오기
     stops = pd.read_csv(
-        STOPS_FILE,
+        stops_path(),
         dtype={"stop_id": str},
         encoding="utf-8-sig"
     )
@@ -65,6 +85,32 @@ def show_drt_map():
         location=[37.474, 127.143],
         zoom_start=14
     )
+        # V-World 도로망 표시
+    st.write("도로망 체크박스 상태:", show_vworld)
+    if show_vworld:
+        if VWORLD_ROADS_FILE.is_file():
+            roads = load_vworld_roads()
+
+            folium.GeoJson(
+                roads,
+                name="V-World 도로망",
+                style_function=lambda feature: {
+                    "color": "green",
+                    "weight": 2,
+                    "opacity": 0.6
+                },
+                tooltip=folium.GeoJsonTooltip(
+                    fields=["link_id", "road_name"],
+                    aliases=["도로 링크 ID", "도로명"]
+                )
+            ).add_to(m)
+
+            st.success(
+                f"V-World 도로 링크 {len(roads['features']):,}개 로딩 완료"
+            )
+
+        else:
+            st.warning("V-World 도로망 파일을 찾을 수 없습니다.")
 
     for _, stop in valid_stops.iterrows():
 
@@ -148,6 +194,7 @@ def show_drt_map():
             ).add_to(m)
 
     # 지도 표시 및 클릭 위치 확인
+    folium.LayerControl(collapsed=False).add_to(m)
     map_data = st_folium(
         m,
         height=550,
@@ -186,25 +233,7 @@ def show_drt_map():
         format_func=lambda x: f"{x} - {stop_names[x]}"
     )
 
-    if st.button("선택 위치 저장"):
-
-        if lat is None or lon is None:
-            st.warning("먼저 지도에서 위치를 클릭하세요.")
-
-        else:
-            mask = stops["stop_id"] == selected_id
-
-            stops.loc[mask, "latitude"] = lat
-            stops.loc[mask, "longitude"] = lon
-
-            stops.to_csv(
-                STOPS_FILE,
-                index=False,
-                encoding="utf-8-sig"
-            )
-
-            st.success("정류장 위치 저장 완료")
-            st.rerun()
+    st.info("정류장 원본은 읽기 전용입니다. 변경 위치는 별도 검증이 필요합니다.")
 
     st.divider()
 

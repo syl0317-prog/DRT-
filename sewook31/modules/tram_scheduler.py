@@ -1,3 +1,4 @@
+from modules.settings import setting
 
 from datetime import datetime, timedelta
 
@@ -5,7 +6,7 @@ from datetime import datetime, timedelta
 def calculate_drt_schedule(
     tram_departure,
     drt_duration,
-    transfer_buffer=5
+    transfer_buffer=setting("transfer_buffer")
 ):
     """
     트램 출발시간 기준 DRT 역산 배차
