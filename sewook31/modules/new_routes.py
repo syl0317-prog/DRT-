@@ -122,6 +122,6 @@ def show_validation():
         else:
             st.warning('경로 확인 필요 · 저장 OSRM 도로 연결 미확인 · 거리/시간 산출 불가')
         st.warning('차량 접근·정차·회차 검증 필요 · 배차 확정 불가')
-        st.caption('정시성 시뮬레이션: 미지원 · 추가 검증 필요')
+        st.caption('정시성 시뮬레이션: OSRM 도로 모형 기준으로 지원(시뮬레이션 및 정시성 분석 메뉴) · 차량 접근·정차 검증 필요')
         for candidate in plan['road_candidates']:
             st.caption(candidate + ' · 통행 방향·고속도로 진입·회차 검증 필요')

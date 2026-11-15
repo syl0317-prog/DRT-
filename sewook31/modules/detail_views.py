@@ -17,12 +17,15 @@ def show_punctuality():
     if not limits[0] <= limits[1] <= limits[2]:
         st.error('최소 ≤ 최빈 ≤ 최대를 만족해야 합니다.')
         return
-    st.caption('기존 연구 방식: 기존 CSV 정류장과 공식 12개 역 중 최근접역 비교. 고정 노선별 정시성 결과가 아닙니다. R03/R04는 미지원입니다.')
+    st.caption('운영 웹과 같은 R01~R04 노선(정류장·방문 순서·최종 목적지)을 사용합니다. 차내시간은 저장된 OSRM 도로 모형 기준이며 중간 정차시간을 포함합니다.')
     frame = generate(limits, allow_network=st.checkbox('캐시 없는 경로 OSRM 조회', value=False))
     if frame.empty:
         st.warning('정류장 missing')
         return
+    route_id = st.selectbox('노선', frame['노선'].unique(), key='legacy_punct_route')
+    frame = frame[frame['노선'] == route_id]
     stop = st.selectbox('정류장', frame['정류장'].unique())
+    st.caption(f"환승(최종 목적지): {frame.loc[frame['정류장'] == stop, '환승역'].iloc[0]}")
     period = st.selectbox('시간대', frame['시간대'].unique())
     shared = st.selectbox('합승 승객 수', [0, 1, 2])
     selected = frame[(frame['정류장'] == stop) & (frame['시간대'] == period) & (frame['합승수'] == shared)].copy()
@@ -119,13 +122,14 @@ def input_versions():
              PROJECT_DIR/'data/processed/wirye_tram_official_stations.geojson',
              PROJECT_DIR/'sewook31/data/osrm_cache.json']
     from modules.settings import stops_path
-    names.append(stops_path())
+    from modules.new_stop_settings import SETTINGS_FILE
+    names += [stops_path(), SETTINGS_FILE]
     return {str(p.relative_to(PROJECT_DIR)): hashlib.sha256(p.read_bytes()).hexdigest() for p in names if p.exists()}
 
 
-def generate(k, allow_network=False, destination_mode='nearest'):
-    if destination_mode != 'nearest':
-        raise ValueError('기존 계산 엔진은 최근접역 연구 모형만 지원합니다.')
+def generate(k, allow_network=False, destination_mode='route'):
+    if destination_mode != 'route':
+        raise ValueError('정시성 계산은 운영 노선의 최종 목적지 모형만 지원합니다.')
     from modules.independent_routes import RouteStore
     state=RouteStore().snapshot()
     inputs = dict(k=k, allow_network=allow_network, destination_mode=destination_mode, registry_revision=state['revision'], registry_state=state, sources=input_versions())

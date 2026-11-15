@@ -1,63 +1,39 @@
-"""Calculate simulated DRT-to-tram punctuality from local OSRM cache only."""
+"""Calculate simulated DRT-to-transfer punctuality for R01~R04 from stored road models only."""
 from __future__ import annotations
 
 import csv
 import json
-import math
 import random
-import struct
-import zlib
+import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "sewook31"
-STOPS = APP / "data" / "drt_stops.csv"
-CACHE = APP / "data" / "osrm_cache.json"
 PARAMS = ROOT / "data" / "assumptions" / "sim_params.json"
 CONGESTION = ROOT / "data" / "processed" / "congestion_by_hour.csv"
 OUT_CSV = ROOT / "data" / "processed" / "punctuality_main_results.csv"
 OUT_PNG = ROOT / "data" / "processed" / "punctuality_main_chart.png"
-HEADERS = ["정류장", "시간대", "구간유형", "혼잡수준", "합승수", "여유분",
+HEADERS = ["노선", "정류장", "환승역", "시간대", "구간유형", "혼잡수준", "합승수", "여유분",
            "놓칠확률", "평균대기분", "기준대기분", "가정"]
 REPS = 10_000
 HEADWAY = 10
 PASSENGER_DELAY = 2.0
 
 
-def cache_key(a, b):
-    return ";".join(f"{float(lat):.6f},{float(lon):.6f}" for lat, lon in (a, b))
-
-
-def haversine(a, b):
-    lat1, lon1, lat2, lon2 = map(math.radians, (a[0], a[1], b[0], b[1]))
-    dlat, dlon = lat2 - lat1, lon2 - lon1
-    h = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
-    return 6_371_000 * 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h))
-
-
-def read_inputs():
-    with STOPS.open(encoding="utf-8-sig", newline="") as f:
-        stops = list(csv.DictReader(f))
-    with CACHE.open(encoding="utf-8") as f:
-        cache = json.load(f)
+def read_inputs(allow_network=False):
+    """R01~R04 boarding stops from the operating web's route plans (single source)."""
+    if str(APP) not in sys.path:
+        sys.path.insert(0, str(APP))
+    from modules.punctuality_routes import route_legs, label
     config = json.loads(PARAMS.read_text(encoding="utf-8"))
     with CONGESTION.open(encoding="utf-8-sig", newline="") as f:
         congestion = list(csv.DictReader(f))
-    tram = [r for r in stops if r["stop_type"] == "tram"]
-    drt = [r for r in stops if r["stop_type"] == "drt"]
-    routes = []
-    skipped = []
-    for stop in drt:
-        a = (float(stop["latitude"]), float(stop["longitude"]))
-        nearest = min(tram, key=lambda r: haversine(a, (float(r["latitude"]), float(r["longitude"]))))
-        b = (float(nearest["latitude"]), float(nearest["longitude"]))
-        route = cache.get(cache_key(a, b)) or cache.get(cache_key(b, a))
-        if not route or route.get("duration_min") is None:
-            skipped.append(stop["stop_name"])
-            continue
-        routes.append((stop["stop_name"], float(route["duration_min"]), nearest["stop_name"]))
+    legs, problems = route_legs(allow_network=allow_network)
+    routes = [(f"{leg['stop_name']} ({leg['stop_id']})", float(leg["ride_min"]), leg["destination_name"], leg["route_id"])
+              for leg in legs if leg["ride_min"] is not None]
+    skipped = [label(leg) for leg in legs if leg["ride_min"] is None] + [p for p in problems if "정시성 계산 제외" not in p]
     return routes, skipped, config, congestion
 
 
@@ -78,7 +54,9 @@ def simulate(routes, config, congestion):
     results = []
     for period, hours in groups:
         corridor = factor_ranges(congestion, hours)
-        for stop_name, duration, _tram_name in routes:
+        for route in routes:
+            stop_name, duration, tram_name = route[:3]
+            route_id = route[3] if len(route) > 3 else ""
             for segment in ("단지내", "간선연계"):
                 bounds = (1.0, 1.1, 1.2) if segment == "단지내" else corridor
                 factor_names = ("min", "mode", "max")
@@ -103,10 +81,10 @@ def simulate(routes, config, congestion):
                                     waits += HEADWAY - remainder if remainder > 1e-12 else 0
                                 else:
                                     waits += -lateness
-                            assumptions = (f"T={duration:.3f}분 OSRM 캐시; 삼각분포 k={lo:.4f}/{mode:.4f}/{hi:.4f}; "
+                            assumptions = (f"{route_id} 승차→{tram_name} 차내시간 T={duration:.3f}분(운영 노선 도로 모형·중간 정차 포함); 삼각분포 k={lo:.4f}/{mode:.4f}/{hi:.4f}; "
                                            f"정차={dwell:g}분; 합승={PASSENGER_DELAY:g}분/인; 배차={HEADWAY}분; "
                                            "요일·시간 구간 대응 assumption; 운행 실측 아님")
-                            results.append({"정류장": stop_name, "시간대": period, "구간유형": segment,
+                            results.append({"노선": route_id, "정류장": stop_name, "환승역": tram_name, "시간대": period, "구간유형": segment,
                                             "혼잡수준": level, "합승수": passengers, "여유분": buffer,
                                             "놓칠확률": missed / REPS,
                                             "평균대기분": waits / REPS,
@@ -124,7 +102,65 @@ def _font(size):
     return ImageFont.load_default()
 
 
+def _mean_series(rows, period, segment, level):
+    selected = [r for r in rows if r["시간대"] == period and r["구간유형"] == segment
+                and r["혼잡수준"] == level and r["합승수"] == 0]
+    buffers = sorted({r["여유분"] for r in selected})
+    # One mean per buffer across stops, rather than joining different stops end to end.
+    return buffers, [
+        (sum(r["놓칠확률"] for r in selected if r["여유분"] == b) / sum(r["여유분"] == b for r in selected),
+         sum(r["평균대기분"] for r in selected if r["여유분"] == b) / sum(r["여유분"] == b for r in selected))
+        for b in buffers]
+
+
 def draw_chart(rows):
+    """Matplotlib chart (mode solid / max dotted, passengers 0); Pillow fallback."""
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        from matplotlib import font_manager
+    except ImportError:
+        return _draw_chart_pillow(rows)
+    korean = Path(r"C:\Windows\Fonts\malgun.ttf")
+    if korean.exists():
+        font_manager.fontManager.addfont(str(korean))
+        plt.rcParams["font.family"] = font_manager.FontProperties(fname=str(korean)).get_name()
+    plt.rcParams["axes.unicode_minus"] = False
+    routes = sorted({r.get("노선", "") for r in rows} - {""})
+    scope = "·".join(routes) if routes else "운영 노선"
+    fig, axes = plt.subplots(1, 2, figsize=(20, 8.67), dpi=150)
+    colors = {("출근", "단지내"): "#169b72", ("출근", "간선연계"): "#2f63b0",
+              ("퇴근", "단지내"): "#7b6bb8", ("퇴근", "간선연계"): "#d95f02"}
+    for (period, segment), color in colors.items():
+        for level, style, marker in (("mode", "-", "o"), ("max", ":", "x")):
+            buffers, values = _mean_series(rows, period, segment, level)
+            if not buffers:
+                continue
+            label = f"{period}-{segment} ({level})"
+            axes[0].plot(buffers, [v[0] for v in values], style, marker=marker, color=color, linewidth=2.2, markersize=5, label=label)
+            axes[1].plot(buffers, [v[1] for v in values], style, marker=marker, color=color, linewidth=2.2, markersize=5, label=label)
+    axes[1].axhline(HEADWAY / 2, color="#d62728", linestyle="--", linewidth=3, label=f"기준선: 임의도착 평균대기 {HEADWAY / 2:g}분")
+    titles = ("여유시간(b)별 환승 놓칠 확률 (합승 0명, mode 실선 / max 점선)",
+              "여유시간(b)별 평균 환승 대기시간 (합승 0명, mode 실선 / max 점선)")
+    for ax, title, ylabel in zip(axes, titles, ("놓칠 확률", "평균 대기시간 (분)")):
+        ax.set_title(title, fontweight="bold", fontsize=13)
+        ax.set_xlabel("환승 여유시간 b (분)", fontsize=12)
+        ax.set_ylabel(ylabel, fontsize=12)
+        ax.set_xticks(range(11))
+        ax.grid(True, linestyle="--", alpha=.5)
+        ax.legend(loc="upper right", fontsize=9)
+    axes[0].set_ylim(-.02, 1.05)
+    if not rows:
+        for ax in axes:
+            ax.text(.5, .5, "도로 모형이 있는 정류장이 없습니다", ha="center", transform=ax.transAxes, color="#9b1c1c")
+    fig.suptitle(f"DRT 환승 정시성 시뮬레이션 결과 ({scope} 정류장 평균 · 혼잡수준: mode vs max)", fontweight="bold", fontsize=16)
+    fig.tight_layout()
+    fig.savefig(OUT_PNG, format="png")
+    plt.close(fig)
+
+
+def _draw_chart_pillow(rows):
     """Small Pillow chart; uses Korean font when available, English otherwise."""
     w, h = 1400, 850
     im = Image.new("RGB", (w, h), "white")

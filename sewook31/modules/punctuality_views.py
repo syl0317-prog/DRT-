@@ -8,7 +8,8 @@ import altair as alt
 import numpy as np
 import pandas as pd
 from modules.session_ui import persistent_ui as st, matching_result, remember_result
-from modules.punctuality_inputs import load_stops, resolve_duration
+from modules.punctuality_inputs import resolve_duration
+from modules.punctuality_routes import route_legs, label as leg_label
 from modules.punctuality_simulation import DelayModel, evaluate_timing, simulate
 
 KST = ZoneInfo("Asia/Seoul")
@@ -19,27 +20,24 @@ def show_punctuality_analysis():
     st.header("정시성 및 트램 환승 분석")
     st.warning("연구용 시뮬레이션 · 실제 운행 측정 결과가 아닙니다. 예약·배차·경로 비용에 반영하지 않습니다.")
     st.caption("확률은 입력한 지연 분포와 혼잡 시나리오에 조건부입니다. GITS는 검증 완료 링크가 없어 계산에 사용하지 않습니다.")
-    try:
-        stops = load_stops()
-    except (OSError, ValueError) as error:
-        st.error(f"정류장 데이터 로딩 실패: {error}")
+    online = st.checkbox("도로 모형이 없는 구간은 OSRM 온라인 조회 허용", value=False, key="pa_online")
+    legs, problems = route_legs(allow_network=online)
+    if not legs:
+        st.error("운영 노선 정류장을 읽지 못했습니다. " + " / ".join(problems))
         return
-    if len(stops) < 2:
-        st.error("출발·도착 선택에 필요한 정류장이 부족합니다.")
-        return
-    records = stops.set_index("stop_id")
-    departures = stops.loc[stops.stop_type == "drt", "stop_id"].tolist() or stops.stop_id.tolist()
-    destinations = stops.stop_id.tolist()
-    default_destination = next((i for i, key in enumerate(destinations) if records.loc[key, "stop_type"] == "tram"), 0)
-    label = lambda key: f"{records.loc[key, 'stop_name']} ({key})"
+    routes = sorted({leg["route_id"] for leg in legs})
     left, right = st.columns(2)
     with left:
-        origin = st.selectbox("DRT 출발 정류장", departures, format_func=label, key="pa_origin")
+        route_id = st.selectbox("노선", routes, key="pa_route")
+    route_stops = [leg for leg in legs if leg["route_id"] == route_id]
+    by_id = {leg["stop_id"]: leg for leg in route_stops}
     with right:
-        destination = st.selectbox("DRT 도착 정류장", destinations, index=default_destination, format_func=label, key="pa_destination")
-    st.caption("정류장: 기존 drt_stops.csv · 후보 좌표의 현장 검증은 별도 필요. 날짜와 익일 여부를 직접 지정합니다.")
-    if records.loc[destination, "stop_type"] != "tram":
-        st.info("도착지가 트램 정류장이 아닙니다. 입력 보행시간에 실제 환승 거점까지의 이동을 포함하세요.")
+        origin = st.selectbox("승차 정류장", list(by_id), format_func=lambda key: f"{by_id[key]['position']}. {by_id[key]['stop_name']} ({key})", key="pa_origin")
+    leg = by_id[origin]
+    destination = leg["destination_id"]
+    st.caption(f"정류장·방문 순서·최종 목적지는 운영 웹의 {route_id} 노선과 같습니다. 하차(환승): {leg['destination_name']} ({destination}). 후보 좌표의 현장 검증은 별도 필요합니다.")
+    if leg["ride_min"] is None:
+        st.warning(f"{leg_label(leg)}: 도로 모형 미확인({leg['missing'] or '경로 없음'}). 온라인 조회를 허용하거나 직접 입력을 선택하세요.")
 
     cols = st.columns(3)
     with cols[0]:
@@ -53,10 +51,11 @@ def show_punctuality_analysis():
         tram_clock = st.time_input("가상 트램 출발시간", time(8, 30), key="pa_tram")
     st.caption("현재 실제 운행 시간표는 연결되어 있지 않습니다. 트램 시각은 사용자가 지정한 가상 시간표입니다.")
 
-    mode_label = st.radio("기준 이동시간 출처", ["OSRM 캐시/온라인 조회", "직접 입력"], key="pa_mode", horizontal=True)
-    online = st.checkbox("캐시가 없으면 OSRM 온라인 조회 허용", value=False, key="pa_online", disabled=mode_label == "직접 입력")
+    mode_label = st.radio("기준 이동시간 출처", ["운영 노선 차내시간", "직접 입력"], key="pa_mode", horizontal=True)
     manual = st.number_input("수동 기준 이동시간 (분)", min_value=.1, max_value=1440., value=15., key="pa_manual")
-    st.caption("OSRM은 실시간 혼잡·정차·합승을 보장하지 않는 경로 모형입니다. 조회 실패 시 직접 입력을 선택하세요. 기존 캐시는 읽기만 합니다.")
+    if leg["ride_min"] is not None:
+        st.caption(f"운영 노선 차내시간 {leg['ride_min']:.2f}분 = 도로 {leg['road_min']:.2f}분 + 중간 정차 {leg['dwell_min']:g}분 · {leg['method']}")
+    st.caption("OSRM은 실시간 혼잡·합승을 보장하지 않는 경로 모형입니다. 도로 모형이 없으면 직접 입력을 선택하세요.")
     cols = st.columns(4)
     with cols[0]:
         walk = st.number_input("환승 보행시간 (분)", 0., 120., 3., key="pa_walk")
@@ -94,8 +93,9 @@ def show_punctuality_analysis():
         runs = st.number_input("시뮬레이션 반복 횟수", 1, 100000, 1000, key="pa_runs")
     with cols[1]:
         seed = st.number_input("난수 시드", 0, 2147483647, 20261113, key="pa_seed")
-    coordinates = [[records.loc[key, "latitude"], records.loc[key, "longitude"]] for key in (origin, destination)]
-    inputs = dict(origin=origin, destination=destination, coordinates=coordinates, day=day, start_clock=start_clock,
+    coordinates = [[leg["latitude"], leg["longitude"]], [leg["destination_latitude"], leg["destination_longitude"]]]
+    label = lambda key: f"{leg['stop_name']} ({key})" if key == origin else f"{leg['destination_name']} ({key})"
+    inputs = dict(route_id=route_id, ride_min=leg["ride_min"], origin=origin, destination=destination, coordinates=coordinates, day=day, start_clock=start_clock,
                   target_offset=target_offset, target_clock=target_clock, tram_offset=tram_offset,
                   tram_clock=tram_clock, mode=mode_label, online=online, manual=manual, walk=walk,
                   buffer=buffer, tolerance=tolerance, single_delay=single_delay, selected=selected,
@@ -106,12 +106,15 @@ def show_punctuality_analysis():
     if not requested and saved is None:
         st.info("입력을 설정한 뒤 실행하세요. 현재 입력과 다른 이전 결과는 대시보드에서 실행 당시 조건과 함께 확인할 수 있습니다.")
         return
-    if origin == destination:
-        st.error("출발 정류장과 도착 정류장을 다르게 선택하세요.")
-        return
     try:
-        route, error = (resolve_duration("manual" if mode_label == "직접 입력" else "osrm", manual, coordinates, online)
-                        if requested else (saved["value"]["route"], None))
+        if not requested:
+            route, error = saved["value"]["route"], None
+        elif mode_label == "직접 입력":
+            route, error = resolve_duration("manual", manual, coordinates)
+        elif leg["ride_min"] is None:
+            route, error = None, f"{leg_label(leg)}: 도로 모형이 없어 운영 노선 차내시간을 계산할 수 없습니다. 직접 입력을 선택하세요."
+        else:
+            route, error = dict(duration_min=leg["ride_min"], source=leg["source"], retrieved_at=leg["retrieved_at"]), None
         if error:
             st.error(error)
             return
@@ -176,7 +179,7 @@ def show_punctuality_analysis():
               "transfer_failure_pct": "예측 환승 실패 확률(%)", "runs": "반복 횟수", "result_type": "결과 유형"}
     st.subheader("시나리오별 분석표 · 시뮬레이션 결과")
     st.dataframe(summary.rename(columns=labels), hide_index=True)
-    metadata = dict(result_type="research_simulation", origin=origin, destination=destination, coordinates=coordinates,
+    metadata = dict(result_type="research_simulation", route_id=route_id, origin=origin, destination=destination, coordinates=coordinates,
                     departure=departure.isoformat(), target=target.isoformat(), tram=tram.isoformat(),
                     tram_source="사용자 지정 가상 시각 · 실제 시간표 아님", route=route,
                     delay_model=asdict(model), runs=int(runs), seed=int(seed),

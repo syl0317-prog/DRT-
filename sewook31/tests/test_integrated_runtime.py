@@ -148,7 +148,7 @@ class IntegrationTests(unittest.TestCase):
         for option in app.radio(key='operations_section').options:
             app.radio(key='operations_section').set_value(option).run();check()
         menu('시뮬레이션 및 정시성 분석')
-        for option in ['기존 정시성 검증','정시성 계산·검증 결과','예약 기반 합승','운영전략 비교']:
+        for option in app.radio(key='analysis_section').options:
             app.radio(key='analysis_section').set_value(option).run();check()
         menu('데이터 및 시스템 관리');menu('통합 대시보드')
 

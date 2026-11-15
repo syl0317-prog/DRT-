@@ -35,11 +35,26 @@ def show_punctuality():
         key="punct_csv",
     )
 
+    if "노선" not in data:
+        st.warning("이전 형식 결과입니다(운영 노선 미반영). scripts/punctuality_calc.py를 다시 실행해 주세요.")
+        data = data.assign(노선="미지정")
+    st.caption("정류장·방문 순서·최종 목적지는 운영 웹의 R01~R04 노선과 같은 원본(sequential_routes.route_plans)을 사용합니다.")
+    from modules.punctuality_routes import route_legs
+    _legs, problems = route_legs()
+    if problems:
+        with st.expander(f"도로 모형이 없어 계산에서 제외된 정류장 {len(problems)}건"):
+            for problem in problems:
+                st.write("· " + problem)
+
     col1, col2 = st.columns(2)
     with col1:
+        route_id = st.selectbox("노선", sorted(data["노선"].astype(str).unique()), key="punct_route")
+        data = data[data["노선"].astype(str) == route_id]
         period = st.selectbox("시간대", sorted(data["시간대"].unique()), key="punct_period")
         segment = st.selectbox("구간유형", sorted(data["구간유형"].unique()), key="punct_segment")
         stop = st.selectbox("정류장", sorted(data["정류장"].unique()), key="punct_stop")
+        if "환승역" in data:
+            st.caption(f"환승(최종 목적지): {data.loc[data['정류장'] == stop, '환승역'].iloc[0]}")
     with col2:
         passengers = st.selectbox(
             "추가 지연(승하차·신호 등)", sorted(data["합승수"].unique()),

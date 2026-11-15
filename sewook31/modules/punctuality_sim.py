@@ -6,9 +6,8 @@ from statistics import fmean, multimode
 import numpy as np
 import pandas as pd
 from modules.settings import PROJECT_DIR, PARAMS_FILE, load_params, setting, stops_path
-from modules.route_engine import calculate_road_route
 
-FIELDS = ['정류장', '시간대', '여유분', '합승수', '놓칠확률', '평균대기분', '기준대기분', '가정']
+FIELDS = ['노선', '정류장', '환승역', '시간대', '여유분', '합승수', '놓칠확률', '평균대기분', '기준대기분', '가정']
 
 def calibrate(persist=False):
     path = PROJECT_DIR / 'data/assumptions/travel_time_observed.csv'
@@ -58,34 +57,30 @@ def simulate_minutes(T, headway, buffer, shared, k, dwell, detour, runs, seed):
     arrivals = pickup + T*factors + dwell + shared*detour
     return arrival_metrics(arrivals, headway)
 
-def generate(k=None, allow_network=False):
+def generate(k=None, allow_network=False, legs=None):
+    """R01~R04 boarding stop → route final destination, same plans as the operating web."""
     calibrated, n, status, source = calibrate()
     k = tuple(k or calibrated)
-    assumption = f'{source}; k={k}; 정류장 및 트램 좌표 unverified; 출발=-(OSRM+정차+여유); 합승 추가시간은 예정출발에 미반영; 가상시간표'
+    assumption = f'{source}; k={k}; 운영 노선 R01~R04 정류장·순서·최종 목적지; 출발=-(차내시간+정차+여유); 합승 추가시간은 예정출발에 미반영; 가상시간표'
     timetable = load_periods()
-    stops = pd.read_csv(stops_path(), encoding='utf-8-sig')
-    canonical = json.loads((PROJECT_DIR / 'data/processed/wirye_tram_official_stations.geojson').read_text(encoding='utf-8'))['features']
-    trams = pd.DataFrame([{'stop_name': f['properties']['station_name'], 'longitude': f['geometry']['coordinates'][0], 'latitude': f['geometry']['coordinates'][1]} for f in canonical])
+    if legs is None:
+        from modules.punctuality_routes import route_legs
+        legs, _problems = route_legs(allow_network=allow_network)
     rows = []
-    for _, stop in stops[stops.stop_type == 'drt'].iterrows():
-        if trams.empty or pd.isna(stop.latitude) or pd.isna(stop.longitude):
-            route = None
-        else:
-            from modules.spatial import haversine
-            tram = min(trams.to_dict('records'), key=lambda t: haversine((stop.longitude, stop.latitude), (t['longitude'], t['latitude'])))
-            route = calculate_road_route([[stop.latitude, stop.longitude], [tram['latitude'], tram['longitude']]], allow_network=allow_network)
+    for leg in legs:
+        name = f"{leg['stop_name']} ({leg['stop_id']})"
         for period, spec in timetable.items():
             H = spec['headway_minutes']
             for shared in range(3):
                 for b in range(11):
-                    if route is None:
+                    if leg['ride_min'] is None:
                         miss, wait = 'missing', 'missing'
-                        note = '계산 불가: OSRM missing; ' + assumption
+                        note = f"계산 불가: 도로 모형 미확인({leg['missing'] or '경로 없음'}); " + assumption
                     else:
-                        miss, wait = simulate_minutes(route['duration_min'], H, b, shared, k,
+                        miss, wait = simulate_minutes(leg['ride_min'], H, b, shared, k,
                             setting('dwell_minutes'), setting('detour_per_passenger'), setting('simulation_runs'), setting('random_seed'))
-                        note = assumption + f'; OSRM={route["duration_min"]:.6f}분; 환승역={tram["stop_name"]}'
-                    rows.append(dict(zip(FIELDS, [stop.stop_name, period, b, shared, miss, wait, H/2, note])))
+                        note = assumption + f"; 차내시간={leg['ride_min']:.6f}분({leg['source']}); 환승역={leg['destination_name']}"
+                    rows.append(dict(zip(FIELDS, [leg['route_id'], name, leg['destination_name'], period, b, shared, miss, wait, H/2, note])))
     return pd.DataFrame(rows, columns=FIELDS)
 
 def save_results(frame):

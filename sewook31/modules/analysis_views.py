@@ -15,7 +15,7 @@ def show_punctuality():
     if not limits[0] <= limits[1] <= limits[2]:
         st.error('최소 ≤ 최빈 ≤ 최대를 만족해야 합니다.')
         return
-    st.caption('예정 픽업=트램 출발−(OSRM+정차+여유). 합승 우회는 추가 지연으로 비교합니다. 정시성 분석은 기준 GeoJSON 12개 중 직선 최근접역을 사용합니다. 기존 예약의 환승거점 2개와 별도입니다.')
+    st.caption('예정 픽업=트램 출발−(OSRM+정차+여유). 합승 우회는 추가 지연으로 비교합니다. 정시성 분석은 운영 웹과 같은 R01~R04 노선의 최종 목적지(T01·T02·복정역)를 사용합니다.')
     frame = generate(limits, allow_network=st.checkbox('캐시 없는 경로 OSRM 조회', value=False))
     if frame.empty:
         st.warning('정류장 missing')

@@ -110,7 +110,7 @@ def show_reservation_list():
 
 def show_simulation_compatibility():
     streamlit.subheader("통합 예약의 시뮬레이션 적용 범위")
-    streamlit.info("R03·R04 정시성 시뮬레이션 미지원 · 추가 검증 필요")
+    streamlit.info("예약 기반 합승 시뮬레이션은 R02 예약만 지원합니다 · R01~R04 정시성은 '정시성 계산·검증 결과'에서 확인하세요.")
     try:
         records=UnifiedReservations().list_records()
         active=[r for r in records if r["status"] in ACTIVE]
