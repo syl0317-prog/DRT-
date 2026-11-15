@@ -5,12 +5,8 @@ import pandas as pd
 from modules.session_ui import persistent_ui as st
 import streamlit as streamlit
 
-<<<<<<< HEAD
 RESULTS = Path(__file__).resolve().parents[2] / "data" / "processed" / "punctuality_results.csv"
 CHART = Path(__file__).resolve().parents[2] / "data" / "processed" / "punctuality_chart.png"
-=======
-RESULTS = Path(__file__).resolve().parents[2] / "data" / "processed" / "punctuality_main_results.csv"
->>>>>>> 038500dfc6e855e711352be5957a5e7a905b15a6
 
 
 @streamlit.cache_data(show_spinner=False)
@@ -29,14 +25,17 @@ def show_punctuality():
         st.warning("계산 결과가 없습니다. scripts/punctuality_calc.py를 실행해 주세요.")
         return
 
-<<<<<<< HEAD
     col1, col2 = st.columns(2)
     with col1:
         period = st.selectbox("시간대", sorted(data["시간대"].unique()), key="punct_period")
         segment = st.selectbox("구간유형", sorted(data["구간유형"].unique()), key="punct_segment")
         stop = st.selectbox("정류장", sorted(data["정류장"].unique()), key="punct_stop")
     with col2:
-        passengers = st.selectbox("합승 인원", sorted(data["합승수"].unique()), key="punct_passengers")
+        passengers = st.selectbox(
+            "추가 지연(승하차·신호 등)", sorted(data["합승수"].unique()),
+            format_func=lambda value: {0: "없음", 1: "보통(+2분)", 2: "큼(+4분, 최악 가정)"}[value],
+            key="punct_passengers",
+        )
         available_levels = [lvl for lvl in ["mode", "max"] if lvl in data["혼잡수준"].unique()]
         level = st.selectbox("혼잡 수준", available_levels, index=0, key="punct_level")
 
@@ -47,24 +46,11 @@ def show_punctuality():
         & (data["합승수"] == passengers)
         & (data["혼잡수준"] == level)
     ]
-=======
-    st.download_button("전체 분석 결과 CSV 다운로드", data.to_csv(index=False).encode("utf-8-sig"),
-                       file_name="punctuality_results.csv", mime="text/csv", key="punct_csv")
-    segment = st.selectbox("구간 유형", sorted(data["구간유형"].unique()), key="punct_segment")
-    period = st.selectbox("시간대", sorted(data["시간대"].unique()), key="punct_period")
-    stop = st.selectbox("정류장", sorted(data["정류장"].unique()), key="punct_stop")
-    passengers = st.selectbox("합승 인원", sorted(data["합승수"].unique()), key="punct_passengers")
-    level = st.selectbox("혼잡 수준", ["min", "mode", "max"], index=1, key="punct_level")
-    subset = data[(data["시간대"] == period) & (data["정류장"] == stop)
-                  & (data["구간유형"] == segment)
-                  & (data["합승수"] == passengers) & (data["혼잡수준"] == level)]
->>>>>>> 038500dfc6e855e711352be5957a5e7a905b15a6
     if subset.empty:
         st.info("선택한 조건의 결과가 없습니다.")
         return
 
     buffers = sorted(subset["여유분"].unique())
-<<<<<<< HEAD
     selected_buffer = st.slider(
         "환승 여유시간 b (분)",
         min_value=int(min(buffers)),
@@ -72,9 +58,6 @@ def show_punctuality():
         value=3,
         key="punct_buffer"
     )
-=======
-    selected_buffer = st.selectbox("환승 여유시간 b (분)", buffers, key="punct_buffer")
->>>>>>> 038500dfc6e855e711352be5957a5e7a905b15a6
     row = subset[subset["여유분"] == selected_buffer].iloc[0]
     delta = float(row["기준대기분"]) - float(row["평균대기분"])
     delta_text = f"-{delta:.2f}" if delta >= 0 else f"+{abs(delta):.2f}"
@@ -111,5 +94,6 @@ def show_punctuality():
     st.caption(
         "혼잡 계수는 위례 진입 간선 12개 구간의 시간대별 속도 기반(평일, 시간 구간 대응은 추정)이고, "
         "단지 내 변동계수와 합승 지연은 답사 1건과 가정에 기반한 시뮬레이션입니다. "
-        "실측 검증은 후속 과제입니다."
+        "실측 검증은 후속 과제입니다. "
+        "추가 지연은 승하차·신호 대기 등을 한꺼번에 가정한 값으로, 실측 전 가정입니다."
     )
