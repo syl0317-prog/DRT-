@@ -4,6 +4,7 @@ import folium
 from modules.independent_routes import RouteStore
 from modules.route_engine import calculate_road_route
 from modules.fixed_routes import COLORS, DESTINATIONS, resolve_stop
+from modules.stop_labels import stop_label
 
 
 def route_layers(originals, state, order=None, destination=None, allow_network=False):
@@ -24,7 +25,7 @@ def add_layers(map_object, routes, visible):
         rid = route['route_id']; color = COLORS[rid]
         layer = folium.FeatureGroup(name=f'{rid} · 고정 목적지', show=rid in visible)
         for index,stop in enumerate(route['stops'],1):
-            label = html.escape(f"{index}. {stop['name']} ({stop['stop_id']}) · {rid} · 최종 목적지 {DESTINATIONS[rid]}")
+            label = html.escape(f"{index}. {stop_label(stop['stop_id'], stop['name'])} · {rid} · 최종 목적지 {DESTINATIONS[rid]}")
             if stop.get('latitude') is None or stop.get('longitude') is None:
                 continue
             if stop.get('coordinate_status'):

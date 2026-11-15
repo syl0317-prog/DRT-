@@ -8,6 +8,7 @@ import streamlit as st
 from streamlit_folium import st_folium
 
 from modules.route_engine import calculate_road_route
+from modules.stop_labels import stop_label
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,9 +49,7 @@ def show_legacy_drt_map():
         subset=["latitude", "longitude"]
     ).copy()
 
-    stop_names = dict(
-        zip(stops["stop_id"], stops["stop_name"])
-    )
+    stop_names = {row['stop_id']: stop_label(row['stop_id'],row['stop_name']) for _,row in stops.iterrows()}
 
     # 노선 설정
     st.markdown("### DRT 운행 노선 설정")
@@ -125,8 +124,8 @@ def show_legacy_drt_map():
                 stop["latitude"],
                 stop["longitude"]
             ],
-            tooltip=stop["stop_name"],
-            popup=f"{stop['stop_name']} / {stop['zone']}",
+            tooltip=stop_label(stop['stop_id'],stop['stop_name']),
+            popup=f"{stop_label(stop['stop_id'],stop['stop_name'])} / {stop['zone']}",
             icon=folium.Icon(color=color)
         ).add_to(m)
 

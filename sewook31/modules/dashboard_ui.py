@@ -7,6 +7,7 @@ from modules.unified_reservations import UnifiedReservations
 from modules.reservation_audit import audit_service,audit_summary,display_rows
 from modules.sequential_routes import route_plans
 from modules.settings import stops_path,setting
+from modules.stop_labels import stop_label
 
 
 def show_policy_warning(rows,key='policy'):
@@ -44,7 +45,7 @@ def show_operating_dashboard(research_renderer):
                 continue
             with st.container(border=True):
                 st.markdown(f"**{p['route_id']} — {p['name']} · 검증 대기**")
-                st.write(' → '.join(f"{s['name']} ({s['stop_id']})" for s in p['stops']))
+                st.write(' → '.join(stop_label(s['stop_id'],s['name']) for s in p['stops']))
                 st.caption('정류장 후보 2개 · 최종 목적지 복정역 · 차량 접근·정차 검증 필요 · 배차 확정 불가')
                 if p.get('road_model_complete'):
                     st.caption(f"OSRM 도로 모형 확인 · {p['distance_km']:.2f} km · {p['duration_min']:.1f}분 · 실측 아님")

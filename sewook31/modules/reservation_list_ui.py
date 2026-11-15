@@ -13,6 +13,7 @@ KST=ZoneInfo('Asia/Seoul')
 
 def show_booking_list(service):
     st.subheader('예약 목록')
+    st.caption('승차 이름은 현재 명칭 후보와 ID입니다. 저장 당시 이름은 원본 정보에서 별도로 확인하며 변경하지 않습니다.')
     try:
         records=audit_service(service)
         a,b,c=st.columns(3)

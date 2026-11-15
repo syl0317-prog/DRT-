@@ -110,10 +110,11 @@ def plans():
 def show_validation():
     import streamlit as st
     import pandas as pd
+    from modules.stop_labels import stop_label
     st.caption('신규 후보 노선 · 기존 R01/R02 원본과 별도 · R03 진한 파랑 / R04 초록')
     for plan in plans():
         st.write(f"{plan['route_id']} — {plan['name']}")
-        st.dataframe(pd.DataFrame([{'순서': i, '정류장': s['stop_id'], '이름': s['name'],
+        st.dataframe(pd.DataFrame([{'순서': i, '정류장': s['stop_id'], '이름': stop_label(s['stop_id'],s['name']),
             '위도': s['latitude'], '경도': s['longitude'], '좌표 상태': s['coordinate_status'],
             '차량 접근': s['access_status'],
             '근거': s['source']} for i, s in enumerate(plan['stops'], 1)]), hide_index=True)
