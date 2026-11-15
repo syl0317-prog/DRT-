@@ -62,27 +62,11 @@
     "status": "assumption",
     "source": "기존 앱 기본 설정"
   },
-<<<<<<< HEAD
-  "trip_noise_min": {
-    "value": 1.0,
-    "status": "assumption",
-    "source": "신호 대기 및 승하차 시간 변동 균등분포 ±1분"
-  },
-=======
->>>>>>> 038500dfc6e855e711352be5957a5e7a905b15a6
   "drt_dispatch_headway_min": {
     "value": null,
     "status": "missing",
     "source": "DRT 배차 간격 자료 없음"
   },
-<<<<<<< HEAD
-  "stops_file": "drt_stops_v2.csv",
-  "disabled_scenarios": [
-    "평일 낮 호출형",
-    "주말"
-  ]
-}
-=======
   "transfer_buffer": {
     "value": 5,
     "status": "assumption",
@@ -114,4 +98,3 @@
     "source": "Temporary demo default; verify before analysis"
   }
 }
->>>>>>> 038500dfc6e855e711352be5957a5e7a905b15a6
