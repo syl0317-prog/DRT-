@@ -74,7 +74,9 @@ class TeamRuntimeTests(unittest.TestCase):
             with closing(sqlite3.connect(paths[0])) as connection:
                 state = json.loads(connection.execute("SELECT payload FROM registry").fetchone()[0])
                 self.assertEqual(len(state["stops"]), 4)
-                self.assertEqual(len(state["segments"]), 3)
+                self.assertEqual([(g["origin"], g["destination"]) for g in state["segments"]],
+                                 [("V05", "V06"), ("V06", "V07"), ("V07", "V08"), ("V08", "T02")])
+                self.assertEqual((state["routes"][0]["transfer_stop_id"], state["routes"][0]["active"], state["routes"][0]["vehicles"]), ("T02", False, []))
                 self.assertEqual(state["bookings"], [])
             with closing(sqlite3.connect(paths[1])) as connection:
                 self.assertEqual(connection.execute("SELECT count(*) FROM requests").fetchone()[0], 0)

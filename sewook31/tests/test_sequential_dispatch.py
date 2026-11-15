@@ -34,6 +34,10 @@ class SequentialDispatchTests(unittest.TestCase):
         self.network=self.stack.enter_context(patch('requests.sessions.Session.request',side_effect=AssertionError('network forbidden')))
         self.store=RouteStore();self.service=UnifiedReservations()
         self.future=(datetime.now(timezone.utc)+timedelta(days=2)).replace(microsecond=0)
+        # Fixture state: R02 without the V08→T02 tail and without vehicles, regardless of the local registry.
+        with self.store.edit(self.store.snapshot()['revision']) as state:
+            state['segments']=[s for s in state['segments'] if not (s['route_id']=='R02' and s['origin']=='V08')]
+            state['routes'][0].update(transfer_stop_id=None,end_stop='V08',vehicles=[],active=False)
 
     def tearDown(self):
         self.assertEqual(self.csv.read_bytes(),self.csv_before)
@@ -44,6 +48,7 @@ class SequentialDispatchTests(unittest.TestCase):
         with self.store.edit(self.store.snapshot()['revision']) as state:
             route=state['routes'][0]
             route.update(active=True,transfer_stop_id='T02',end_stop='T02')
+            state['segments']=[s for s in state['segments'] if not (s['route_id']=='R02' and s['origin']=='V08')]
             state['segments'].append(dict(route_id='R02',position=4,origin='V08',destination='T02',duration_min=2,distance_km=.2,
                 coordinates=[state['segments'][-1]['coordinates'][-1],[37.47033951973533,127.1419490406675]],source='TEST ONLY SYNTHETIC'))
 
@@ -165,6 +170,7 @@ class SequentialDispatchTests(unittest.TestCase):
         self.assertEqual(len(app.selectbox(key='ua_origin').options),12)
         run=self.make_run()
         app.run();app.selectbox(key='ua_origin').set_value('D01').run()
+        app.radio(key='ua_time_mode').set_value('직접 시간 입력').run()
         app.selectbox(key='ua_run').set_value(run['run_id']).run()
         app.button(key='ua_submit').click().run();check()
         app.selectbox(key='ua_origin').set_value('D03').run()

@@ -28,6 +28,10 @@ class IntegrationTests(unittest.TestCase):
         if SETTINGS_FILE == ROOT/'data/derived/new_route_settings/locations.json':
             self.stack.enter_context(patch('modules.new_stop_settings.SETTINGS_FILE',self.temp/'locations.json'))
         self.store=RouteStore();self.service=UnifiedReservations();self.future=datetime.now(timezone.utc)+timedelta(days=2)
+        # Fixture state: R02 without the V08→T02 tail and without vehicles, regardless of the local registry.
+        with self.store.edit(self.store.snapshot()['revision']) as state:
+            state['segments']=[s for s in state['segments'] if not (s['route_id']=='R02' and s['origin']=='V08')]
+            state['routes'][0].update(transfer_stop_id=None,end_stop='V08',vehicles=[],active=False)
 
     def tearDown(self):
         self.assertEqual(self.csv.read_bytes(),self.original)
@@ -41,6 +45,7 @@ class IntegrationTests(unittest.TestCase):
         with self.store.edit(self.store.snapshot()['revision']) as state:
             route=state['routes'][0]
             route.update(vehicles=[dict(vehicle_id='R02-TEST',capacity=1)],transfer_stop_id='T02',end_stop='T02')
+            state['segments']=[s for s in state['segments'] if not (s['route_id']=='R02' and s['origin']=='V08')]
             state['segments'].append(dict(route_id='R02',position=4,origin='V08',destination='T02',
                 duration_min=2,distance_km=.2,coordinates=[state['segments'][-1]['coordinates'][-1],[37.47034,127.14195]],source='TEST ONLY'))
         self.store.set_active('R02',True,self.store.snapshot()['revision'])

@@ -48,49 +48,62 @@ def show_booking_form():
             route=next((r for r in service.routes.snapshot()["routes"] if r["route_id"]=="R02"),None)
             if not route or not route["active"] or not route["vehicles"] or route.get("transfer_stop_id") != destination:
                 streamlit.warning("R02 경로·운행 조건 확인 전까지 배차 대기로 접수합니다.")
-        future=datetime.now(KST)+timedelta(hours=1)
-        left,right=streamlit.columns(2)
-        with left:
-            day=st.date_input("탑승 희망 날짜",future.date(),key="ua_day")
-        with right:
-            clock=st.time_input("탑승 희망 시간 (한국시간)",future.time().replace(second=0,microsecond=0,tzinfo=None),key="ua_time")
-        passenger_col,run_col=streamlit.columns([.65,1.35])
-        with passenger_col:
+        time_mode=st.radio("시간 지정 방식",["트램 연계 시간표 (출퇴근)","직접 시간 입력"],horizontal=True,key="ua_time_mode")
+        run_id=None;tram_departure=None;online=False;repeat_days=1;peak=None
+        if time_mode=="트램 연계 시간표 (출퇴근)":
+            peak=_peak_slot(route_id,origin)
+            if peak is None:
+                streamlit.caption("시간표를 사용할 수 없어 직접 시간 입력으로 접수합니다.")
+        if peak is not None:
+            request_time,tram_departure,repeat_days=peak["request_time"],peak["tram_departure"],peak["repeat_days"]
             passengers=st.number_input("탑승 인원",1,100,1,key="ua_passengers")
-        online=False
-        request_time=datetime.combine(day,clock,KST)
-        from modules.fixed_dispatch import boarding_at
-        runs=[r for r in service.operations()['runs'] if r['route_id']==route_id and r['active'] and datetime.fromisoformat(r['departure'])>datetime.now(KST)]
-        run_lookup={r['run_id']:r for r in runs}
-        with run_col:
-            run_id=st.selectbox('등록 운행편',[None]+list(run_lookup),
-                format_func=lambda k:'미선택 · 검토 접수' if k is None else f"{run_lookup[k]['vehicle_id']} · {boarding_at(run_lookup[k],origin).astimezone(KST):%m/%d %H:%M} 승차"+(' · 시험' if run_lookup[k]['test_only'] else ''),key='ua_run')
-        if run_id:
-            request_time=boarding_at(run_lookup[run_id],origin).astimezone(KST)
-            streamlit.info(f'선택 운행편의 {origin} 예정 승차 시각 {request_time:%Y-%m-%d %H:%M:%S}을 적용합니다. 정류장 방문 순서는 고정됩니다.')
-        tram_departure=None
-        if destination in {s["stop_id"] for s in catalog["trams"] if s.get("stop_type", "tram") == "tram"}:
-            enabled=st.checkbox("가상 트램 출발 목표 시각 입력",key="ua_tram_enabled")
-            if enabled:
-                default=request_time+timedelta(minutes=30)
-                target_day=st.date_input("가상 트램 출발 날짜",default.date(),key="ua_tram_day")
-                target_clock=st.time_input("가상 트램 출발시간",default.time().replace(tzinfo=None),key="ua_tram_time")
-                tram_departure=datetime.combine(target_day,target_clock,KST)
-                streamlit.caption("사용자가 정한 가상 시각이며 실제 시간표가 아닙니다.")
-        inputs=[route_id,origin,destination,request_time.isoformat(),int(passengers),tram_departure.isoformat() if tram_departure else None,run_id]
+        else:
+            future=datetime.now(KST)+timedelta(hours=1)
+            left,right=streamlit.columns(2)
+            with left:
+                day=st.date_input("탑승 희망 날짜",future.date(),key="ua_day")
+            with right:
+                clock=st.time_input("탑승 희망 시간 (한국시간)",future.time().replace(second=0,microsecond=0,tzinfo=None),key="ua_time")
+            passenger_col,run_col=streamlit.columns([.65,1.35])
+            with passenger_col:
+                passengers=st.number_input("탑승 인원",1,100,1,key="ua_passengers")
+            online=False
+            request_time=datetime.combine(day,clock,KST)
+            from modules.fixed_dispatch import boarding_at
+            runs=[r for r in service.operations()['runs'] if r['route_id']==route_id and r['active'] and datetime.fromisoformat(r['departure'])>datetime.now(KST)]
+            run_lookup={r['run_id']:r for r in runs}
+            with run_col:
+                run_id=st.selectbox('등록 운행편',[None]+list(run_lookup),
+                    format_func=lambda k:'미선택 · 검토 접수' if k is None else f"{run_lookup[k]['vehicle_id']} · {boarding_at(run_lookup[k],origin).astimezone(KST):%m/%d %H:%M} 승차"+(' · 시험' if run_lookup[k]['test_only'] else ''),key='ua_run')
+            if run_id:
+                request_time=boarding_at(run_lookup[run_id],origin).astimezone(KST)
+                streamlit.info(f'선택 운행편의 {origin} 예정 승차 시각 {request_time:%Y-%m-%d %H:%M:%S}을 적용합니다. 정류장 방문 순서는 고정됩니다.')
+            tram_departure=None
+            if destination in {s["stop_id"] for s in catalog["trams"] if s.get("stop_type", "tram") == "tram"}:
+                enabled=st.checkbox("가상 트램 출발 목표 시각 입력",key="ua_tram_enabled")
+                if enabled:
+                    default=request_time+timedelta(minutes=30)
+                    target_day=st.date_input("가상 트램 출발 날짜",default.date(),key="ua_tram_day")
+                    target_clock=st.time_input("가상 트램 출발시간",default.time().replace(tzinfo=None),key="ua_tram_time")
+                    tram_departure=datetime.combine(target_day,target_clock,KST)
+                    streamlit.caption("사용자가 정한 가상 시각이며 실제 시간표가 아닙니다.")
+        inputs=[route_id,origin,destination,request_time.isoformat(),int(passengers),tram_departure.isoformat() if tram_departure else None,run_id,repeat_days]
         fingerprint=signature(inputs)
         tokens=streamlit.session_state.setdefault("ua_request_tokens",{})
         token=tokens.setdefault(fingerprint,'ui:'+fingerprint)
         if streamlit.button("예약 신청",key="ua_submit",type="primary"):
-            try:
-                record=service.create(origin,destination,request_time,int(passengers),token,allow_network=online,tram_departure=tram_departure,route_id=route_id,run_id=run_id)
-                streamlit.session_state["ua_last_result"]=record
-                from modules.reservation_audit import audit_records
-                audited=audit_records([record],service.routes.original_loader(),service.routes.snapshot())[0]
-                streamlit.success(f"{audited['display_stage']} · 저장 완료")
-                streamlit.info(audited['review_reason'])
-            except (RouteError,OSError,sqlite3.Error,ValueError) as error:
-                streamlit.error(str(error))
+            if peak is not None and repeat_days>1:
+                _submit_repeated(service,route_id,origin,destination,peak,int(passengers),token)
+            else:
+                try:
+                    record=service.create(origin,destination,request_time,int(passengers),token,allow_network=online,tram_departure=tram_departure,route_id=route_id,run_id=run_id)
+                    streamlit.session_state["ua_last_result"]=record
+                    from modules.reservation_audit import audit_records
+                    audited=audit_records([record],service.routes.original_loader(),service.routes.snapshot())[0]
+                    streamlit.success(f"{audited['display_stage']} · 저장 완료")
+                    streamlit.info(audited['review_reason'])
+                except (RouteError,OSError,sqlite3.Error,ValueError) as error:
+                    streamlit.error(str(error))
         last=streamlit.session_state.get("ua_last_result")
         if last:
             with streamlit.expander("최근 접수 결과 및 배차 판정"):
@@ -102,6 +115,69 @@ def show_booking_form():
                 streamlit.info("새 요청이 준비됐습니다. 예약 신청을 눌러 접수하세요.")
     except (RouteError,OSError,sqlite3.Error,ValueError,KeyError) as error:
         streamlit.error(f"정류장 또는 예약 입력을 확인하세요: {error}")
+
+def _peak_slot(route_id,origin):
+    """Tram-anchored slot picker: boarding window, arrival range, transfer probability, repeat."""
+    from modules.peak_operations import PERIODS, next_weekdays, timetable
+    left,middle=streamlit.columns(2)
+    with left:
+        default_day=next_weekdays(datetime.now(KST).date()+timedelta(days=1),1)[0]
+        day=st.date_input("탑승 날짜 (평일)",default_day,key="ua_peak_day")
+    with middle:
+        period=st.selectbox("시간대",list(PERIODS),key="ua_peak_period")
+    try:
+        table=timetable(route_id,day,period)
+    except (ValueError,OSError,KeyError) as error:
+        streamlit.warning(f"시간표를 만들 수 없습니다: {error}")
+        return None
+    now=datetime.now(KST)
+    options={}
+    for trip in table["trips"]:
+        window=next(w for w in trip["windows"] if w["stop_id"]==origin)
+        if window["start"]>now:
+            options[trip["trip"]]=(trip,window)
+    if not options:
+        streamlit.warning("선택한 날짜·시간대에 예약 가능한 편이 없습니다. 다른 날짜를 선택하세요.")
+        return None
+    def fmt(key):
+        trip,window=options[key]
+        end="" if window["start"]==window["end"] else "~"+window["end"].strftime("%H:%M")
+        return f"{trip['tram_departure']:%H:%M} 트램 ← {window['start']:%H:%M}{end} 승차"
+    selected=st.selectbox(f"{table['station']}역 트램 연계 편",list(options),format_func=fmt,key="ua_peak_trip")
+    trip,window=options[selected]
+    end="" if window["start"]==window["end"] else f"~{window['end']:%H:%M}"
+    streamlit.info(f"승차 타임윈도우 {window['start']:%H:%M}{end} · {window['start']:%H:%M}까지 정류장에 나와 주세요.\n\n"
+                   f"{table['station']}역 도착 예상 {trip['arrival_start']:%H:%M}~{trip['arrival_end']:%H:%M} · "
+                   f"{trip['tram_departure']:%H:%M} 트램 환승 성공 예측 {trip['success_pct']:.0f}% · 평균 트램 대기 {trip['mean_tram_wait']:.1f}분")
+    streamlit.caption(f"혼잡 반영 95% 통행시간 {table['model']['q95']:.1f}분 기준 역산 · {table['model']['basis']} · 가상 트램 시간표")
+    repeat=st.radio("반복 예약",["이번 1회","다음 날까지 (평일 2일)","1주일 (평일 5일)"],horizontal=True,key="ua_repeat")
+    repeat_days={"이번 1회":1,"다음 날까지 (평일 2일)":2,"1주일 (평일 5일)":5}[repeat]
+    if repeat_days>1:
+        days=next_weekdays(day,repeat_days)
+        streamlit.caption("같은 트램 편으로 예약: "+", ".join(f"{d:%m/%d}" for d in days))
+    return dict(request_time=window["start"],tram_departure=trip["tram_departure"],repeat_days=repeat_days,
+                trip=trip["trip"],day=day,period=period)
+
+
+def _submit_repeated(service,route_id,origin,destination,peak,passengers,token):
+    from modules.peak_operations import next_weekdays, timetable
+    saved,failed=[],[]
+    for day in next_weekdays(peak["day"],peak["repeat_days"]):
+        try:
+            table=timetable(route_id,day,peak["period"])
+            trip=next(t for t in table["trips"] if t["trip"]==peak["trip"])
+            window=next(w for w in trip["windows"] if w["stop_id"]==origin)
+            record=service.create(origin,destination,window["start"],passengers,f"{token}:{day.isoformat()}",
+                                  tram_departure=trip["tram_departure"],route_id=route_id)
+            saved.append(record)
+        except (RouteError,OSError,sqlite3.Error,ValueError,StopIteration) as error:
+            failed.append(f"{day:%m/%d}: {error}")
+    if saved:
+        streamlit.session_state["ua_last_result"]=saved[-1]
+        streamlit.success(f"반복 예약 {len(saved)}건 저장 · "+", ".join(datetime.fromisoformat(r['requested_at']).astimezone(KST).strftime('%m/%d %H:%M') for r in saved))
+    for message in failed:
+        streamlit.error(message)
+
 
 def show_reservation_list():
     from modules.reservation_list_ui import show_booking_list

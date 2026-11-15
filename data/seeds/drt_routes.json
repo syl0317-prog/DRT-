@@ -13,17 +13,17 @@
         "V07",
         "V08"
       ],
-      "transfer_stop_id": null,
+      "transfer_stop_id": "T02",
       "vehicles": [],
       "start_stop": "V05",
-      "end_stop": "V08",
+      "end_stop": "T02",
       "calculation_status": "calculated",
-      "distance_km": 1.3336000000000001,
-      "duration_min": 2.0,
+      "distance_km": 1.3958,
+      "duration_min": 2.0933333333333333,
       "created_at": "2026-11-13T15:52:45.488883+00:00",
-      "updated_at": "2026-11-13T15:52:45.488883+00:00",
+      "updated_at": "2026-11-15T11:39:57.215049+00:00",
       "error": null,
-      "calculated_at": "2026-11-13T07:07:51.878574+00:00",
+      "calculated_at": "2026-11-15T11:39:57.215049+00:00",
       "recovery_source": "git ee68dcc:data/derived/drt_routes/routes.sqlite3"
     }
   ],
@@ -196,7 +196,7 @@
         ]
       ],
       "source": "OSRM online driving model; not observed",
-      "retrieved_at": "2026-11-13T07:07:44.533471+00:00"
+      "retrieved_at": "2026-11-15T11:39:49.651350+00:00"
     },
     {
       "route_id": "R02",
@@ -240,7 +240,7 @@
         ]
       ],
       "source": "OSRM online driving model; not observed",
-      "retrieved_at": "2026-11-13T07:07:48.211788+00:00"
+      "retrieved_at": "2026-11-15T11:39:52.109318+00:00"
     },
     {
       "route_id": "R02",
@@ -316,7 +316,43 @@
         ]
       ],
       "source": "OSRM online driving model; not observed",
-      "retrieved_at": "2026-11-13T07:07:51.869859+00:00"
+      "retrieved_at": "2026-11-15T11:39:54.706477+00:00"
+    },
+    {
+      "route_id": "R02",
+      "position": 4,
+      "origin": "V08",
+      "destination": "T02",
+      "distance_km": 0.062200000000000005,
+      "duration_min": 0.09333333333333332,
+      "coordinates": [
+        [
+          37.470941,
+          127.142688
+        ],
+        [
+          37.470952,
+          127.142398
+        ],
+        [
+          37.470961,
+          127.142091
+        ],
+        [
+          37.470966,
+          127.142022
+        ],
+        [
+          37.470967,
+          127.141986
+        ],
+        [
+          37.470967,
+          127.141986
+        ]
+      ],
+      "source": "OSRM online driving model; not observed",
+      "retrieved_at": "2026-11-15T11:39:57.189146+00:00"
     }
   ],
   "bookings": []

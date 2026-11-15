@@ -52,7 +52,7 @@ elif menu == MENUS[1]:
             with scope('dispatch'):
                 show_dispatch()
 elif menu == MENUS[2]:
-    operation_options=['통합 노선 지도', '신규 정류장 위치 설정', '차량·운행편 등록', '운영 설정', '연구·관제 도구']
+    operation_options=['통합 노선 지도', '출퇴근 시간표·운영 조정', '신규 정류장 위치 설정', '차량·운행편 등록', '운영 설정', '연구·관제 도구']
     saved_operation=st.session_state.get('operations_section',st.session_state.get('ui_saved_values',{}).get('operations_section'))
     if saved_operation is not None and saved_operation not in operation_options:
         st.session_state.pop('operations_section',None)
@@ -63,6 +63,9 @@ elif menu == MENUS[2]:
         if selected == '통합 노선 지도':
             from modules.combined_routes import show_combined_map
             show_combined_map()
+        elif selected == '출퇴근 시간표·운영 조정':
+            from modules.peak_operations_views import show_peak_operations
+            show_peak_operations()
         elif selected == '신규 정류장 위치 설정':
             from modules.new_stop_views import show_new_stop_settings
             show_new_stop_settings()
