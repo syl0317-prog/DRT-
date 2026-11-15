@@ -2,6 +2,7 @@
 venv/
 .venv/
 .work/
+.venv-*/
 
 # 대용량 원본 데이터 및 아카이브
 data/raw/

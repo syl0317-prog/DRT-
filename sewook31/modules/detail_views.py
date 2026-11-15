@@ -117,7 +117,7 @@ def input_versions():
              PROJECT_DIR/'data/assumptions/tram_timetable.json',
              PROJECT_DIR/'data/assumptions/travel_time_observed.csv',
              PROJECT_DIR/'data/processed/wirye_tram_official_stations.geojson',
-             PROJECT_DIR/'drt_system/data/osrm_cache.json']
+             PROJECT_DIR/'sewook31/data/osrm_cache.json']
     from modules.settings import stops_path
     names.append(stops_path())
     return {str(p.relative_to(PROJECT_DIR)): hashlib.sha256(p.read_bytes()).hexdigest() for p in names if p.exists()}

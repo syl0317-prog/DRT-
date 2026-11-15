@@ -185,7 +185,7 @@ def run_audit(root, output_root=None):
     rows, report = audit(features, *(read_csv(inputs[n]) for n in
         ("gits_link_summary.csv", "gits_data_quality.csv", "vworld_gits_matching.csv")))
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")+"_"+uuid4().hex
-    out = Path(output_root or root/"drt_system/data/derived")/run_id
+    out = Path(output_root or root/"data/derived/gits_validation")/run_id
     out.mkdir(parents=True, exist_ok=False)
     with (out/"gits_link_validation.csv").open("x", encoding="utf-8-sig", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0]) if rows else ["link_id", "status"])

@@ -1,4 +1,5 @@
 """Five-menu operating workspace; research tools retain their own scopes."""
+
 import streamlit as st
 from modules.settings import setting
 from modules.session_ui import persistent_ui, scope

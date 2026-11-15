@@ -8,6 +8,23 @@
 
 ---
 
+## 3. 데이터 정리 산출물
+
+이번 데이터 정리에서 추가한 파일은 다음과 같습니다.
+
+- `DATA_CATALOG.csv`: `data/raw/`를 제외한 데이터 파일의 설명, 출처, 상태, 행수 카탈로그입니다.
+- `processed/apartment_master.csv`: 문서·K-apt·취약 아파트 자료를 합친 29개 단지 마스터입니다.
+- `processed/apartment_tram_access.csv`: 단지별 최근접 트램 거리, 추정 도보거리, 기존 버스정류장 접근성입니다.
+- `processed/virtual_stop_candidates.csv`: 취약 아파트 기반 가상정류장 후보 우선순위입니다.
+- `processed/destination_candidates.csv`: 창곡동 경계 안 소상공인 목적지 후보입니다.
+- `assumptions/tram_timetable.json`: 트램 가상 시간표와 각 값의 상태·출처입니다.
+- `assumptions/travel_time_observed.csv`: 직접 측정해 채울 이동시간 양식입니다.
+- `assumptions/travel_time_observed_todo.csv`: 이동시간 측정 대상 구간과 시간대입니다.
+- `assumptions/household_stats_todo.csv`: 직접 확인할 인구·세대·보험·시간 값 양식입니다.
+- `TODO_missing_data.md`: 발표 전 직접 확인할 데이터의 우선순위 목록입니다.
+
+생성된 CSV는 모두 UTF-8 BOM으로 저장했습니다. 기존 원본 GeoJSON과 `sewook31/data/drt_stops.csv`는 수정하지 않았습니다.
+
 ## 1. 원본 데이터 (`data/raw/`)
 
 | 폴더/파일명 | 데이터 설명 | 출처 (제공기관) |

@@ -1,0 +1,30 @@
+﻿단지명,가장가까운정거장,직선거리_m,도보거리_m,도보거리산정방법,500m이내기존버스정류장수,가장가까운기존버스정류장거리_m
+위례그린파크푸르지오아파트,107 위례중앙광장,1069.7,1390.6,assumption: 직선거리×1.3,7,5.8
+위례더힐55아파트,108 위례역사공원,1038.5,1350.1,assumption: 직선거리×1.3,11,59.6
+위례롯데캐슬아파트,107 위례중앙광장,783.4,1018.4,assumption: 직선거리×1.3,9,47.4
+위례센트럴푸르지오,108 위례역사공원,857.1,1114.2,assumption: 직선거리×1.3,15,5.8
+위례호반써밋에비뉴아파트,107 위례중앙광장,948.9,1233.5,assumption: 직선거리×1.3,11,108.6
+플로리체위례아파트,missing,,,missing,,
+위례자이더시티,107 위례중앙광장,611.4,794.8,assumption: 직선거리×1.3,9,131.5
+위례자이더파크,missing,,,missing,,
+위례센트로엘아파트,missing,,,missing,,
+위례신안인스빌아스트로아파트,missing,,,missing,,
+위례35단지아파트,missing,,,missing,,
+래미안위례아파트,missing,,,missing,,
+송파와이즈더샵아파트,missing,,,missing,,
+위례중앙푸르지오2단지아파트,missing,,,missing,,
+위례아트리버푸르지오2단지,missing,,,missing,,
+위례아트리버푸르지오1단지,missing,,,missing,,
+위례보미리즌빌아파트,missing,,,missing,,
+위례중앙푸르지오1단지아파트,missing,,,missing,,
+위례아이파크아파트,missing,,,missing,,
+위례아이파크2차아파트,missing,,,missing,,
+힐스테이트송파위례,missing,,,missing,,
+위례송파푸르지오아파트,missing,,,missing,,
+송파더센트레아파트,missing,,,missing,,
+송파꿈에그린위례24단지아파트,missing,,,missing,,
+위례센트럴자이,missing,,,missing,,
+위례자이아파트,missing,,,missing,,
+위례포레샤인23단지아파트,110 남위례역,665.0,864.4,assumption: 직선거리×1.3,11,4.7
+성남위례A2-15BL행복주택,missing,,,missing,,
+E편한세상테라스위례,missing,,,missing,,
