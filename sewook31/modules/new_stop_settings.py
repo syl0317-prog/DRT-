@@ -8,6 +8,7 @@ import math
 import os
 from pathlib import Path
 import tempfile
+import time
 from uuid import uuid4
 
 from modules.settings import PROJECT_DIR
@@ -16,6 +17,18 @@ SETTINGS_FILE = PROJECT_DIR / 'data/derived/new_route_settings/locations.json'
 STOP_IDS = ('R03-S01', 'R03-S02', 'R04-S01', 'R04-S02', 'R03-BOKJEONG', 'R04-BOKJEONG')
 SOURCE = '사용자 지정 후보 좌표'
 
+
+
+def _replace_with_retry(source, target, attempts=10):
+    """Atomic replace; Windows/OneDrive can briefly lock the target while syncing."""
+    for attempt in range(attempts):
+        try:
+            os.replace(source, target)
+            return
+        except PermissionError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(0.05 * (attempt + 1))
 
 def coordinates(latitude, longitude):
     try:
@@ -144,7 +157,7 @@ def edit(expected_revision, path=None):
             os.fsync(handle.fileno())
         if (path.read_bytes() if path.exists() else None) != original:
             raise ValueError('저장 도중 설정 파일이 변경되었습니다. 새로고침하세요.')
-        os.replace(temp, path)
+        _replace_with_retry(temp, path)
     finally:
         if temp is not None and temp.exists():
             temp.unlink()
