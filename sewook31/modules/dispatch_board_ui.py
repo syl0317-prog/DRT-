@@ -4,6 +4,7 @@ import pandas as pd
 import streamlit as st
 from modules.session_ui import persistent_ui as ui
 from modules.sequential_routes import route_plans
+from modules.stop_labels import stop_label
 
 
 def render_dispatch_board(service,tables_loader,compact=False):
@@ -40,7 +41,7 @@ def render_dispatch_board(service,tables_loader,compact=False):
         st.caption('배차 확정은 등록 차량·운행편 배정입니다. 실제 운행 상태는 데이터 없음.')
         with st.expander('경유 순서·집계 기준'):
             for p in plans:
-                st.write(p['route_id']+' · '+' → '.join(p['order']))
+                st.write(p['route_id']+' · '+' → '.join(stop_label(s['stop_id'],s['name']) for s in p['stops']))
             st.caption(f"날짜 미기록 {tables['undated']}건 및 규칙 불일치 {tables['invalid']}건은 운행편 인원에서 제외합니다. 취소 시 탑승 예정 인원을 다시 계산합니다.")
     except (OSError,ValueError,KeyError,sqlite3.Error) as error:
         st.error(f'배차 현황 조회 실패: {error}')

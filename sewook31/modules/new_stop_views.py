@@ -7,6 +7,7 @@ from modules.map_background import background_map
 from modules.new_routes import boarding_stops, destination_stops, plans, show_validation
 from modules.new_stop_settings import migrate_file, save_stop, clicked_point, query_road
 from modules.session_ui import persistent_ui as ui
+from modules.stop_labels import stop_label
 
 
 def show_new_stop_settings():
@@ -18,7 +19,7 @@ def show_new_stop_settings():
         lookup = {s['stop_id']: s for s in boarding_stops() + destination_stops()}
         ids = [rid+'-S01', rid+'-S02', rid+'-BOKJEONG']
         sid = ui.selectbox('위치 설정 대상', ids,
-            format_func=lambda k: f"{lookup[k]['name']} ({k})",
+            format_func=lambda k: stop_label(k,lookup[k]['name']),
             key='ns_stop_'+rid)
         token = f"{sid}:{data['revision']}"
         key = 'ns_click_'+token
@@ -29,7 +30,7 @@ def show_new_stop_settings():
         for stop in lookup.values():
             if stop['latitude'] is not None:
                 folium.Marker([stop['latitude'], stop['longitude']],
-                    tooltip=f"{stop['name']} ({stop['stop_id']}) · {stop['coordinate_status']}").add_to(m)
+                    tooltip=f"{stop_label(stop['stop_id'],stop['name'])} · {stop['coordinate_status']}").add_to(m)
         plan = next(p for p in plans() if p['route_id'] == rid)
         from modules.combined_routes import add_route_paths
         add_route_paths(m, plan)
@@ -52,11 +53,11 @@ def show_new_stop_settings():
         st.caption('좌표 수정 시 해당 노선의 저장 OSRM 경로만 해제됩니다. 다른 노선의 좌표·경로는 유지됩니다.')
         if st.button('후보 좌표 저장', key='ns_save', disabled=point is None):
             save_stop(sid, point['latitude'], point['longitude'], data['revision'])
-            st.session_state['ns_notice'] = f'{selected["name"]} · 사용자 지정 후보 좌표 저장 완료'
+            st.session_state['ns_notice'] = f'{stop_label(sid,selected["name"])} · 사용자 지정 후보 좌표 저장 완료'
             st.rerun()
         if st.session_state.get('ns_notice'):
             st.success(st.session_state.pop('ns_notice'))
-        st.dataframe(pd.DataFrame([{'정류장': k, '이름': lookup[k]['name'],
+        st.dataframe(pd.DataFrame([{'정류장': k, '이름': stop_label(k,lookup[k]['name']),
             '위도': lookup[k]['latitude'], '경도': lookup[k]['longitude'],
             '좌표 상태': lookup[k]['coordinate_status'], '차량 접근': lookup[k]['access_status']} for k in ids]), hide_index=True)
         st.subheader('순차 도로 경로 조회')

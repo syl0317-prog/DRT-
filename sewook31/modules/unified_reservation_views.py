@@ -9,6 +9,7 @@ import streamlit as streamlit
 from modules.session_ui import persistent_ui as st, signature
 from modules.unified_reservations import UnifiedReservations, ACTIVE
 from modules.independent_routes import RouteError, booking_schedule
+from modules.stop_labels import stop_label
 
 KST=ZoneInfo("Asia/Seoul")
 
@@ -21,6 +22,7 @@ def records_frame(records):
 def show_booking_form():
     streamlit.subheader("예약 접수")
     streamlit.caption("승차 정류장 → 노선·목적지 자동 지정 · 접수와 배차 확정은 구분됩니다.")
+    streamlit.caption('정류장 이름은 검토용 명칭 후보입니다. 확정 명칭·현장 검증 완료를 뜻하지 않습니다.')
     service=UnifiedReservations()
     try:
         catalog=service.catalog()
@@ -31,7 +33,7 @@ def show_booking_form():
             streamlit.warning(f"현재 저장된 DRT 정류장은 {len(stops)}개입니다. 미등록·잘못된 정류장 이름이나 좌표는 임의로 채우지 않습니다.")
         if len(stops)<2:
             raise RouteError("예약 가능한 저장 정류장이 부족합니다.")
-        label=lambda key:f"{lookup[key]['name']} ({key})"
+        label=lambda key:stop_label(key, lookup[key]['name'])
         selected_route=st.selectbox("예약 노선", ["전체", "R01", "R02", "R03", "R04"], key="ua_booking_route")
         if selected_route != "전체":
             ids=[s["stop_id"] for s in stops if s["route_id"] == selected_route]
@@ -44,6 +46,8 @@ def show_booking_form():
             streamlit.info(f"{route_id} → {label(destination)} · 고정 목적지")
         if route_id in ("R03", "R04"):
             streamlit.warning("예약 접수는 가능하지만 실제 차량 접근·정차·회차 및 운영 조건이 미검증이므로 배차를 확정하지 않습니다.")
+        if route_id == 'R04':
+            streamlit.warning('R04-S01·R04-S02 위치 검증 필요 · 후보 명칭은 도로·보도 위치나 정차 가능 확인을 뜻하지 않습니다.')
         if route_id == "R02":
             route=next((r for r in service.routes.snapshot()["routes"] if r["route_id"]=="R02"),None)
             if not route or not route["active"] or not route["vehicles"] or route.get("transfer_stop_id") != destination:

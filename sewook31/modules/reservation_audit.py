@@ -2,6 +2,7 @@
 from collections import Counter
 from modules.fixed_routes import DESTINATIONS,resolve_stop
 from modules.independent_routes import RouteError
+from modules.stop_labels import stop_label
 
 ACTIVE={'예약완료','배차 검토 필요'}
 
@@ -78,7 +79,8 @@ def safe_counts(rows):
 
 
 def display_rows(rows):
-    return [{'예약 ID':r['public_id'],'자료 구분':r['data_category'],'노선':r.get('route_id'),'승차':r.get('boarding_stop'),
+    return [{'예약 ID':r['public_id'],'자료 구분':r['data_category'],'노선':r.get('route_id'),'승차':stop_label(r.get('boarding_stop')),
+        '저장 당시 승차명':(r.get('stop_snapshot') or {}).get(r.get('boarding_stop'),{}).get('name') or '미기록',
         '하차':r.get('destination_stop'),'인원':r.get('passengers'),'표시 상태':r['display_stage'],'원본 상태':r.get('status'),
         '승차 시각':r.get('requested_at') or '미기록','차량':r.get('vehicle_id') or '미배정',
         '확인 사항':r['policy_issues'] or (r['review_reason'] if r.get('status')=='배차 검토 필요' else '')} for r in rows]

@@ -100,8 +100,9 @@ class OperationsUITests(unittest.TestCase):
         for text in ('R03 — 위례 북서부 → 복정역 · 검증 대기',
                      'R04 — 위례 중서부 → 복정역 · 검증 대기',
                      'R03-S01', 'R03-S02', 'R04-S01', 'R04-S02',
-                     '위례포레샤인 23단지 인근', '서울송례초등학교 인근',
-                     '위례중앙푸르지오 인근', '위례센트럴자이 인근', '복정역 (R03-BOKJEONG)', '복정역 (R04-BOKJEONG)'):
+                     '송파더센트레 인근', '위례포레샤인23단지 인근',
+                     '위례31단지 인근', '위례서로·헌릉로 접속부 인근', '명칭 후보', '위치 검증 필요',
+                     '복정역 (R03-BOKJEONG)', '복정역 (R04-BOKJEONG)'):
             self.assertIn(text,cards)
         frame=next(d.value for d in app.dataframe if '등록 운행편' in d.value.columns)
         self.assertEqual(list(frame['노선']),['R01','R02','R03','R04'])

@@ -9,6 +9,7 @@ from modules.unified_reservations import UnifiedReservations
 from modules.sequential_routes import route_plans
 from modules.fixed_dispatch import register_vehicle,register_run,boarding_at
 from modules.independent_routes import RouteError
+from modules.stop_labels import stop_label
 
 KST=ZoneInfo('Asia/Seoul')
 
@@ -29,7 +30,7 @@ def dispatch_tables(service,run_id=None,data_scope="all"):
     for plan in plans:
         for position,stop in enumerate(plan['stops'],1):
             own=[r for r in dated if r['route_id']==plan['route_id'] and r['boarding_stop']==stop['stop_id']]
-            stops.append(dict(노선=plan['route_id'],순서=position,정류장=stop['stop_id'],구분='최종 하차' if position==len(plan['stops']) else '승차',
+            stops.append(dict(노선=plan['route_id'],순서=position,정류장=stop['stop_id'],표시명=stop_label(stop['stop_id'],stop['name']),구분='최종 하차' if position==len(plan['stops']) else '승차',
                 배정_승객=sum(r['passengers'] for r in own if r['status']=='예약완료'),
                 대기_승객=sum(r['passengers'] for r in own if r['status']=='배차 검토 필요'),
                 하차_예정=sum(r['passengers'] for r in dated if r['route_id']==plan['route_id'] and r['status']=='예약완료') if position==len(plan['stops']) else 0))
