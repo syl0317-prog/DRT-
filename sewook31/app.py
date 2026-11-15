@@ -86,7 +86,7 @@ elif menu == MENUS[2]:
                 show_live_control()
 elif menu == MENUS[3]:
     st.caption('정시성 분석은 운영 웹과 같은 R01~R04 노선을 사용합니다 · 도로 모형이 없는 구간은 계산에서 제외됩니다.')
-    selected = persistent_ui.radio('분석 도구', ['개별 운행 분석', '기존 정시성 검증', '정시성 계산·검증 결과', '예약 기반 합승', '운영전략 비교'], horizontal=True, key='analysis_section')
+    selected = persistent_ui.radio('분석 도구', ['개별 운행 분석', '기존 정시성 검증', '정시성 계산·검증 결과', '혼잡 근거·실측 입력', '예약 기반 합승', '운영전략 비교'], horizontal=True, key='analysis_section')
     st.caption('가정과 저장 자료에 근거한 연구 결과이며 실제 운행 실적이 아닙니다.')
     with scope('analysis_' + selected):
         if selected == '개별 운행 분석':
@@ -98,6 +98,9 @@ elif menu == MENUS[3]:
         elif selected == '정시성 계산·검증 결과':
             from modules.punctuality_view import show_punctuality
             show_punctuality()
+        elif selected == '혼잡 근거·실측 입력':
+            from modules.congestion_views import show_congestion_evidence
+            show_congestion_evidence()
         elif selected == '예약 기반 합승':
             from modules.unified_reservation_views import show_simulation_compatibility
             from modules.operational_views import show_shared

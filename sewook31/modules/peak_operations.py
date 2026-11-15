@@ -4,17 +4,14 @@ Pipeline (research model, not observed operation):
 1. Virtual tram timetable at each route's transfer station
    (first train + main-line station offset + n x peak headway, tram_timetable.json).
 2. DRT travel time = road model x congestion factor k + intermediate dwell.
-   k ~ triangular(min, mode, max):
-   * R03/R04 (Bokjeong entrance corridor): weekday hourly GITS speed ratios
-     k = free-flow speed / hourly speed (congestion_by_hour.csv), period min/median/max;
-   * R01/R02 (inside residential area): (1.0, 1.1, 1.2) assumption, no observed data yet.
+   k per route/period from modules.congestion_basis: field observations first, else
+   MOCT link composition (arterial share -> GITS hourly speed ratio, rest -> assumption).
 3. Reverse calculation: first-stop departure D0 = tram - walk - Q_target(total travel),
    so the transfer succeeds with the target probability (default 95%).
 4. Boarding time window at each stop = D0 + [Q5, Q95] of travel to that stop.
 """
 from __future__ import annotations
 
-import csv
 import json
 import math
 from datetime import date, datetime, time, timedelta
@@ -27,10 +24,8 @@ from modules.settings import PROJECT_DIR, setting
 KST = ZoneInfo("Asia/Seoul")
 TIMETABLE = PROJECT_DIR / "data/assumptions/tram_timetable.json"
 STATIONS = PROJECT_DIR / "data/processed/wirye_tram_official_stations.geojson"
-CONGESTION = PROJECT_DIR / "data/processed/congestion_by_hour.csv"
 PERIODS = {"출근": (time(7, 0), time(9, 0)), "퇴근": (time(17, 0), time(19, 0))}
-RESIDENTIAL_K = (1.0, 1.1, 1.2)
-CORRIDOR_ROUTES = {"R03", "R04"}
+from modules.congestion_basis import RESIDENTIAL_K  # noqa: E402  (re-export for callers)
 TRANSFER_STATION = {"T01": "106", "T02": "108", "R03-BOKJEONG": "112", "R04-BOKJEONG": "112"}
 RUNS = 5000
 SEED = 20261113
@@ -76,19 +71,10 @@ def tram_departures(destination_id, day, period, service=None):
 
 
 def congestion_factors(route_id, period):
-    """Triangular (min, mode, max) congestion factor and its documented basis."""
-    if route_id not in CORRIDOR_ROUTES:
-        return RESIDENTIAL_K, "단지내 도로 가정값 1.0/1.1/1.2 · 실측 보정 전"
-    hours = range(PERIODS[period][0].hour, PERIODS[period][1].hour + 1)
-    with CONGESTION.open(encoding="utf-8-sig", newline="") as handle:
-        values = sorted(float(r["k"]) for r in csv.DictReader(handle)
-                        if int(r["시간"]) in hours and r.get("k") not in (None, ""))
-    if not values:
-        raise ValueError(f"congestion_by_hour.csv에 {period} 혼잡값이 없습니다.")
-    median = float(np.median(values))
-    return (values[0], median, values[-1]), (
-        f"GITS 평일 시간대 속도 기반 k=자유류속도/시간대속도 · {period} {hours.start}~{hours.stop - 1}시 "
-        f"{len(values)}개 값의 최소/중앙/최대 · 복정역 진입 간선 구간 적용 가정")
+    """(min, mode, max) summary and basis; see modules.congestion_basis for the rule."""
+    from modules.congestion_basis import route_factor
+    factor = route_factor(route_id, period)
+    return factor["k"], factor["basis"]
 
 
 def route_model(legs, period, runs=RUNS, seed=SEED, dwell_min=None):
@@ -97,14 +83,16 @@ def route_model(legs, period, runs=RUNS, seed=SEED, dwell_min=None):
     if not legs or any(leg["road_min"] is None for leg in legs):
         raise ValueError("도로 모형이 없는 정류장이 있어 시간표를 만들 수 없습니다.")
     dwell = float(setting("dwell_minutes") if dwell_min is None else dwell_min)
-    (lo, mode, hi), basis = congestion_factors(legs[0]["route_id"], period)
+    from modules.congestion_basis import route_factor
+    factor = route_factor(legs[0]["route_id"], period)
+    (lo, mode, hi), basis = factor["k"], factor["basis"]
     rng = np.random.default_rng(seed)
-    k = np.full(runs, lo) if lo == hi else rng.triangular(lo, mode, hi, size=runs)
+    k = factor["sample"](rng.uniform(size=runs))
     road0 = legs[0]["road_min"]
     to_stop = [(road0 - leg["road_min"]) * k + index * dwell for index, leg in enumerate(legs)]
     total = road0 * k + (len(legs) - 1) * dwell
     free_flow = road0 + (len(legs) - 1) * dwell
-    return dict(legs=legs, to_stop=to_stop, total=total, k=(lo, mode, hi), basis=basis,
+    return dict(legs=legs, to_stop=to_stop, total=total, k=(lo, mode, hi), basis=basis, factor_kind=factor["kind"],
                 free_flow=free_flow, mean=float(total.mean()), q05=float(np.quantile(total, .05)),
                 q50=float(np.quantile(total, .5)), q95=float(np.quantile(total, .95)),
                 buffer_index=float((np.quantile(total, .95) - total.mean()) / total.mean()),
