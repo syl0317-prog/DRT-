@@ -14,6 +14,7 @@ filled with an invented time. Results are research inputs, not observed operatio
 import math
 
 from modules.settings import setting
+from modules.stop_labels import CANDIDATE_NAMES  # presentation-only review names (명칭 후보 · 현장 미검증)
 
 STATUS_OK = '계산 가능'
 STATUS_MISSING = '계산 불가'
@@ -105,7 +106,7 @@ def plan_legs(plan, allow_network=False, dwell_min=None):
         ride = None if base is None else base + later_stops * dwell
         legs.append(dict(
             route_id=plan['route_id'], route_name=plan.get('name', ''),
-            stop_id=stop['stop_id'], stop_name=stop.get('name') or stop.get('stop_name') or stop['stop_id'],
+            stop_id=stop['stop_id'], stop_name=CANDIDATE_NAMES.get(stop['stop_id']) or stop.get('name') or stop.get('stop_name') or stop['stop_id'],
             position=index + 1, latitude=_number(stop.get('latitude')), longitude=_number(stop.get('longitude')),
             destination_id=destination['stop_id'],
             destination_name=destination.get('name') or destination.get('stop_name') or destination['stop_id'],

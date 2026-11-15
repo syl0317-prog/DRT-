@@ -68,6 +68,7 @@ def show_peak_operations():
                       f"차내시간은 중간 정차 포함 · 시뮬레이션 {len(model['total']):,}회")
 
     streamlit.markdown("**역산 시간표 · 정류장별 승차 타임윈도우**")
+    streamlit.caption("정류장 이름은 검토용 명칭 후보입니다(현장 미검증).")
     streamlit.dataframe(trips_frame(table), hide_index=True)
     streamlit.caption(f"DRT 출발 = 트램 출발 − 보행 {walk:g}분 − 통행시간 {reliability:.0%} 분위수 (분 단위 내림). "
                       "승차 타임윈도우 = 차량이 정류장에 도착할 수 있는 5~95% 범위이며, 이용객은 시작 시각까지 정류장에 나와야 합니다. "
