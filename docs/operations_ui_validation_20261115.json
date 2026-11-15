@@ -1,0 +1,22 @@
+{
+  "branch": "fix/integrated-drt-operations",
+  "scope": "operations UI, read-only reservation audit, display classification; no punctuality execution",
+  "tests": {"run": 32, "failures": 0, "errors": 0, "elapsed_seconds": 33.407, "command": ".\\.venv\\Scripts\\python.exe -B scripts/verify_operations_ui.py"},
+  "main_sources": {
+    "legacy_csv_records": 5,
+    "legacy_csv_R01_to_T02_current_policy_mismatches": 2,
+    "unified_sqlite_requests": 0,
+    "route_registry_bookings": 0,
+    "operating_active_records": 0
+  },
+  "separate_legacy_copy": {"path": "drt_system/data/reservations.csv", "records": 6, "current_policy_mismatches": 3, "merged_into_main": false},
+  "preservation": {"data_files_checked": 98, "data_changed": [], "protected_files_checked": 30, "protected_changed": [], "preexisting_pyc_changed": []},
+  "main_menus": 5,
+  "original_reservation_values_modified": false,
+  "test_writes": "temporary SQLite and CSV copies only",
+  "sqlite_audit_connections": "mode=ro; uri=True",
+  "browser_visual_verification": "not completed: browser access host unavailable; AppTest used",
+  "git_diff_check": "passed",
+  "automatic_commit": false,
+  "push": false
+}

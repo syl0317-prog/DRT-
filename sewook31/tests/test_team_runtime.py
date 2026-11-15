@@ -17,6 +17,15 @@ spec.loader.exec_module(team_init)
 
 
 class TeamRuntimeTests(unittest.TestCase):
+    def setUp(self):
+        import sys
+        sys.path.insert(0, str(ROOT / 'sewook31'))
+        self.settings_temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.settings_temp.cleanup)
+        self.settings_patch = patch('modules.new_stop_settings.SETTINGS_FILE', Path(self.settings_temp.name)/'locations.json')
+        self.settings_patch.start()
+        self.addCleanup(self.settings_patch.stop)
+
     def test_offline_analysis_and_all_catalog_map_points(self):
         import sys
         sys.path.insert(0, str(ROOT / "sewook31"))
@@ -28,28 +37,28 @@ class TeamRuntimeTests(unittest.TestCase):
         from modules.map_background import background_map
         store = RouteStore()
         catalog = UnifiedReservations().catalog()
-        self.assertEqual((len(catalog["boarding"]), len(catalog["trams"])), (8, 2))
+        self.assertEqual((len(catalog["boarding"]), len(catalog["trams"])), (12, 4))
         observed = set()
         for tram in ("T01", "T02"):
             routes = route_layers(store.original_loader(), store.snapshot(), ["D01", "D02", "D03", "D04"], tram)
-            self.assertEqual([r["route_id"] for r in routes], ["R01", "R02"])
+            self.assertEqual([r["route_id"] for r in routes], ["R01", "R02", "R03", "R04"])
             observed.update(s["stop_id"] for r in routes for s in r["stops"])
             map_object = background_map([37.474, 127.143])
-            add_layers(map_object, routes, ["R01", "R02"])
-            self.assertEqual(map_object.get_root().render().count("L.circleMarker("), 9)
-        self.assertEqual(len(observed), 10)
+            add_layers(map_object, routes, ["R01", "R02", "R03", "R04"])
+            self.assertEqual(map_object.get_root().render().count("L.circleMarker("), 0)
+            self.assertEqual(map_object.get_root().render().count("L.marker("), 12)
+        self.assertEqual(len(observed), 16)
         with patch("requests.sessions.Session.request", side_effect=requests.ConnectionError("offline verification")) as network:
             app = AppTest.from_file(str(ROOT / "sewook31/app.py"), default_timeout=60).run()
-            app.sidebar.radio(key="main_menu").set_value("정시·환승 분석").run()
+            app.sidebar.radio(key="main_menu").set_value("시뮬레이션 및 정시성 분석").run()
             app.radio(key="pa_mode").set_value("직접 입력").run()
             app.button(key="pa_run").click().run()
             self.assertEqual(len(app.exception), 0, str(app.exception))
             self.assertGreater(len(app.dataframe), 0)
-            app.radio(key="punctuality_section").set_value("정시성 계산·검증 결과").run()
+            app.radio(key="analysis_section").set_value("정시성 계산·검증 결과").run()
             self.assertEqual(len(app.exception), 0, str(app.exception))
             self.assertGreater(len(app.get("vega_lite_chart")), 0)
-            app.sidebar.radio(key="main_menu").set_value("운영 시뮬레이션").run()
-            app.radio(key="simulation_section").set_value("운영전략 비교").run()
+            app.radio(key="analysis_section").set_value("운영전략 비교").run()
             self.assertEqual(len(app.exception), 0, str(app.exception))
             self.assertGreater(len(app.dataframe), 0)
             self.assertEqual(network.call_count, 0)

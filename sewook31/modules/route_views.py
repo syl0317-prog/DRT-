@@ -111,25 +111,12 @@ def show_legacy_route_settings():
         else:
             st.warning("V-World 도로망 파일을 찾을 수 없습니다.")
 
-    for _, stop in valid_stops.iterrows():
+    from modules.combined_routes import route_layers, add_layers
+    from modules.independent_routes import RouteStore
+    store=RouteStore()
+    add_layers(m,route_layers(store.original_loader(),store.snapshot()),['R01','R02'])
+    preview_layer=folium.FeatureGroup(name='Research preview (not operating route)',show=False).add_to(m)
 
-        color = (
-            "red"
-            if stop["stop_type"] == "tram"
-            else "blue"
-        )
-
-        folium.Marker(
-            location=[
-                stop["latitude"],
-                stop["longitude"]
-            ],
-            tooltip=stop["stop_name"],
-            popup=f"{stop['stop_name']} / {stop['zone']}",
-            icon=folium.Icon(color=color)
-        ).add_to(m)
-
-    # 경유 정류장 + 목적지
     route_ids = route_stops + [destination]
 
     route_coords = []
@@ -160,11 +147,11 @@ def show_legacy_route_settings():
 
             folium.PolyLine(
                 road_route["coordinates"],
-                color="blue",
+                color="#64748b",
                 weight=5,
                 opacity=0.85,
                 tooltip="도로 기반 DRT 운행 노선"
-            ).add_to(m)
+            ).add_to(preview_layer)
 
             col1, col2 = st.columns(2)
 
@@ -195,7 +182,7 @@ def show_legacy_route_settings():
                 color="gray",
                 weight=3,
                 dash_array="8, 8"
-            ).add_to(m)
+            ).add_to(preview_layer)
 
     # 지도 표시 및 클릭 위치 확인
     folium.LayerControl(collapsed=False).add_to(m)

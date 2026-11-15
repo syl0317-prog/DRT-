@@ -1,0 +1,28 @@
+{
+  "syntax": "pass",
+  "streamlit_health": 200,
+  "protected_inputs_unchanged": true,
+  "protected_sha256": {
+    "sewook31\\data\\drt_stops.csv": "b34d5ff5d5b7231173293c03fadbefefa8a9e11cd543b08efb8613e6481d0777",
+    "sewook31\\data\\osrm_cache.json": "01976365c30071b90c84d56161d4098c0a2606a6c3a11a112ff7abaf3830d9e9",
+    "sewook31\\data\\reservations.csv": "8aa5ee40efb9ef64538db160e8c732b06e679a12d5331912da39c66e6bfadffe",
+    "data\\derived\\drt_routes\\routes.sqlite3": "61edd20e0ab4634d990cf8856ba0fecefe28f8e59136fa520a997e937f46f9a5",
+    "data\\derived\\unified_reservations\\reservations.sqlite3": "55535b2ddb2b1ddc1839f9be86381c480a218fe5e09ad13cabd3edbe5727cb8f",
+    "sewook31\\modules\\punctuality_inputs.py": "381fad7b4b494ebeb6ced54de7c1c0146c0eb7bbbeeda5d006dc95ef98c6321e",
+    "sewook31\\modules\\punctuality_sim.py": "76081c55637ad13d3f4347338d8e82c64b96e3a004ff18c53baff421ac4bd679",
+    "sewook31\\modules\\punctuality_simulation.py": "839e0935738b0a15fcf9e839e9c8e2fac50888cd5a2e0438e6b1d0046b1c0a3d",
+    "sewook31\\modules\\punctuality_view.py": "4682e842d306f60264f823eccde62e6af1436071003fa5dc88197d64a13ef9e6",
+    "sewook31\\modules\\punctuality_views.py": "2d136ebbcfce7e4d4c493d7430b210dfa819c285b39701cd9c6bdda00151d630"
+  },
+  "new_routes": {
+    "R03": "coordinates_pending; road_unverified; dispatch_blocked",
+    "R04": "coordinates_pending; road_unverified; dispatch_blocked"
+  },
+  "unittest": {
+    "command": ".venv/Scripts/python.exe -B -m unittest discover -s sewook31/tests -v",
+    "passed": 41,
+    "failed": 0
+  },
+  "app_test": "five menus and R03/R04 booking passed",
+  "visual_browser_qa": "not performed"
+}

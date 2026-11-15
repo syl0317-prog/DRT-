@@ -1,6 +1,7 @@
 # 가상환경
 venv/
 .venv/
+.work/
 .venv-*/
 
 # 대용량 원본 데이터 및 아카이브
@@ -21,6 +22,7 @@ data/processed/streamlit_smoke.log
 # Private runtime stores and SQLite journals (never distribute reservations)
 data/derived/drt_routes/
 data/derived/unified_reservations/
+data/derived/new_route_settings/
 *.sqlite3
 *.sqlite3-*
 *.sqlite
