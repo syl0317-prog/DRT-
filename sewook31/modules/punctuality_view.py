@@ -39,6 +39,9 @@ def show_punctuality():
         st.warning("이전 형식 결과입니다(운영 노선 미반영). scripts/punctuality_calc.py를 다시 실행해 주세요.")
         data = data.assign(노선="미지정")
     st.caption("정류장·방문 순서·최종 목적지는 운영 웹의 R01~R04 노선과 같은 원본(sequential_routes.route_plans)을 사용합니다.")
+    st.info("이 화면은 혼잡 **시나리오 비교**입니다. 구간유형 '단지내'(가정 1.0~1.2)와 '간선연계'(GITS 국도·간선 시간대 속도)를 "
+            "모든 정류장에 각각 적용해 여유시간별 환승 실패 확률을 비교합니다. 노선이 실제로 지나는 도로 구성을 반영한 운영값은 "
+            "'혼잡 근거·실측 입력' 탭과 '출퇴근 시간표·운영 조정' 화면에서 확인하세요.")
     from modules.punctuality_routes import route_legs
     _legs, problems = route_legs()
     if problems:

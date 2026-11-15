@@ -106,7 +106,8 @@ def show_peak_operations():
                             "평균 트램 대기(분)": round(sum(t["mean_tram_wait"] for t in other["trips"]) / len(other["trips"]), 1),
                             "혼잡 근거": m["basis"]})
         streamlit.dataframe(pd.DataFrame(summary), hide_index=True)
-        streamlit.caption("버퍼 지수가 큰 노선일수록 환승 성공을 위해 일찍 출발해야 하고, 그만큼 트램 대기가 늘어납니다.")
+        streamlit.caption("버퍼 지수가 큰 노선일수록 환승 성공을 위해 일찍 출발해야 하고, 그만큼 트램 대기가 늘어납니다. "
+                          "가정값 도로 비율이 큰 노선은 현장 실측 후 수치가 바뀔 수 있습니다('혼잡 근거·실측 입력' 탭).")
     if problems:
         with streamlit.expander("시간표에서 제외된 정류장"):
             for problem in problems:
