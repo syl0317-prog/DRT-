@@ -1,4 +1,5 @@
 """Local data provenance inventory; no network probes or source mutations."""
+from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 import sqlite3
@@ -13,6 +14,7 @@ def data_inventory():
             ('data/seeds', '복구용 연구 노선', '최초 초기화'),
             ('data/derived/drt_routes', '연구 노선 등록부', 'R02·차량·구간'),
             ('data/derived/unified_reservations', 'SQLite 접수 및 취소 오버레이', '통합 예약'),
+            ('data/derived/new_route_settings', '사용자 지정 후보 좌표·OSRM 도로 모형·백업', 'R03/R04 위치 설정 · 정차 검증 별도'),
             ('data/processed', '가공 결과·관측/가정 혼합', '교통·정시성·시뮬레이션 분석'),
             ('data/assumptions', '가정·참조자료（실측 보장 없음）', '모형 입력'),
             ('data/vworld', '저장 도로 GIS', '지도·도로 검증'),
@@ -42,7 +44,7 @@ def _show_data_status():
         for stop in catalog['boarding']:
             try:
                 rid,target=resolve_stop(service.routes.original_loader(),state,stop['stop_id'])
-                checks.append({'정류장':stop['stop_id'],'노선':rid,'고정 목적지':target,'검증':'정상'})
+                checks.append({'정류장':stop['stop_id'],'노선':rid,'고정 목적지':target,'검증':stop.get('coordinate_status', '기존 등록 좌표 · 현장 검증 별도')})
             except ValueError as error:
                 checks.append({'정류장':stop['stop_id'],'검증':str(error)})
         st.dataframe(pd.DataFrame(checks),hide_index=True)
@@ -51,7 +53,7 @@ def _show_data_status():
                 st.info(f'{path.name}: 아직 생성되지 않음')
                 continue
             # URI read-only mode guarantees inspection cannot initialize/alter a DB.
-            with sqlite3.connect(path.resolve().as_uri()+'?mode=ro',uri=True) as connection:
+            with closing(sqlite3.connect(path.resolve().as_uri()+'?mode=ro',uri=True)) as connection:
                 status=connection.execute('PRAGMA quick_check').fetchone()[0]
             st.write(f'{path.relative_to(PROJECT_DIR)} · SQLite quick_check: {status}')
         records=service.list_records()
@@ -73,6 +75,9 @@ def show_system():
     from modules.reservation_audit import audit_service,audit_summary,display_rows
     from modules.unified_reservations import UnifiedReservations
     st.subheader('데이터 및 시스템 관리')
+    with st.expander('신규 R03·R04 데이터 및 검증 상태'):
+        from modules.new_routes import show_validation
+        show_validation()
     audit_tab,registry_tab,data_tab=st.tabs(['예약 데이터 검증','원본 R02 연구용 등록부','데이터·DB 상태'])
     with audit_tab:
         try:

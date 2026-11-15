@@ -94,6 +94,37 @@ class OperationsUITests(unittest.TestCase):
         self.operational_fixture();app.run();self.check(app)
         self.assertEqual(next(m.value for m in app.metric if m.label=='배차 확정'),'1')
 
+    def test_actual_dashboard_shows_candidates_and_controls_embedded_map(self):
+        app=self.app();self.check(app)
+        cards='\n'.join(m.value for m in app.markdown)
+        for text in ('R03 — 위례 북서부 → 복정역 · 검증 대기',
+                     'R04 — 위례 중서부 → 복정역 · 검증 대기',
+                     'R03-S01', 'R03-S02', 'R04-S01', 'R04-S02',
+                     '위례포레샤인 23단지 인근', '서울송례초등학교 인근',
+                     '위례중앙푸르지오 인근', '위례센트럴자이 인근', '복정역 (R03-BOKJEONG)', '복정역 (R04-BOKJEONG)'):
+            self.assertIn(text,cards)
+        frame=next(d.value for d in app.dataframe if '등록 운행편' in d.value.columns)
+        self.assertEqual(list(frame['노선']),['R01','R02','R03','R04'])
+        self.assertEqual(list(frame.iloc[2:]['상태']),['검증 대기','검증 대기'])
+        self.assertEqual(list(frame.iloc[2:]['최종 목적지']),['복정역','복정역'])
+        choice=app.multiselect(key='dashboard_visible_routes')
+        self.assertEqual(choice.options,['R01','R02','R03','R04'])
+        choice.set_value(['R03']).run();self.check(app)
+        iframe=next(e for e in app.get('iframe') if e.proto.srcdoc)
+        self.assertIn('L.map(',iframe.proto.srcdoc)
+        self.assertFalse(iframe.proto.src)
+        from modules.dashboard_views import overview_map
+        from modules.combined_routes import add_layers
+        import pandas as pd
+        with patch('modules.combined_routes.add_layers',wraps=add_layers) as layers:
+            overview_map(pd.DataFrame(),self.store.snapshot(),visible=['R03'])
+            self.assertEqual(layers.call_args.args[2],['R03'])
+            groups=[c for c in layers.call_args.args[0]._children.values()
+                    if c.__class__.__name__=='FeatureGroup']
+            self.assertEqual([g.show for g in groups],[False,False,True,False])
+        app.multiselect(key='dashboard_visible_routes').set_value([]).run();self.check(app)
+        self.assertTrue(any('R04 —' in m.value for m in app.markdown))
+
     def test_list_filters_keep_original_status_and_show_invalid_records(self):
         app=self.app();menus=app.sidebar.radio(key='main_menu').options
         app.sidebar.radio(key='main_menu').set_value(menus[1]).run();self.check(app)

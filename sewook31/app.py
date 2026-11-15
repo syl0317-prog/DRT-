@@ -13,7 +13,7 @@ st.markdown('''<style>
 h1 {font-size:1.9rem;margin-bottom:.2rem;}
 </style>''', unsafe_allow_html=True)
 st.title('위례 DRT 통합 운영 시스템')
-st.caption('R01 → 위례별역 · R02 → 위례역사공원역')
+st.caption('R01 → 위례별역 · R02 → 위례역사공원역 · R03/R04 → 복정역 (검증 대기)')
 with st.sidebar:
     st.title('운영 메뉴')
     # Old saved navigation values must not leave the radio without a valid choice.
@@ -51,7 +51,7 @@ elif menu == MENUS[1]:
             with scope('dispatch'):
                 show_dispatch()
 elif menu == MENUS[2]:
-    operation_options=['통합 노선 지도', '차량·운행편 등록', '운영 설정', '연구·관제 도구']
+    operation_options=['통합 노선 지도', '신규 정류장 위치 설정', '차량·운행편 등록', '운영 설정', '연구·관제 도구']
     saved_operation=st.session_state.get('operations_section',st.session_state.get('ui_saved_values',{}).get('operations_section'))
     if saved_operation is not None and saved_operation not in operation_options:
         st.session_state.pop('operations_section',None)
@@ -62,6 +62,9 @@ elif menu == MENUS[2]:
         if selected == '통합 노선 지도':
             from modules.combined_routes import show_combined_map
             show_combined_map()
+        elif selected == '신규 정류장 위치 설정':
+            from modules.new_stop_views import show_new_stop_settings
+            show_new_stop_settings()
         elif selected == '차량·운행편 등록':
             from modules.fixed_dispatch_views import show_fixed_operations
             show_fixed_operations()
@@ -78,6 +81,7 @@ elif menu == MENUS[2]:
                 from modules.live_control import show_live_control
                 show_live_control()
 elif menu == MENUS[3]:
+    st.info('R03·R04 정시성 분석 미지원 · 추가 검증 필요')
     selected = persistent_ui.radio('분석 도구', ['개별 운행 분석', '기존 정시성 검증', '정시성 계산·검증 결과', '예약 기반 합승', '운영전략 비교'], horizontal=True, key='analysis_section')
     st.caption('가정과 저장 자료에 근거한 연구 결과이며 실제 운행 실적이 아닙니다.')
     with scope('analysis_' + selected):

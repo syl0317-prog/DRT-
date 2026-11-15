@@ -54,6 +54,8 @@ def route_plans(originals,state,archive=None):
     lookup.update({s['stop_id']:s for s in state['stops']})
     plans=[]
     for rid,target in DESTINATIONS.items():
+        if rid not in ("R01", "R02"):
+            continue
         registered=next((r for r in state['routes'] if r['route_id']==rid),None)
         ids=list(R01_ORDER) if rid=='R01' else list(registered['stop_order']) if registered else []
         if len(ids)!=4 or len(set(ids))!=4:
@@ -106,4 +108,5 @@ def route_plans(originals,state,archive=None):
             active=bool(registered and registered['active'] and registered.get('transfer_stop_id')==target and registered['calculation_status']=='calculated'),vehicles=registered['vehicles'] if registered else [],
             test_geometry=any(str(s.get('source','')).lower().startswith('test') for s in segments) or (rid=='R01' and road_complete and str(road.get('source','')).lower().startswith('test')),
             geometry_note=' → '.join(order)+' · 저장 OSRM 도로 모형, 정류장 접근은 별도 검증'))
-    return plans
+    from modules.new_routes import plans as candidate_plans
+    return plans + candidate_plans()

@@ -1,12 +1,18 @@
 """Fixed operating policy; source registries remain unchanged."""
 from modules.independent_routes import RouteError
 
-COLORS = {"R01": "#2563EB", "R02": "#F97316"}
-DESTINATIONS = {"R01": "T01", "R02": "T02"}
+COLORS = {"R01": "#2563EB", "R02": "#F97316", "R03": "#1D4ED8", "R04": "#16A34A"}
+DESTINATIONS = {"R01": "T01", "R02": "T02", "R03": "R03-BOKJEONG", "R04": "R04-BOKJEONG"}
 
 
 def resolve_stop(originals, state, stop_id):
     # R01 is the existing CSV route namespace; R02 membership comes from registry.
+    from modules.new_routes import STOPS
+    candidate = next((s for s in STOPS if s["stop_id"] == stop_id), None)
+    if candidate:
+        if any(s["stop_id"] == stop_id for s in originals + state["stops"]) or any(stop_id in r["stop_order"] for r in state["routes"]):
+            raise RouteError(f"{stop_id}: 신규 후보와 등록부 ID 중복")
+        return candidate["route_id"], DESTINATIONS[candidate['route_id']]
     candidates = set()
     if any(s["stop_id"] == stop_id and s["stop_type"] == "drt" for s in originals):
         candidates.add("R01")

@@ -11,9 +11,10 @@ def audit_records(records,originals,state):
     for record in records:
         row=dict(record); reasons=[]
         rid=row.get('route_id');target=DESTINATIONS.get(rid)
+        legacy_destination=rid in ('R03','R04') and row.get('destination_stop')=='BOKJEONG'
         if target is None:
             reasons.append('노선 식별 정보 확인 필요')
-        elif row.get('destination_stop')!=target:
+        elif row.get('destination_stop')!=target and not legacy_destination:
             reasons.append(f"{rid}의 고정 하차는 {target}, 저장값은 {row.get('destination_stop')}")
         try:
             actual,_=resolve_stop(originals,state,row.get('boarding_stop'))
@@ -51,7 +52,7 @@ def audit_records(records,originals,state):
             stage='상태 확인 필요'
         row.update(data_category=category,policy_valid=not reasons,policy_issues=' / '.join(reasons),display_stage=stage,
             operating_record=category=='신규 SQLite' and not reasons,
-            review_reason=' / '.join(reasons) or row.get('dispatch_status') or '배차 근거 확인 필요')
+            review_reason=' / '.join(reasons) or ('이전 공통 복정역 하차 기록 · 노선별 하차 후보 재확인 필요' if legacy_destination else row.get('dispatch_status')) or '배차 근거 확인 필요')
         rows.append(row)
     return rows
 

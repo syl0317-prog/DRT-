@@ -124,7 +124,12 @@ class UnifiedReservations:
         originals=self.routes.original_loader()
         for stop in boarding:
             stop['route_id'],stop['destination_stop_id']=resolve_stop(originals,state,stop['stop_id'])
-        return dict(boarding=boarding,trams=trams)
+        from modules.new_routes import boarding_stops, destination_stops
+        extra = boarding_stops()
+        targets = destination_stops()
+        if set(ids) & {s["stop_id"] for s in extra + targets}:
+            raise RouteError("신규 후보 정류장 ID가 기존 등록부와 중복됩니다.")
+        return dict(boarding=boarding + extra,trams=trams + targets)
 
     def _csv_rows(self):
         if not self.legacy_path.exists():
@@ -278,7 +283,8 @@ class UnifiedReservations:
                 raise RouteError('배차 검토 필요 상태의 접수만 재검토할 수 있습니다.')
             from modules.fixed_routes import resolve_stop
             rid, target = resolve_stop(self.routes.original_loader(), state, record['boarding_stop'])
-            if rid != record['route_id'] or target != record['destination_stop']:
+            legacy_destination = rid in ('R03','R04') and record['destination_stop']=='BOKJEONG'
+            if rid != record['route_id'] or (target != record['destination_stop'] and not legacy_destination):
                 raise RouteError('현재 노선 및 고정 목적지와 맞지 않는 과거 요청입니다.')
             if run_id is not None:
                 from modules.fixed_dispatch import read_rows,boarding_at

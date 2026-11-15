@@ -24,6 +24,9 @@ class IntegrationTests(unittest.TestCase):
         self.stack.enter_context(patch('modules.independent_routes.DATABASE',self.registry))
         self.stack.enter_context(patch('modules.unified_reservations.DATABASE',self.db))
         self.stack.enter_context(patch('modules.reservation_manager.RESERVATION_FILE',self.csv))
+        from modules.new_stop_settings import SETTINGS_FILE
+        if SETTINGS_FILE == ROOT/'data/derived/new_route_settings/locations.json':
+            self.stack.enter_context(patch('modules.new_stop_settings.SETTINGS_FILE',self.temp/'locations.json'))
         self.store=RouteStore();self.service=UnifiedReservations();self.future=datetime.now(timezone.utc)+timedelta(days=2)
 
     def tearDown(self):
@@ -57,7 +60,7 @@ class IntegrationTests(unittest.TestCase):
 
     def test_road_layers_colors_coordinates_and_missing_tail(self):
         routes=route_layers(self.store.original_loader(),self.store.snapshot())
-        self.assertEqual([len(r['stops']) for r in routes],[5,5])
+        self.assertEqual([len(r['stops']) for r in routes],[5,5,3,3])
         self.assertEqual(len(routes[0]['paths']),1)
         self.assertFalse(routes[0]['temporary']);self.assertTrue(routes[1]['temporary'])
         self.assertEqual(len(routes[1]['paths']),1)
@@ -68,7 +71,7 @@ class IntegrationTests(unittest.TestCase):
                 self.assertTrue(all(37 < lat < 38 and 127 < lon < 128 for lat,lon in line))
         m=background_map([37.474,127.143]);add_layers(m,routes,['R01','R02']);html=m.get_root().render()
         self.assertIn('#2563EB',html);self.assertIn('#F97316',html)
-        self.assertEqual(html.count('L.marker('),10)
+        self.assertEqual(html.count('L.marker('),12)
         self.assertIn('8,8',html)
         with patch('modules.sequential_routes.ARCHIVE',self.temp/'missing_archive.json'):
             fallback=route_layers(self.store.original_loader(),dict(self.store.snapshot(),segments=[]))
@@ -132,7 +135,7 @@ class IntegrationTests(unittest.TestCase):
         def check():self.assertEqual(len(app.exception),0,str(app.exception))
         def menu(value):app.sidebar.radio(key='main_menu').set_value(value).run();check()
         check();self.assertEqual(len(app.sidebar.radio(key='main_menu').options),5)
-        menu('예약 및 배차 관리');self.assertEqual(len(app.selectbox(key='ua_origin').options),8)
+        menu('예약 및 배차 관리');self.assertEqual(len(app.selectbox(key='ua_origin').options),12)
         self.assertNotIn('ua_destination',[s.key for s in app.selectbox])
         app.selectbox(key='ua_origin').set_value('V05').run();check()
         app.button(key='ua_submit').click().run();check()
@@ -142,7 +145,7 @@ class IntegrationTests(unittest.TestCase):
         app.button(key='ua_submit').click().run();check()
         row=self.service.own_records()[-1];self.assertEqual((row['route_id'],row['destination_stop']),('R01','T01'))
         menu('노선 및 운영 관리')
-        for option in ['R02 등록부 및 차량','운영 설정','기존 경유지 연구 도구','관제 모형','통합 노선 지도']:
+        for option in app.radio(key='operations_section').options:
             app.radio(key='operations_section').set_value(option).run();check()
         menu('시뮬레이션 및 정시성 분석')
         for option in ['기존 정시성 검증','정시성 계산·검증 결과','예약 기반 합승','운영전략 비교']:

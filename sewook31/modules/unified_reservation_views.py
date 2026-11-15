@@ -27,11 +27,14 @@ def show_booking_form():
         stops=catalog["boarding"]
         lookup={s["stop_id"]:s for s in stops+catalog["trams"]}
         ids=[s["stop_id"] for s in stops]
-        if len(stops)!=8:
+        if len(stops)!=12:
             streamlit.warning(f"현재 저장된 DRT 정류장은 {len(stops)}개입니다. 미등록·잘못된 정류장 이름이나 좌표는 임의로 채우지 않습니다.")
         if len(stops)<2:
             raise RouteError("예약 가능한 저장 정류장이 부족합니다.")
         label=lambda key:f"{lookup[key]['name']} ({key})"
+        selected_route=st.selectbox("예약 노선", ["전체", "R01", "R02", "R03", "R04"], key="ua_booking_route")
+        if selected_route != "전체":
+            ids=[s["stop_id"] for s in stops if s["route_id"] == selected_route]
         left,right=streamlit.columns(2)
         with left:
             origin=st.selectbox("탑승 정류장",ids,format_func=label,key="ua_origin")
@@ -39,6 +42,8 @@ def show_booking_form():
         route_id,destination=resolve_stop(service.routes.original_loader(),service.routes.snapshot(),origin)
         with right:
             streamlit.info(f"{route_id} → {label(destination)} · 고정 목적지")
+        if route_id in ("R03", "R04"):
+            streamlit.warning("예약 접수는 가능하지만 실제 차량 접근·정차·회차 및 운영 조건이 미검증이므로 배차를 확정하지 않습니다.")
         if route_id == "R02":
             route=next((r for r in service.routes.snapshot()["routes"] if r["route_id"]=="R02"),None)
             if not route or not route["active"] or not route["vehicles"] or route.get("transfer_stop_id") != destination:
@@ -64,7 +69,7 @@ def show_booking_form():
             request_time=boarding_at(run_lookup[run_id],origin).astimezone(KST)
             streamlit.info(f'선택 운행편의 {origin} 예정 승차 시각 {request_time:%Y-%m-%d %H:%M:%S}을 적용합니다. 정류장 방문 순서는 고정됩니다.')
         tram_departure=None
-        if destination in {s["stop_id"] for s in catalog["trams"]}:
+        if destination in {s["stop_id"] for s in catalog["trams"] if s.get("stop_type", "tram") == "tram"}:
             enabled=st.checkbox("가상 트램 출발 목표 시각 입력",key="ua_tram_enabled")
             if enabled:
                 default=request_time+timedelta(minutes=30)
@@ -105,6 +110,7 @@ def show_reservation_list():
 
 def show_simulation_compatibility():
     streamlit.subheader("통합 예약의 시뮬레이션 적용 범위")
+    streamlit.info("R03·R04 정시성 시뮬레이션 미지원 · 추가 검증 필요")
     try:
         records=UnifiedReservations().list_records()
         active=[r for r in records if r["status"] in ACTIVE]

@@ -28,6 +28,9 @@ class SequentialDispatchTests(unittest.TestCase):
         self.stack.enter_context(patch('modules.independent_routes.DATABASE',self.registry))
         self.stack.enter_context(patch('modules.unified_reservations.DATABASE',self.db))
         self.stack.enter_context(patch('modules.reservation_manager.RESERVATION_FILE',self.csv))
+        from modules.new_stop_settings import SETTINGS_FILE
+        if SETTINGS_FILE == ROOT/'data/derived/new_route_settings/locations.json':
+            self.stack.enter_context(patch('modules.new_stop_settings.SETTINGS_FILE',self.temp/'locations.json'))
         self.network=self.stack.enter_context(patch('requests.sessions.Session.request',side_effect=AssertionError('network forbidden')))
         self.store=RouteStore();self.service=UnifiedReservations()
         self.future=(datetime.now(timezone.utc)+timedelta(days=2)).replace(microsecond=0)
@@ -57,14 +60,14 @@ class SequentialDispatchTests(unittest.TestCase):
         plans=route_plans(self.store.original_loader(),self.store.snapshot())
         self.assertEqual(plans[0]['order'],['D01','D02','D03','D04','T01'])
         self.assertEqual(plans[1]['order'],['V05','V06','V07','V08','T02'])
-        self.assertEqual([len(p['paths']) for p in plans],[1,1])
-        self.assertEqual([len(p['estimated_paths']) for p in plans],[0,1])
+        self.assertEqual([len(p['paths']) for p in plans],[1,1,0,0])
+        self.assertEqual([len(p['estimated_paths']) for p in plans],[0,1,0,0])
         self.assertAlmostEqual(plans[0]['distance_km'],1.76)
         self.assertIsNone(plans[1]['duration_min'])
         positions=plans[0]['evidence'][0]['positions_m']
         self.assertTrue(all(b>a for a,b in zip(positions,positions[1:])))
         m=background_map([37.474,127.143]);add_layers(m,plans,['R01','R02']);html=m.get_root().render()
-        self.assertEqual(html.count('L.marker('),10)
+        self.assertEqual(html.count('L.marker('),12)
         self.assertIn('#2563EB',html);self.assertIn('#F97316',html)
         self.assertIn('4. ',html);self.assertIn('5. ',html)
 
@@ -159,7 +162,7 @@ class SequentialDispatchTests(unittest.TestCase):
             self.assertEqual(len(app.error),0,str([e.value for e in app.error]))
         check();menus=app.sidebar.radio(key='main_menu').options;self.assertEqual(len(menus),5)
         app.sidebar.radio(key='main_menu').set_value(menus[1]).run();check()
-        self.assertEqual(len(app.selectbox(key='ua_origin').options),8)
+        self.assertEqual(len(app.selectbox(key='ua_origin').options),12)
         run=self.make_run()
         app.run();app.selectbox(key='ua_origin').set_value('D01').run()
         app.selectbox(key='ua_run').set_value(run['run_id']).run()

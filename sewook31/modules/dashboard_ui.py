@@ -2,6 +2,7 @@
 import sqlite3
 import pandas as pd
 import streamlit as st
+from modules.session_ui import persistent_ui
 from modules.unified_reservations import UnifiedReservations
 from modules.reservation_audit import audit_service,audit_summary,display_rows
 from modules.sequential_routes import route_plans
@@ -37,13 +38,30 @@ def show_operating_dashboard(research_renderer):
     show_policy_warning(rows,'dashboard')
     operating,research=st.tabs(['운영 현황','연구·모형 결과'])
     with operating:
+        st.markdown('**전체 노선 목록 · 운영 및 검증 상태**')
+        for p in plans:
+            if p['route_id'] not in ('R03', 'R04'):
+                continue
+            with st.container(border=True):
+                st.markdown(f"**{p['route_id']} — {p['name']} · 검증 대기**")
+                st.write(' → '.join(f"{s['name']} ({s['stop_id']})" for s in p['stops']))
+                st.caption('정류장 후보 2개 · 최종 목적지 복정역 · 차량 접근·정차 검증 필요 · 배차 확정 불가')
+                if p.get('road_model_complete'):
+                    st.caption(f"OSRM 도로 모형 확인 · {p['distance_km']:.2f} km · {p['duration_min']:.1f}분 · 실측 아님")
+                else:
+                    st.caption('경로 확인 필요 · 신규 정류장 위치 설정에서 후보 저장 후 OSRM 경로를 조회하세요.')
+                for candidate in p.get('road_candidates', []):
+                    st.caption(candidate)
         left,right=st.columns([1.4,1],gap='medium')
         with left:
             st.markdown('**고정 노선 지도**')
+            visible=persistent_ui.multiselect('지도에 표시할 노선', [p['route_id'] for p in plans],
+                default=[p['route_id'] for p in plans], key='dashboard_visible_routes')
             try:
                 stops=pd.read_csv(stops_path(),encoding='utf-8-sig')
-                st.iframe(overview_map(stops,state),height=450)
-                st.caption('R01 파랑 · R02 주황 · 번호: 경유 순서 · 점선: 미검증 구간')
+                st.iframe(overview_map(stops,state,visible=visible),height=450)
+                st.caption('사용자 지정 후보는 마커로 표시 · 미지정 승차 지점은 배치 보류 · 복정역 미지정 시 GIS 참고점 · 차량 접근·정차 검증 필요')
+                st.caption('R01 파랑 · R02 주황 · R03 진한 파랑 · R04 초록 · 번호: 경유 순서 · 점선: 미검증 구간')
             except (OSError,ValueError,KeyError) as error:
                 st.warning(f'지도 조회 실패: {error}')
         with right:
@@ -53,9 +71,12 @@ def show_operating_dashboard(research_renderer):
                 for p in plans:
                     current=[r for r in rows if r['operating_record'] and r['route_id']==p['route_id']]
                     runs=[r for r in ops['runs'] if r['route_id']==p['route_id'] and r['active'] and not r['test_only']]
-                    route_rows.append({'노선':p['route_id'],'대기':sum(r['display_stage']=='예약 접수 · 배차 대기' for r in current),
+                    route_rows.append({'노선':p['route_id'],
+                        '노선명':p['name'] if p['route_id'] in ('R03','R04') else f"{p['route_id']} → {p['stops'][-1]['name']}",
+                        '최종 목적지':p['stops'][-1]['name'],
+                        '대기':sum(r['display_stage']=='예약 접수 · 배차 대기' for r in current),
                         '확정':sum(r['display_stage']=='배차 확정' for r in current),'등록 운행편':len(runs),
-                        '상태':'도로 구간 확인 필요' if not p['road_complete'] else '운행편 등록됨' if runs else '운행편 없음'})
+                        '상태':'검증 대기' if p['route_id'] in ('R03','R04') else '도로 구간 확인 필요' if not p['road_complete'] else '운행편 등록됨' if runs else '운행편 없음'})
                 st.dataframe(pd.DataFrame(route_rows),hide_index=True,width='stretch')
                 st.caption('차량 위치·실제 운행 중 상태는 수집 자료가 없습니다.')
                 st.button('예약·배차 관리',on_click=navigate,args=('예약 및 배차 관리',),key='dashboard_booking_link')

@@ -23,15 +23,16 @@ def reservation_snapshot(reservations, configured_vehicles):
                 assigned_vehicles=int(active.vehicle_id.dropna().nunique()))
 
 
-def overview_map(stops, route_state=None, legacy_preview=None):
+def overview_map(stops, route_state=None, legacy_preview=None, visible=None):
     """Station overview with web basemap; no editing or route requests."""
     from modules.combined_routes import route_layers, add_layers
     from modules.independent_routes import RouteStore
     result = background_map([37.474, 127.143], zoom_start=14, layer_control=False)
     store = RouteStore()
     routes = route_layers(store.original_loader(), route_state or store.snapshot())
-    add_layers(result, routes, ["R01", "R02"])
-    points = [[float(s["latitude"]), float(s["longitude"])] for r in routes for s in r["stops"]]
+    visible = [r["route_id"] for r in routes] if visible is None else visible
+    add_layers(result, routes, visible)
+    points = [[float(s["latitude"]), float(s["longitude"])] for r in routes if r['route_id'] in visible for s in r["stops"] if s.get("latitude") is not None and s.get("longitude") is not None]
     if points:
         result.fit_bounds(points, padding=(30, 30))
     folium.LayerControl(collapsed=False).add_to(result)

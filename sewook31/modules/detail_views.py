@@ -17,9 +17,8 @@ def show_punctuality():
     if not limits[0] <= limits[1] <= limits[2]:
         st.error('최소 ≤ 최빈 ≤ 최대를 만족해야 합니다.')
         return
-    st.caption('예정 픽업=트램 출발−(OSRM+정차+여유). 기본 분석은 8개 정류장의 고정 목적지를 사용합니다. 실제 도로 시간이 없으면 산출 불가입니다.')
-    research_nearest=st.checkbox('기존 연구 방식: 공식 12개 역 중 최근접역 비교',value=False)
-    frame = generate(limits, allow_network=st.checkbox('캐시 없는 경로 OSRM 조회', value=False),destination_mode='nearest' if research_nearest else 'fixed')
+    st.caption('기존 연구 방식: 기존 CSV 정류장과 공식 12개 역 중 최근접역 비교. 고정 노선별 정시성 결과가 아닙니다. R03/R04는 미지원입니다.')
+    frame = generate(limits, allow_network=st.checkbox('캐시 없는 경로 OSRM 조회', value=False))
     if frame.empty:
         st.warning('정류장 missing')
         return
@@ -124,14 +123,16 @@ def input_versions():
     return {str(p.relative_to(PROJECT_DIR)): hashlib.sha256(p.read_bytes()).hexdigest() for p in names if p.exists()}
 
 
-def generate(k, allow_network=False, destination_mode='fixed'):
+def generate(k, allow_network=False, destination_mode='nearest'):
+    if destination_mode != 'nearest':
+        raise ValueError('기존 계산 엔진은 최근접역 연구 모형만 지원합니다.')
     from modules.independent_routes import RouteStore
     state=RouteStore().snapshot()
     inputs = dict(k=k, allow_network=allow_network, destination_mode=destination_mode, registry_revision=state['revision'], registry_state=state, sources=input_versions())
     saved = matching_result('legacy_punctuality_execution', inputs)
     if saved:
         return saved['value'].copy()
-    value = original_generate(k, allow_network=allow_network, destination_mode=destination_mode)
+    value = original_generate(k, allow_network=allow_network)
     # Network may have added derived cache entries: identify the actual source snapshot.
     inputs['sources'] = input_versions()
     remember_result('legacy_punctuality_execution', inputs, value, 'Existing triangular-factor model; virtual timetable; not measured')

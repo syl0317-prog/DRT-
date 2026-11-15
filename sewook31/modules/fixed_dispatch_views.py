@@ -77,19 +77,19 @@ def show_fixed_operations():
             st.info('운영 차량 데이터 없음. 차량을 임의 생성하지 않습니다.')
             return
         with st.form('fixed_run_form'):
-            rid=st.selectbox('운행 노선',['R01','R02'],key='fixed_run_route')
+            rid=st.selectbox('운행 노선',['R01','R02','R03','R04'],key='fixed_run_route')
             vid=st.selectbox('운행 차량',[v['vehicle_id'] for v in operational_vehicles],key='fixed_run_vehicle')
             future=datetime.now(KST)+timedelta(days=1)
             day=st.date_input('운행 날짜',future.date(),key='fixed_run_day')
             clock=st.time_input('첫 정류장 출발 시각',future.time().replace(second=0,microsecond=0,tzinfo=None),key='fixed_run_clock')
-            offsets_text=st.text_input('고정 순서 5개 지점의 예정 분 (첫 지점 0, 쉼표 구분)',placeholder='확인된 시간표를 입력하세요',key='fixed_run_offsets')
+            offsets_text=st.text_input('고정 순서 전체 지점의 예정 분 (첫 지점 0, 쉼표 구분)',placeholder='확인된 시간표를 입력하세요',key='fixed_run_offsets')
             access=st.text_input('고정 경로 운행·정류장 접근 및 정차 가능 확인 근거',key='fixed_access_evidence')
             st.caption('R01 D01→D02→D03→D04→T01 / R02는 저장된 방문 순서→T02. 회차·공차 이동 여유도 운영자가 확보해야 합니다.')
             if st.form_submit_button('날짜별 운행편 등록'):
                 plan=next(p for p in route_plans(service.routes.original_loader(),service.routes.snapshot()) if p['route_id']==rid)
                 values=[float(x.strip()) for x in offsets_text.split(',')]
                 if len(values)!=len(plan['order']):
-                    raise RouteError('승차 정류장 4개와 최종 트램 지점의 예정 분 5개가 필요합니다.')
+                    raise RouteError('노선의 모든 승차 정류장과 최종 목적지의 예정 분이 필요합니다.')
                 register_run(service,rid,vid,datetime.combine(day,clock,KST),dict(zip(plan['order'],values)),access)
                 st.success('운행편 등록 완료');st.rerun()
         show_dispatch_board()

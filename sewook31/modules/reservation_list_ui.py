@@ -22,7 +22,7 @@ def show_booking_list(service):
             selected=ui.selectbox('예약 상태',['전체','배차 검토 필요','배차 확정','예약완료','예약취소'],key='ua_filter',
                 format_func=lambda v:{'배차 검토 필요':'접수·대기','예약완료':'배정 기록 (과거·시험 포함)','예약취소':'예약 취소'}.get(v,v))
         with c:
-            selected_route=ui.selectbox('노선',['전체','R01','R02'],key='ua_route_filter')
+            selected_route=ui.selectbox('노선',['전체','R01','R02','R03','R04'],key='ua_route_filter')
         filtered=[]
         for r in records:
             if selected_route!='전체' and r['route_id']!=selected_route:continue
